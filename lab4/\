@@ -1,0 +1,30 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include "utils.h"
+#include "words.h"
+
+void *malloc (size_t size);
+
+int readMsg(char* buf) {
+	int len;
+	char c;
+	len = 0;
+	while((c = getchar()) != EOF && c != '\n' && len < SIZE) {
+		*(buf + len) = c;	
+		len++;
+	}
+	if (len == 0 && c == EOF) {
+		return EOF;
+	}	
+	if (c == '\n' && len < SIZE) {
+		*(buf + len) = c;
+		return (len + 1);	
+	}
+	return len;
+}
+
+int main() {
+	char c[SIZE] = {0};
+	int len = readMsg(c);
+	printf("the len of:\n%s\n is %d\n",c,len);
+}
