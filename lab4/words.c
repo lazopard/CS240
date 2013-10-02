@@ -38,13 +38,13 @@ int wordLen(char* str, int strLen, int start){
 }
 
 void matchAndEraseWord(char *str, int start, int wLen, char* keyword) {
-	int i, count;
-	char *p = &(*(str + start));
-	if (strNCmp(p,keyword,wLen)) {
-		for(i=0; i < wLen; i++)
-			*(p + i) = ' ';
-	}
-	return;
+     int i, count;
+     char *p = &(*(str + start));
+     if (strNCmp(p,keyword,wLen)) {
+     	for(i=0; i < wLen; i++)
+     		*(p + i) = ' ';
+     }
+     return;
 }
 
 int getNextWordIndex(char *string, int len, int prevEnd) {
@@ -55,8 +55,9 @@ int getNextWordIndex(char *string, int len, int prevEnd) {
 		return -1;
 	}
 	int i = 0;
-	while(!isAlphaNumeric(*(string + i + prevEnd)))
+	while(!(isAlphaNumeric(*(string + i + prevEnd)))) {
 		i++;
+	}
 	return (i + prevEnd);
 }
 
@@ -71,7 +72,7 @@ int getNextWordIndex(char *string, int len, int prevEnd) {
 
 int readMsg(char* buf) {
 	int len;
-	char c;
+	int c;
 	len=0;
 	while((c = getchar()) != EOF && c != '\n' && len < SIZE) {
 		*(buf + len) = c;	
@@ -84,4 +85,5 @@ int readMsg(char* buf) {
 		*(buf + len) = c;
 		return len + 1;
 	}
+	return len;
 }

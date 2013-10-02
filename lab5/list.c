@@ -20,6 +20,8 @@ struct lnode* newNode (char* word, int line) { //malloc space for new node
   struct lnode *newNode = m
   struct lnode newNode = { .word = word, .line = line, .count = 1,.next = NULL};
   return &newNode;
+	struct lnode* newNode (char* word, int line) {
+  /* FILL THIS IN */
 }
 
 /**
@@ -29,6 +31,11 @@ struct lnode* newNode (char* word, int line) { //malloc space for new node
 void pushNode (struct lnode** head, struct lnode* node) {
 	node->next = *head;
 }
+
+  /* FILL THIS IN */
+  abort(); // Please remove the abort() when you implement this function
+}
+
 
 /**
  * Returns the pointer to the node containing the given word in the linked list
@@ -53,16 +60,16 @@ void deleteNode (struct lnode** head, struct lnode* node);
  * Simply returns the next node in the list, or NULL if there are no further nodes.
  */
 struct lnode *nodeGetNext(struct lnode *node) {
-    /* FILL THIS IN */
     return node->next;
+    abort(); // Please remove the abort() when you implement this function
 }
 
 /**
  * Simply returns the word in the given node.
  */
 char *nodeGetWord(struct lnode *node) {
-    /* FILL THIS IN */
     return node->word;
+    abort(); // Please remove the abort() when you implement this function
 }
 
 /**
@@ -70,6 +77,7 @@ char *nodeGetWord(struct lnode *node) {
  */
 int nodeGetLine(struct lnode *node) {
     return node->line;
+    abort(); // Please remove the abort() when you implement this function
 }
 
 /**
@@ -77,6 +85,7 @@ int nodeGetLine(struct lnode *node) {
  */
 int nodeGetCount(struct lnode *node) {
     return node->count;
+    abort(); // Please remove the abort() when you implement this function
 }
 
 /**
@@ -84,6 +93,7 @@ int nodeGetCount(struct lnode *node) {
  */
 void nodeSetCount(struct lnode *node, int count) {
 	node->count = count;
+    abort(); // Please remove the abort() when you implement this function
 }
 
 /**
@@ -91,6 +101,8 @@ void nodeSetCount(struct lnode *node, int count) {
  */
 void nodeSetLine(struct lnode *node, int line) {
 	node->line = line;
+    /* FILL THIS IN */
+    abort(); // Please remove the abort() when you implement this function
 }
 
 
