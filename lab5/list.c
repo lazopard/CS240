@@ -17,11 +17,12 @@ struct lnode {
  */
 
 struct lnode* newNode (char* word, int line) { //malloc space for new node
-  struct lnode *newNode = m
-  struct lnode newNode = { .word = word, .line = line, .count = 1,.next = NULL};
-  return &newNode;
-	struct lnode* newNode (char* word, int line) {
-  /* FILL THIS IN */
+  struct lnode *newNode = malloc(sizeof *newNode);
+  newNode->word = word;
+  newNode->line = line;
+  newNode->count = 1;
+  newNode->next = NULL;
+  return newNode;
 }
 
 /**
@@ -32,18 +33,12 @@ void pushNode (struct lnode** head, struct lnode* node) {
 	node->next = *head;
 }
 
-  /* FILL THIS IN */
-  abort(); // Please remove the abort() when you implement this function
-}
-
-
 /**
  * Returns the pointer to the node containing the given word in the linked list
  * with head as the head pointer. If a node with the given word cannot be found,
  * the function returns NULL.
  */
 struct lnode* getNode (struct lnode* head, char* word) {
-  /* FILL THIS IN */
   abort(); // Please remove the abort() when you implement this function
 }
 
@@ -51,8 +46,7 @@ struct lnode* getNode (struct lnode* head, char* word) {
  * Removes the specified node from the list, and frees all memory the node is
  * using. Remember if *head is the node being deleted, it must be updated.
  */
-void deleteNode (struct lnode** head, struct lnode* node);
-  /* FILL THIS IN */
+void deleteNode (struct lnode** head, struct lnode* node) {
   abort(); // Please remove the abort() when you implement this function
 }
 
