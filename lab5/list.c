@@ -4,24 +4,29 @@
 #include "list.h"
 
 struct lnode {
-	char *word;
+	char *word; 
 	int line;
 	int count;
 	struct lnode *next;
-};
+}; 
 
-/**
+/*
  * Returns a new linked list node filled in with the given word and line, and
  * sets the count to be 1. Make sure to duplicate the word, as the original word
  * may be modified by the calling function.
  */
 
-struct lnode* newNode (char* word, int line) { //malloc space for new node
-  struct lnode *newNode = malloc(sizeof *newNode);
+struct lnode* newNode (char* word, int line) {
+  struct lnode *newNode = NULL;
+  newNode = (struct lnode*) malloc(sizeof(struct lnode));
+  if (newNode == NULL) {
+  	return NULL;
+  }
   newNode->word = word;
   newNode->line = line;
   newNode->count = 1;
   newNode->next = NULL;
+  free(newNode);
   return newNode;
 }
 
@@ -38,8 +43,15 @@ void pushNode (struct lnode** head, struct lnode* node) {
  * with head as the head pointer. If a node with the given word cannot be found,
  * the function returns NULL.
  */
-struct lnode* getNode (struct lnode* head, char* word) {
-  abort(); // Please remove the abort() when you implement this function
+struct lnode* getNode (struct lnode *head, char* word) {
+	int i = 0;
+	while( (head + i)->word != word && (head + i) != NULL) {
+		i++;
+	}
+	if ((head + i) == NULL) {
+		return NULL;
+	}
+	return (head + i);
 }
 
 /**
@@ -47,7 +59,12 @@ struct lnode* getNode (struct lnode* head, char* word) {
  * using. Remember if *head is the node being deleted, it must be updated.
  */
 void deleteNode (struct lnode** head, struct lnode* node) {
-  abort(); // Please remove the abort() when you implement this function
+	int i = 0;
+	while(*(head + i) != node) {
+		i++;
+	}
+	(node - 1)->next = (node + 1);
+	free(node);
 }
 
 /**
@@ -55,7 +72,6 @@ void deleteNode (struct lnode** head, struct lnode* node) {
  */
 struct lnode *nodeGetNext(struct lnode *node) {
     return node->next;
-    abort(); // Please remove the abort() when you implement this function
 }
 
 /**
@@ -63,7 +79,6 @@ struct lnode *nodeGetNext(struct lnode *node) {
  */
 char *nodeGetWord(struct lnode *node) {
     return node->word;
-    abort(); // Please remove the abort() when you implement this function
 }
 
 /**
@@ -71,7 +86,6 @@ char *nodeGetWord(struct lnode *node) {
  */
 int nodeGetLine(struct lnode *node) {
     return node->line;
-    abort(); // Please remove the abort() when you implement this function
 }
 
 /**
@@ -79,7 +93,6 @@ int nodeGetLine(struct lnode *node) {
  */
 int nodeGetCount(struct lnode *node) {
     return node->count;
-    abort(); // Please remove the abort() when you implement this function
 }
 
 /**
@@ -87,7 +100,6 @@ int nodeGetCount(struct lnode *node) {
  */
 void nodeSetCount(struct lnode *node, int count) {
 	node->count = count;
-    abort(); // Please remove the abort() when you implement this function
 }
 
 /**
@@ -95,8 +107,6 @@ void nodeSetCount(struct lnode *node, int count) {
  */
 void nodeSetLine(struct lnode *node, int line) {
 	node->line = line;
-    /* FILL THIS IN */
-    abort(); // Please remove the abort() when you implement this function
 }
 
 
@@ -106,6 +116,17 @@ void nodeSetLine(struct lnode *node, int line) {
  * should be NULL.
  */
 void deleteList(struct lnode **head) {
-    /* FILL THIS IN */
-    abort(); // Please remove the abort() when you implement this function
+	int i = 0;
+	while(*(head + i) != NULL) {
+		*(head + i) = NULL;
+		free(*(head+i));
+		i++;
+	}
+	free(head);
+}
+
+int main() {
+	struct lnode *new = newNode("hello",1);
+	printf("%s, %d\n", new->word,new->line);
+	free(new);
 }
