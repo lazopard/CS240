@@ -44,14 +44,13 @@ void pushNode (struct lnode** head, struct lnode* node) {
  * the function returns NULL.
  */
 struct lnode* getNode (struct lnode *head, char* word) {
-	int i = 0;
-	while( (head + i)->word != word && (head + i) != NULL) {
-		i++;
-	}
-	if ((head + i) == NULL) {
+	struct lnode *ptr = (struct lnode*) malloc(sizeof(struct lnode));
+	for(ptr = head; ptr != NULL && ptr->word != word;ptr=ptr->next);
+	if (ptr == NULL) {
 		return NULL;
 	}
-	return (head + i);
+	free(ptr);
+	return ptr;
 }
 
 /**
@@ -123,10 +122,4 @@ void deleteList(struct lnode **head) {
 		i++;
 	}
 	free(head);
-}
-
-int main() {
-	struct lnode *new = newNode("hello",1);
-	printf("%s, %d\n", new->word,new->line);
-	free(new);
 }
