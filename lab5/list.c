@@ -18,15 +18,19 @@ struct lnode {
 
 struct lnode* newNode (char* word, int line) {
   struct lnode *newNode = NULL;
+  size_t sizeofword = sizeof(word);
+  char *alword = (char*) malloc(sizeofword);
+  alword = word;
   newNode = (struct lnode*) malloc(sizeof(struct lnode));
   if (newNode == NULL) {
   	return NULL;
   }
-  newNode->word = word;
+  newNode->word = alword;
   newNode->line = line;
   newNode->count = 1;
   newNode->next = NULL;
-  free(newNode);
+  //free(alword);
+  //free(newNode);
   return newNode;
 }
 
@@ -36,6 +40,7 @@ struct lnode* newNode (char* word, int line) {
  */
 void pushNode (struct lnode** head, struct lnode* node) {
 	node->next = *head;
+	*head = node;
 }
 
 /**
@@ -69,6 +74,7 @@ void deleteNode (struct lnode** head, struct lnode* node) {
 /**
  * Simply returns the next node in the list, or NULL if there are no further nodes.
  */
+
 struct lnode *nodeGetNext(struct lnode *node) {
     return node->next;
 }
@@ -116,10 +122,9 @@ void nodeSetLine(struct lnode *node, int line) {
  */
 void deleteList(struct lnode **head) {
 	int i = 0;
-	while(*(head + i) != NULL) {
-		*(head + i) = NULL;
-		free(*(head+i));
-		i++;
-	}
-	free(head);
+	struct lnode *temp = NULL;
+	temp = (struct lnode*) malloc(sizeof(struct lnode));
+	temp = *head;
+	while(temp != NULL) {
+		
 }
