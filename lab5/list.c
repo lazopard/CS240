@@ -17,10 +17,10 @@ struct lnode {
  */
 
 struct lnode* newNode (char* word, int line) {
-  struct lnode *newNode = NULL;
-  size_t sizeofword = sizeof(word);
-  char *alword = (char*) malloc(sizeofword);
-  alword = word;
+  char *alword; 
+  alword = (char *) malloc(sizeof(char)*(strlen(word) + 1));
+  alword = strcpy(alword,word);
+  struct lnode *newNode;
   newNode = (struct lnode*) malloc(sizeof(struct lnode));
   if (newNode == NULL) {
   	return NULL;
@@ -29,8 +29,6 @@ struct lnode* newNode (char* word, int line) {
   newNode->line = line;
   newNode->count = 1;
   newNode->next = NULL;
-  //free(alword);
-  //free(newNode);
   return newNode;
 }
 
@@ -38,7 +36,8 @@ struct lnode* newNode (char* word, int line) {
  * In a linked list with *head as the head pointer, adds the given node to the
  * front of the list.
  */
-void pushNode (struct lnode** head, struct lnode* node) {
+
+void pushNode(struct lnode** head, struct lnode* node) {
 	node->next = *head;
 	*head = node;
 }
@@ -48,10 +47,12 @@ void pushNode (struct lnode** head, struct lnode* node) {
  * with head as the head pointer. If a node with the given word cannot be found,
  * the function returns NULL.
  */
-struct lnode* getNode (struct lnode *head, char* word) {
+
+struct lnode* getNode(struct lnode *head, char* word) {
 	struct lnode *ptr = (struct lnode*) malloc(sizeof(struct lnode));
 	for(ptr = head; ptr != NULL && ptr->word != word;ptr=ptr->next);
 	if (ptr == NULL) {
+		free(ptr);
 		return NULL;
 	}
 	free(ptr);
@@ -62,13 +63,23 @@ struct lnode* getNode (struct lnode *head, char* word) {
  * Removes the specified node from the list, and frees all memory the node is
  * using. Remember if *head is the node being deleted, it must be updated.
  */
-void deleteNode (struct lnode** head, struct lnode* node) {
-	int i = 0;
-	while(*(head + i) != node) {
-		i++;
+
+void deleteNode(struct lnode **head, struct lnode* node) {
+	/*if (*head == node) {
+		pushNode(head,*head->next);
+		*head->next = *head->next->next;
+		free(node);
+		return;
 	}
-	(node - 1)->next = (node + 1);
-	free(node);
+	struct lnode *ptr = (struct lnode*) malloc(sizeof(struct lnode));
+	for(ptr = *head; ptr != NULL; ptr = ptr->next) {
+		if (ptr == node) {
+			(ptr - 1)->next = (ptr + 1);
+		}
+	}
+	free(ptr);
+	*/
+	abort();
 }
 
 /**
@@ -82,6 +93,7 @@ struct lnode *nodeGetNext(struct lnode *node) {
 /**
  * Simply returns the word in the given node.
  */
+
 char *nodeGetWord(struct lnode *node) {
     return node->word;
 }
@@ -89,6 +101,7 @@ char *nodeGetWord(struct lnode *node) {
 /**
  * Simply returns the line in the given node.
  */
+
 int nodeGetLine(struct lnode *node) {
     return node->line;
 }
@@ -96,6 +109,7 @@ int nodeGetLine(struct lnode *node) {
 /**
  * Simply returns the count in the given node.
  */
+
 int nodeGetCount(struct lnode *node) {
     return node->count;
 }
@@ -103,6 +117,7 @@ int nodeGetCount(struct lnode *node) {
 /**
  * Set the count in the node to be the given count.
  */
+
 void nodeSetCount(struct lnode *node, int count) {
 	node->count = count;
 }
@@ -110,6 +125,7 @@ void nodeSetCount(struct lnode *node, int count) {
 /**
  * Set the line in the node to be the given line.
  */
+
 void nodeSetLine(struct lnode *node, int line) {
 	node->line = line;
 }
@@ -120,11 +136,13 @@ void nodeSetLine(struct lnode *node, int line) {
  * this function, all memory used by the list should be freed, and *head
  * should be NULL.
  */
+
 void deleteList(struct lnode **head) {
-	int i = 0;
-	struct lnode *temp = NULL;
-	temp = (struct lnode*) malloc(sizeof(struct lnode));
-	temp = *head;
-	while(temp != NULL) {
-		
+	struct lnode *ptr = (struct lnode*) malloc(sizeof(struct lnode));
+	for(ptr = *head; ptr != NULL; ptr = ptr->next) {
+		free(ptr);			
+	}
+	head = NULL;
 }
+
+// []->[]->[]->[]->NULL
