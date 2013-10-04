@@ -37,9 +37,15 @@ struct lnode* newNode (char* word, int line) {
  * front of the list.
  */
 
+//make node the head, make *head point to node, give node the value of head
+
 void pushNode(struct lnode** head, struct lnode* node) {
+	struct lnode *temp = (struct lnode*) malloc(sizeof(struct lnode));
+	*temp = **head;
 	node->next = *head;
 	*head = node;
+	node = temp;
+	free(temp);
 }
 
 /**
@@ -50,7 +56,9 @@ void pushNode(struct lnode** head, struct lnode* node) {
 
 struct lnode* getNode(struct lnode *head, char* word) {
 	struct lnode *ptr = (struct lnode*) malloc(sizeof(struct lnode));
-	for(ptr = head; ptr != NULL && ptr->word != word;ptr=ptr->next);
+	for(ptr = head; ptr->word != word && ptr != NULL;ptr=ptr->next) {
+		printf("%s",ptr->word);
+	}
 	if (ptr == NULL) {
 		free(ptr);
 		return NULL;
@@ -145,4 +153,20 @@ void deleteList(struct lnode **head) {
 	head = NULL;
 }
 
-// []->[]->[]->[]->NULL
+void printList(struct lnode **head) {
+	struct lnode *temp = malloc(sizeof(struct lnode));
+	temp = *head;
+	while(temp != NULL) {
+		printf("node.word is %s\n",temp->word);
+		temp = temp->next;
+	}
+}
+
+int main() {
+	struct lnode *inhead = newNode("node1",1);
+	struct lnode *node = newNode("node2",2);
+	struct lnode *node2 = newNode("node3",3);
+	pushNode(&inhead,node);
+	pushNode(&inhead,node2);
+	printList(&inhead);
+}
