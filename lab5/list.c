@@ -56,11 +56,15 @@ void pushNode(struct lnode** head, struct lnode* node) {
 
 struct lnode* getNode(struct lnode *head, char* word) {
 	struct lnode *ptr = (struct lnode*) malloc(sizeof(struct lnode));
-	for(ptr = head; ptr->word != word && ptr != NULL;ptr=ptr->next) {
-		printf("%s",ptr->word);
+	ptr = head;
+	while(ptr->word != word && ptr != NULL) {
+		if (ptr->next == NULL)
+			break;
+		ptr = ptr->next;
 	}
-	if (ptr == NULL) {
+	if (strcmp(ptr->word,word)) {
 		free(ptr);
+		ptr = NULL;
 		return NULL;
 	}
 	free(ptr);
@@ -73,21 +77,36 @@ struct lnode* getNode(struct lnode *head, char* word) {
  */
 
 void deleteNode(struct lnode **head, struct lnode* node) {
-	/*if (*head == node) {
-		pushNode(head,*head->next);
-		*head->next = *head->next->next;
-		free(node);
-		return;
-	}
-	struct lnode *ptr = (struct lnode*) malloc(sizeof(struct lnode));
-	for(ptr = *head; ptr != NULL; ptr = ptr->next) {
-		if (ptr == node) {
-			(ptr - 1)->next = (ptr + 1);
+
+	if (*head == node) {
+		if (((*head)->next) == NULL) {
+			free(*head);
+			*head = NULL;
+			return;
 		}
+		struct lnode *prevptr = (struct lnode*) malloc(sizeof(struct lnode));
+		prevptr = *head;
+		*head = (*head)->next;
+		free(prevptr);
+		prevptr = NULL;
+		return;
+	}	
+	struct lnode *currentptr = (struct lnode*) malloc(sizeof(struct lnode));
+	struct lnode *prevptr = (struct lnode*) malloc(sizeof(struct lnode));
+
+	currentptr = *head;
+
+	while(currentptr != node) {
+		if(currentptr->next == NULL) 
+			break;
+		prevptr = currentptr;
+		currentptr = currentptr->next;
 	}
-	free(ptr);
-	*/
-	abort();
+	if (currentptr == node) {
+		prevptr->next = currentptr->next;
+		free(currentptr);
+		currentptr = NULL;
+	}
 }
 
 /**
@@ -146,18 +165,20 @@ void nodeSetLine(struct lnode *node, int line) {
  */
 
 void deleteList(struct lnode **head) {
-	struct lnode *ptr = (struct lnode*) malloc(sizeof(struct lnode));
-	for(ptr = *head; ptr != NULL; ptr = ptr->next) {
-		free(ptr);			
+	struct lnode *prevptr = (struct lnode*) malloc(sizeof(struct lnode));
+	prevptr = *head;
+	while((*head)->next != NULL) {
+		deleteNode(head,(*head));
 	}
-	head = NULL;
+	free(*head);
+	*head = NULL;
 }
 
 void printList(struct lnode **head) {
 	struct lnode *temp = malloc(sizeof(struct lnode));
 	temp = *head;
 	while(temp != NULL) {
-		printf("node.word is %s\n",temp->word);
+	//	printf("%s\n",temp->word);
 		temp = temp->next;
 	}
 }
@@ -168,5 +189,7 @@ int main() {
 	struct lnode *node2 = newNode("node3",3);
 	pushNode(&inhead,node);
 	pushNode(&inhead,node2);
+	printList(&inhead);
+	deleteList(&inhead);
 	printList(&inhead);
 }
