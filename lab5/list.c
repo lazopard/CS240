@@ -22,9 +22,6 @@ struct lnode* newNode (char* word, int line) {
   alword = strcpy(alword,word);
   struct lnode *newNode;
   newNode = (struct lnode*) malloc(sizeof(struct lnode));
-  if (newNode == NULL) {
-  	return NULL;
-  }
   newNode->word = alword;
   newNode->line = line;
   newNode->count = 1;
@@ -165,8 +162,6 @@ void nodeSetLine(struct lnode *node, int line) {
  */
 
 void deleteList(struct lnode **head) {
-	struct lnode *prevptr = (struct lnode*) malloc(sizeof(struct lnode));
-	prevptr = *head;
 	while((*head)->next != NULL) {
 		deleteNode(head,(*head));
 	}
@@ -178,18 +173,15 @@ void printList(struct lnode **head) {
 	struct lnode *temp = malloc(sizeof(struct lnode));
 	temp = *head;
 	while(temp != NULL) {
-	//	printf("%s\n",temp->word);
+		printf("%s\n",temp->word);
 		temp = temp->next;
 	}
 }
 
 int main() {
-	struct lnode *inhead = newNode("node1",1);
+	struct lnode *inhead = newNode("inhead",1);
 	struct lnode *node = newNode("node2",2);
 	struct lnode *node2 = newNode("node3",3);
 	pushNode(&inhead,node);
 	pushNode(&inhead,node2);
-	printList(&inhead);
-	deleteList(&inhead);
-	printList(&inhead);
 }
