@@ -46,21 +46,21 @@ struct lnode* newNode (char* word, int line) {
  * front of the list.
  */
 
-//make node the head, make *head point to node, give node the value of head
-//
 //pushes new node to head
 //
 //not updating the head pointer
 
+void printList(struct lnode **head);
+
 void pushNode(struct lnode** head, struct lnode* node) {
 	if ((*head) == NULL) {
-		head = &node;
+		*head = node;
 		return;
 	}
-	node->next = *head;	
-	printf("node is %s, head is %s, node->next is %s\n",node->word,(*head)->word,node->next->word);
-	head = &node;
-	printf("head is now %s\n",(*head)->word);
+	struct lnode *temp = *head;
+	*head = node;
+	node = temp;
+	(*head)->next = node;
 }
 
 /**
@@ -126,6 +126,9 @@ void deleteNode(struct lnode **head, struct lnode* node) {
 		myFree(currentptr->word);
 		myFree(currentptr);
 		currentptr = NULL;
+		myFree(prevptr->word);
+		myFree(prevptr);
+		prevptr = NULL;
 	}
 }
 
@@ -202,19 +205,19 @@ void printList(struct lnode **head) {
 		printf("%s\n",temp->word);
 		temp = temp->next;
 	}
-	//free(temp->word);
 	myFree(temp);
 }
 
 int main() {
+	struct lnode **headptr;
 	struct lnode *inhead = newNode("inhead",1);
 	struct lnode *node = newNode("node2",2);
 	struct lnode *node2 = newNode("node3",3);
-	pushNode(&inhead,node);
-	printf("head out of push is %s\n",inhead->word);
-	//pushNode(&inhead,node2);
+	headptr = &inhead;
+	pushNode(headptr,node);
+	pushNode(&inhead,node2);
 	printList(&inhead);
-	//printf("counter is %d\n",counter);
-	//deleteList(&inhead);
-	//printf("counter is %d\n",counter);
+	printf("counter is %d\n",counter);
+	deleteList(&inhead);
+	printf("counter is %d\n",counter);
 }
