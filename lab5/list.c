@@ -216,7 +216,6 @@ int main() {
 	headptr = &inhead;
 	pushNode(headptr,node);
 	pushNode(&inhead,node2);
-	printList(&inhead);
 	printf("counter is %d\n",counter);
 	deleteList(&inhead);
 	printf("counter is %d\n",counter);
