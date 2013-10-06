@@ -69,7 +69,6 @@ int getNextWordIndex(char *string, int len, int prevEnd) {
  Note that it doesn't treat the chars as strings, so no '\0' terminator will be appended at the end.
  */
 
-
 int readMsg(char* buf) {
 	int len;
 	int c;
