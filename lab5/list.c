@@ -3,6 +3,18 @@
 #include <string.h>
 #include "list.h"
 
+int counter = 0;
+
+void *myMalloc(size_t size){
+		++counter;
+		return malloc(size);
+}
+
+void myFree(void *ptr){
+		--counter;
+		free(ptr);
+}
+
 struct lnode {
 	char *word; 
 	int line;
@@ -18,10 +30,10 @@ struct lnode {
 
 struct lnode* newNode (char* word, int line) {
   char *alword; 
-  alword = (char *) malloc(sizeof(char)*(strlen(word) + 1));
+  alword = (char *) myMalloc(sizeof(char)*(strlen(word) + 1));
   alword = strcpy(alword,word);
   struct lnode *newNode;
-  newNode = (struct lnode*) malloc(sizeof(struct lnode));
+  newNode = (struct lnode*) myMalloc(sizeof(struct lnode));
   newNode->word = alword;
   newNode->line = line;
   newNode->count = 1;
@@ -37,12 +49,12 @@ struct lnode* newNode (char* word, int line) {
 //make node the head, make *head point to node, give node the value of head
 
 void pushNode(struct lnode** head, struct lnode* node) {
-	struct lnode *temp = (struct lnode*) malloc(sizeof(struct lnode));
+	struct lnode *temp = (struct lnode*) myMalloc(sizeof(struct lnode));
 	*temp = **head;
 	node->next = *head;
 	*head = node;
 	node = temp;
-	free(temp);
+	myFree(temp);
 }
 
 /**
@@ -52,7 +64,7 @@ void pushNode(struct lnode** head, struct lnode* node) {
  */
 
 struct lnode* getNode(struct lnode *head, char* word) {
-	struct lnode *ptr = (struct lnode*) malloc(sizeof(struct lnode));
+	struct lnode *ptr = (struct lnode*) myMalloc(sizeof(struct lnode));
 	ptr = head;
 	while(ptr->word != word && ptr != NULL) {
 		if (ptr->next == NULL)
@@ -60,16 +72,16 @@ struct lnode* getNode(struct lnode *head, char* word) {
 		ptr = ptr->next;
 	}
 	if (strcmp(ptr->word,word)) {
-		free(ptr);
+		myFree(ptr);
 		ptr = NULL;
 		return NULL;
 	}
-	free(ptr);
+	myFree(ptr);
 	return ptr;
 }
 
 /**
- * Removes the specified node from the list, and frees all memory the node is
+ * Removes the specified node from the list, and myFrees all memory the node is
  * using. Remember if *head is the node being deleted, it must be updated.
  */
 
@@ -77,19 +89,19 @@ void deleteNode(struct lnode **head, struct lnode* node) {
 
 	if (*head == node) {
 		if (((*head)->next) == NULL) {
-			free(*head);
+			myFree(*head);
 			*head = NULL;
 			return;
 		}
-		struct lnode *prevptr = (struct lnode*) malloc(sizeof(struct lnode));
+		struct lnode *prevptr = (struct lnode*) myMalloc(sizeof(struct lnode));
 		prevptr = *head;
 		*head = (*head)->next;
-		free(prevptr);
+		myFree(prevptr);
 		prevptr = NULL;
 		return;
 	}	
-	struct lnode *currentptr = (struct lnode*) malloc(sizeof(struct lnode));
-	struct lnode *prevptr = (struct lnode*) malloc(sizeof(struct lnode));
+	struct lnode *currentptr = (struct lnode*) myMalloc(sizeof(struct lnode));
+	struct lnode *prevptr = (struct lnode*) myMalloc(sizeof(struct lnode));
 
 	currentptr = *head;
 
@@ -101,7 +113,7 @@ void deleteNode(struct lnode **head, struct lnode* node) {
 	}
 	if (currentptr == node) {
 		prevptr->next = currentptr->next;
-		free(currentptr);
+		myFree(currentptr);
 		currentptr = NULL;
 	}
 }
@@ -157,7 +169,7 @@ void nodeSetLine(struct lnode *node, int line) {
 
 /**
  * Deletes every node in the list with *head as the head pointer. After calling
- * this function, all memory used by the list should be freed, and *head
+ * this function, all memory used by the list should be myFreed, and *head
  * should be NULL.
  */
 
@@ -165,12 +177,12 @@ void deleteList(struct lnode **head) {
 	while((*head)->next != NULL) {
 		deleteNode(head,(*head));
 	}
-	free(*head);
+	myFree(*head);
 	*head = NULL;
 }
 
 void printList(struct lnode **head) {
-	struct lnode *temp = malloc(sizeof(struct lnode));
+	struct lnode *temp = myMalloc(sizeof(struct lnode));
 	temp = *head;
 	while(temp != NULL) {
 		printf("%s\n",temp->word);
@@ -182,6 +194,12 @@ int main() {
 	struct lnode *inhead = newNode("inhead",1);
 	struct lnode *node = newNode("node2",2);
 	struct lnode *node2 = newNode("node3",3);
-	pushNode(&inhead,node);
-	pushNode(&inhead,node2);
+	printf("counter is %d\n",counter);
+	myFree(inhead->word);
+	myFree(node->word);
+	myFree(node2->word);
+	myFree(inhead);
+	myFree(node);
+	myFree(node2);
+	printf("counter is %d\n",counter);
 }
