@@ -112,31 +112,6 @@ void deleteNode(struct lnode **head, struct lnode *node) {
 	return;
 }
 
-/*void deleteNode(struct lnode **head, struct lnode* node) {
-
-	struct lnode *currentptr = (struct lnode*) myMalloc(sizeof(struct lnode));
-	struct lnode *prevptr = (struct lnode*) myMalloc(sizeof(struct lnode));
-
-	currentptr = *head;
-
-	while(currentptr != node) {
-		if(currentptr->next == NULL) 
-			break;
-		prevptr = currentptr;
-		currentptr = currentptr->next;
-	}
-	if (currentptr == node) {
-		prevptr->next = currentptr->next;
-		myFree(currentptr->word);
-		myFree(currentptr);
-		currentptr = NULL;
-		myFree(prevptr->word);
-		myFree(prevptr);
-		prevptr = NULL;
-	}
-}
-*/
-
 /*
  * Simply returns the next node in the list, or NULL if there are no further nodes.
  */
@@ -204,15 +179,14 @@ void deleteList(struct lnode **head) {
 }
 
 void printList(struct lnode **head) {
-	struct lnode *temp = myMalloc(sizeof(struct lnode));
-	temp = *head;
+	struct lnode *temp = *head;
 	while(temp != NULL) {
 		printf("%s\n",temp->word);
 		temp = temp->next;
 	}
-	myFree(temp);
 }
 
+/*
 int main() {
 	struct lnode **headptr;
 	struct lnode *inhead = newNode("inhead",1);
@@ -226,3 +200,4 @@ int main() {
 	getNode(inhead,"inhead");
 	printf("counter is %d\n",counter);
 }
+*/

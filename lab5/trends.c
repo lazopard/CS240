@@ -6,53 +6,40 @@
 
 int isAlpha(char c);
 
-void printList(struct lnode **head);
+void printWordCount(struct lnode **head);
+
+/*
+*read tweets from stdin, store in char **msg
+*initialize the head of the list, have a counter for the length
+*go through every word in msg, add it to the list
+*if size of list is 100
+*choose which word to take out: // done
+*print the list with appropiate format //done
+*free all memory
+*/
 
 int main() {
 
-		int i, line, nodeCount;
-		i=line=nodeCount=0;
-		char msg* = (char *) malloc(sizeof(char)*SIZE);
-		struct lnode *head = malloc(sizeof(lnode));
-
-		while(/*condition to be determined*/1) {
-
-				while((c=getchar()) != EOF && isAlpha(c) && i < SIZE && c != '\n') {
-						msg[i] = c;
-						i++;
-				}
-				if (head == NULL) {
-						head = newNode(msg,line);
-						nodeCount++;
-				}
-				if (c == '\n') {
-						line++;
-				}
-				if (getNode(head, msg) == NULL) {
-						struct lnode *new  = newNode(msg,line);
-						pushNode(&head,new);
-						nodeCount++;
-				}
-				else {
-						setCount(getNode(&head,msg), getNode(&head,msg)->count + 1);
-						setLine(getNode(&head,msg),line);
-				}
-		}
-
-		printList(head);	
 }
 
-void printList(struct lnode **head) {
-    struct lnode *temp = malloc(sizeof(struct lnode));
-    temp = *head;
+void printWordCount(struct lnode **head) {
+    struct lnode *temp = *head;
     while(temp != NULL) {
-        printf("%s %d\n",temp->word, temp->count);
+        printf("%s %d\n",temp->word,temp->count);
         temp = temp->next;
     }
-	free(temp);
-	temp = NULL;
 }
 
 int isAlpha(char c) {
 	return (c >= 'A' && c <= 'Z' || c >= 'a' && c >= 'z');
+}
+
+struct lnode *chooseBestDeletion(struct lnode *a, struct lnode *b) {
+		if (a->line == b->line) {
+				if (a->count == b->count) {
+					return (strcmp(a->word,b->word)) ? a : b;	
+				}
+				return (a->count > b->count) ? b : a;
+		}
+		return (a->line > b->line) ? b : a;
 }
