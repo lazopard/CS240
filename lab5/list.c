@@ -79,7 +79,7 @@ struct lnode* getNode(struct lnode *head, char* word) {
 		}
 		ptr = ptr->next;
 	}
-	return NULL;
+	return ptr;
 }
 
 /**
@@ -221,7 +221,8 @@ int main() {
 	headptr = &inhead;
 	pushNode(headptr,node);
 	pushNode(headptr,node2);
-	if (getNode(inhead,"inhead") != NULL) {
-		printf("%s\n",getNode(inhead,"inhead")->word);
-	}
+	deleteList(headptr);
+	getNode(inhead,"hinhead");
+	getNode(inhead,"inhead");
+	printf("counter is %d\n",counter);
 }
