@@ -83,7 +83,7 @@ struct lnode* getNode(struct lnode *head, char* word) {
 }
 
 /**
- * Removes the specified node from the list, and myFrees all memory the node is
+ * Removes the specified node from the list, and frees all memory the node is
  * using. Remember if *head is the node being deleted, it must be updated.
  */
 
@@ -99,10 +99,10 @@ void deleteNode(struct lnode **head, struct lnode *node) {
 		return;
 	}
 	struct lnode *ptr = (*head);
-	while(ptr->next != node) {
+	while(ptr != NULL && ptr->next != node) {
 		ptr = ptr->next;
 	}
-	if (ptr->next == node) {
+	if (ptr != NULL) {
 		struct lnode *temp = ptr->next;
 		ptr->next = ptr->next->next;
 		myFree(temp->word);
@@ -186,7 +186,6 @@ void printList(struct lnode **head) {
 	}
 }
 
-/*
 int main() {
 	struct lnode **headptr;
 	struct lnode *inhead = newNode("inhead",1);
@@ -195,9 +194,7 @@ int main() {
 	headptr = &inhead;
 	pushNode(headptr,node);
 	pushNode(headptr,node2);
-	deleteList(headptr);
-	getNode(inhead,"hinhead");
-	getNode(inhead,"inhead");
-	printf("counter is %d\n",counter);
+	printList(headptr);
+	deleteNode(headptr,node);
+	printList(headptr);
 }
-*/
