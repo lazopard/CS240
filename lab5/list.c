@@ -93,23 +93,33 @@ struct lnode* getNode(struct lnode *head, char* word) {
  * using. Remember if *head is the node being deleted, it must be updated.
  */
 
-void deleteNode(struct lnode **head, struct lnode* node) {
+//find pointer, make previous point to next of pointer, free pointer, make it NULL
 
-	if (*head == node) {
-		if (((*head)->next) == NULL) {
-			myFree((*head)->word);
-			myFree(*head);
-			*head = NULL;
-			return;
-		}
-		struct lnode *prevptr = (struct lnode*) myMalloc(sizeof(struct lnode));
-		prevptr = *head;
+void deleteNode(struct lnode **head, struct lnode *node) {
+	if ((*head) == node) {
+		struct lnode *temp = (*head);
 		*head = (*head)->next;
-		myFree(prevptr->word);
-		myFree(prevptr);
-		prevptr = NULL;
+		myFree(temp->word);
+		myFree(temp);
+		temp = NULL;
 		return;
-	}	
+	}
+	struct lnode *ptr = (*head);
+	while(ptr->next != node) {
+		ptr = ptr->next;
+	}
+	if (ptr->next == node) {
+		struct lnode temp = temp->next;
+		ptr->next = ptr->next->next;
+		free(temp->word);
+		free(temp);
+		temp = NULL;
+	}
+	return;
+}
+
+/*void deleteNode(struct lnode **head, struct lnode* node) {
+
 	struct lnode *currentptr = (struct lnode*) myMalloc(sizeof(struct lnode));
 	struct lnode *prevptr = (struct lnode*) myMalloc(sizeof(struct lnode));
 
@@ -131,8 +141,9 @@ void deleteNode(struct lnode **head, struct lnode* node) {
 		prevptr = NULL;
 	}
 }
+*/
 
-/**
+/*
  * Simply returns the next node in the list, or NULL if there are no further nodes.
  */
 
@@ -215,8 +226,11 @@ int main() {
 	struct lnode *node2 = newNode("node3",3);
 	headptr = &inhead;
 	pushNode(headptr,node);
-	pushNode(&inhead,node2);
-	printf("counter is %d\n",counter);
-	deleteList(&inhead);
-	printf("counter is %d\n",counter);
+	pushNode(headptr,node2);
+	printList(headptr);
+	//deleteList(&inhead);
+	deleteNode(headptr,inhead);
+	deleteNode(headptr,inhead);
+	deleteNode(headptr,inhead);
+	printList(headptr);
 }
