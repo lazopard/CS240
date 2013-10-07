@@ -178,23 +178,23 @@ void deleteList(struct lnode **head) {
 	*head = NULL;
 }
 
-void printList(struct lnode **head) {
+void printWordCount(struct lnode **head) {
 	struct lnode *temp = *head;
 	while(temp != NULL) {
-		printf("%s\n",temp->word);
+		printf("%s %d\n",temp->word, temp->count);
 		temp = temp->next;
 	}
 }
 
 int main() {
 	struct lnode **headptr;
-	struct lnode *inhead = newNode("inhead",1);
+	struct lnode *inhead = NULL;//newNode("inhead",1);
 	struct lnode *node = newNode("node2",2);
 	struct lnode *node2 = newNode("node3",3);
 	headptr = &inhead;
 	pushNode(headptr,node);
-	pushNode(headptr,node2);
-	printList(headptr);
-	deleteNode(headptr,node);
-	printList(headptr);
+	//pushNode(headptr,node2);
+	printWordCount(headptr);
+	deleteList(headptr);
+	printf("counter is %d\n",counter);
 }
