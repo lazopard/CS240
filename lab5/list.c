@@ -69,23 +69,17 @@ void pushNode(struct lnode** head, struct lnode* node) {
  * the function returns NULL.
  */
 
+ //go through list, if word is found return that ptr, else return NULL
+
 struct lnode* getNode(struct lnode *head, char* word) {
-	struct lnode *ptr = (struct lnode*) myMalloc(sizeof(struct lnode));
-	ptr = head;
-	while(ptr->word != word && ptr != NULL) {
-		if (ptr->next == NULL)
-			break;
+	struct lnode *ptr = head;
+	while(ptr != NULL) {
+		if (!strcmp(ptr->word,word)) {
+			return ptr;	
+		}
 		ptr = ptr->next;
 	}
-	if (strcmp(ptr->word,word)) {
-		myFree(ptr->word);
-		myFree(ptr);
-		ptr = NULL;
-		return NULL;
-	}
-	myFree(ptr->word);
-	myFree(ptr);
-	return ptr;
+	return NULL;
 }
 
 /**
@@ -109,10 +103,10 @@ void deleteNode(struct lnode **head, struct lnode *node) {
 		ptr = ptr->next;
 	}
 	if (ptr->next == node) {
-		struct lnode temp = temp->next;
+		struct lnode *temp = ptr->next;
 		ptr->next = ptr->next->next;
-		free(temp->word);
-		free(temp);
+		myFree(temp->word);
+		myFree(temp);
 		temp = NULL;
 	}
 	return;
@@ -227,10 +221,7 @@ int main() {
 	headptr = &inhead;
 	pushNode(headptr,node);
 	pushNode(headptr,node2);
-	printList(headptr);
-	//deleteList(&inhead);
-	deleteNode(headptr,inhead);
-	deleteNode(headptr,inhead);
-	deleteNode(headptr,inhead);
-	printList(headptr);
+	if (getNode(inhead,"inhead") != NULL) {
+		printf("%s\n",getNode(inhead,"inhead")->word);
+	}
 }
