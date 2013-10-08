@@ -85,10 +85,8 @@ struct lnode* getNode(struct lnode *head, char* word) {
  * using. Remember if *head is the node being deleted, it must be updated.
  */
 
-//find pointer, make previous point to next of pointer, free pointer, make it NULL
-
 void deleteNode(struct lnode **head, struct lnode *node) {
-	if ((*head) == node) {
+	if ( (*head) == node) {
 		struct lnode *temp = (*head);
 		*head = (*head)->next;
 		myFree(temp->word);
@@ -97,9 +95,21 @@ void deleteNode(struct lnode **head, struct lnode *node) {
 		return;
 	}
 	struct lnode *ptr = (*head);
-	while(ptr != NULL && ptr->next != node) {
+	while(ptr->next != NULL) {
+		if (ptr->next == node) {
+			break;
+		}
 		ptr = ptr->next;
 	}
+	if (ptr->next == node) {
+		struct lnode **temp = &(ptr->next);
+		ptr->next = (*temp)->next;
+		myFree((*temp)->word);
+		myFree(*temp);
+		temp = NULL;
+		return;
+	}
+	/*
 	if (ptr != NULL) {
 		struct lnode *temp = ptr->next;
 		ptr->next = ptr->next->next;
@@ -108,6 +118,7 @@ void deleteNode(struct lnode **head, struct lnode *node) {
 		temp = NULL;
 	}
 	return;
+	*/
 }
 
 /*
@@ -165,8 +176,6 @@ void nodeSetLine(struct lnode *node, int line) {
  * should be NULL.
  */
 
-//only deleting head
-
 void deleteList(struct lnode **head) {
 	while((*head)->next != NULL) {
 		deleteNode(head,(*head));
@@ -176,25 +185,28 @@ void deleteList(struct lnode **head) {
 	*head = NULL;
 }
 
-void printWordCount(struct lnode **head) {
+/*void printWordCount(struct lnode **head) {
 	struct lnode *temp = *head;
 	while(temp != NULL) {
 		printf("%s %d\n",temp->word, temp->count);
 		temp = temp->next;
 	}
 }
+*/
 
 /*
 int main() {
 	struct lnode **headptr;
-	struct lnode *inhead = NULL;//newNode("inhead",1);
+	struct lnode *inhead = newNode("inhead",1);
 	struct lnode *node = newNode("node2",2);
 	struct lnode *node2 = newNode("node3",3);
+	//struct lnode *node3 = newNode("node4",4);
 	headptr = &inhead;
 	pushNode(headptr,node);
 	pushNode(headptr,node2);
 	printWordCount(headptr);
-	deleteList(headptr);
+	deleteNode(headptr,node2);
+	printWordCount(headptr);
 	printf("counter is %d\n",counter);
 }
 */

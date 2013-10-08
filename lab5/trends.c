@@ -1,3 +1,4 @@
+#define ONLYNEWLINE -13
 #define SIZE 140
 #define MAXLISTLEGNTH 100
 #include <stdio.h>
@@ -22,14 +23,26 @@ int main() {
 		char *msg = (char *) malloc(sizeof(char)*(SIZE + 1));
 		char *substr;
 		i = sublength = line = listLength = strlength = 0;
-		struct lnode *head;
+		struct lnode **head;
 		while( (strlength = readMsg(msg)) != EOF) {
-				while ( (i = getNextWordIndex(msg, strlength, i)) != -1) {
-						sublength = wordLen(msg, strlength,i);
-						substr = (char *)  malloc(sizeof(char)*sublength);
-						substr = strncpy(substr, msg + i, sublength);
-						resetString(substr);
-						i += sublength;
+				if (strlength != ONLYNEWLINE) {
+						while ( (i = getNextWordIndex(msg, strlength, i)) != -1) {
+								sublength = wordLen(msg, strlength,i);
+								if (sublength == 0)
+									break;
+								substr = (char *)  malloc(sizeof(char)*sublength);
+								substr = strncpy(substr, msg + i, sublength);
+								if (listLength == 0) {
+										struct lnode *first = newNode(substr, line);
+										head = &first;
+										listLength++;
+								}
+								else {
+										handleWord(head, &listLength, &line, substr);
+								}
+								resetString(substr);
+								i += sublength;
+						}
 				}
 				i = 0;
 				resetString(msg);
@@ -37,8 +50,8 @@ int main() {
 		}
 		free(msg);
 		free(substr);
-		printWordCount(&head);
-		deleteList(&head);
+		printWordCount(head);
+		deleteList(head);
 }
 
 int isAlpha(char c) {
@@ -64,9 +77,12 @@ int readMsg(char* buf) {
 		if (len == 0 && c == EOF) {
 				return EOF;
 		}
-		if (c == '\n') {
+		if (c == '\n' && len > 0) {
 				*(buf + len) = c;
 				return len + 1;
+		}
+		if (c == '\n' && len == 0) {
+			return ONLYNEWLINE;	
 		}
 		return len;
 }
@@ -146,8 +162,10 @@ void evictNode(struct lnode **head) {
 
 void printWordCount(struct lnode **head) {
     struct lnode *temp = *head;
+	int i = 0;
     while(temp != NULL) {
-        printf("%s %d\n",nodeGetWord(temp), nodeGetCount(temp));
+        printf("%s %d\n", nodeGetWord(temp), nodeGetCount(temp));
         temp = nodeGetNext(temp);
+		i++;
     }
 }
