@@ -50,8 +50,6 @@ struct lnode* newNode (char* word, int line) {
 //
 //not updating the head pointer
 
-void printList(struct lnode **head);
-
 void pushNode(struct lnode** head, struct lnode* node) {
 	if ((*head) == NULL) {
 		*head = node;
@@ -186,6 +184,7 @@ void printWordCount(struct lnode **head) {
 	}
 }
 
+/*
 int main() {
 	struct lnode **headptr;
 	struct lnode *inhead = NULL;//newNode("inhead",1);
@@ -193,8 +192,9 @@ int main() {
 	struct lnode *node2 = newNode("node3",3);
 	headptr = &inhead;
 	pushNode(headptr,node);
-	//pushNode(headptr,node2);
+	pushNode(headptr,node2);
 	printWordCount(headptr);
 	deleteList(headptr);
 	printf("counter is %d\n",counter);
 }
+*/
