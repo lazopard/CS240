@@ -28,8 +28,9 @@ int main() {
 				if (strlength != ONLYNEWLINE) {
 						while ( (i = getNextWordIndex(msg, strlength, i)) != -1) {
 								sublength = wordLen(msg, strlength,i);
-								if (sublength == 0)
+								if (sublength == 0) {
 									break;
+								}
 								substr = (char *)  malloc(sizeof(char)*sublength);
 								substr = strncpy(substr, msg + i, sublength);
 								if (listLength == 0) {
@@ -158,6 +159,7 @@ void evictNode(struct lnode **head) {
 		temp = nodeGetNext(temp);
 	}
 	deleteNode(head,toDelete);
+	printf("got here\n");
 }
 
 void printWordCount(struct lnode **head) {
