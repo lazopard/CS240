@@ -19,40 +19,40 @@ void handleWord(struct lnode **head, int *listlength, int *line, char *word);
 void printWordCount(struct lnode **head);
 
 int main() {
-		int listLength, line, strlength, i, sublength;
-		char *msg = (char *) malloc(sizeof(char)*(SIZE + 1));
-		char *substr;
-		i = sublength = line = listLength = strlength = 0;
-		struct lnode **head;
-		while( (strlength = readMsg(msg)) != EOF) {
-				if (strlength != ONLYNEWLINE) {
-						while ( (i = getNextWordIndex(msg, strlength, i)) != -1) {
-								sublength = wordLen(msg, strlength,i);
-								if (sublength == 0) {
-									break;
-								}
-								substr = (char *)  malloc(sizeof(char)*sublength);
-								substr = strncpy(substr, msg + i, sublength);
-								if (listLength == 0) {
-										struct lnode *first = newNode(substr, line);
-										head = &first;
-										listLength++;
-								}
-								else {
-										handleWord(head, &listLength, &line, substr);
-								}
-								resetString(substr);
-								i += sublength;
-						}
+	int listLength, line, strlength, i, sublength;
+	char *msg = (char *) malloc(sizeof(char)*(SIZE + 1));
+	char *substr;
+	i = sublength = line = listLength = strlength = 0;
+	struct lnode **head;
+	while( (strlength = readMsg(msg)) != EOF) {
+		if (strlength != ONLYNEWLINE) {
+			while ( (i = getNextWordIndex(msg, strlength, i)) != -1) {
+				sublength = wordLen(msg, strlength,i);
+				if (sublength == 0) {
+					break;
 				}
-				i = 0;
-				resetString(msg);
-				line++;
+				substr = (char *)  malloc(sizeof(char)*sublength);
+				substr = strncpy(substr, msg + i, sublength);
+				if (listLength == 0) {
+					struct lnode *first = newNode(substr, line);
+					head = &first;
+					listLength++;
+				}
+				else {
+					handleWord(head, &listLength, &line, substr);
+				}
+				resetString(substr);
+				i += sublength;
+			}
 		}
-		free(msg);
-		free(substr);
-		printWordCount(head);
-		deleteList(head);
+		i = 0;
+		resetString(msg);
+		line++;
+	}
+	free(msg);
+	free(substr);
+	printWordCount(head);
+	deleteList(head);
 }
 
 int isAlpha(char c) {
@@ -159,7 +159,6 @@ void evictNode(struct lnode **head) {
 		temp = nodeGetNext(temp);
 	}
 	deleteNode(head,toDelete);
-	printf("got here\n");
 }
 
 void printWordCount(struct lnode **head) {
