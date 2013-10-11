@@ -32,31 +32,16 @@ int countCmp (struct lnode* n1, struct lnode* n2) {
 }
 
 void swap (struct lnode** head, struct lnode* n1, struct lnode* n2) {
-	if (n1 == n2)
-		return;
-	struct lnode *temp1, *temp2;
-	temp1 = nodeGetPrev(n1);
-	temp2 = nodeGetPrev(n2);
-	if (temp1 == NULL || temp2 == NULL) { //if either is the head
-		if (temp1 == NULL) {
-			evictNode(head, n1);
-			evictNode(head, n2);
-			pushNode(head, n2);
-			insertNode(head, temp2, n1);
-		}
-		else {
-			evictNode(head, n2);
-			evictNode(head, n1);
-			pushNode(head, n1);
-			insertNode(head, temp1, n2);
-
-		}
+	if (n1 == n2) {
 		return;
 	}
+	struct lnode *temp1 = nodeGetPrev(n1);
 	evictNode(head, n1);
-	evictNode(head, n2);
-	insertNode(head, temp1, n2);
-	insertNode(head, temp2, n1);
+	insertNode(head,nodeGetPrev(n2), n1);
+	if (temp1 != n2) {
+		evictNode(head, n2);
+		insertNode(head, temp1, n2);
+	}
 	return;
 }
 
@@ -66,22 +51,19 @@ int llistGetLength(struct lnode **head);
 
 void sort (struct lnode** head,
 			void (*swapPtr)    (struct lnode**, struct lnode*, struct lnode*),
-			int  (*comparePtr) (void*, void*)){
-	int n, newn, i;
-	n = llistGetLength(head);	
+			int  (*comparePtr) (void*, void*)) {
+	int n, newn, i, j;
 	struct lnode *temp = (*head);
-	while (n != 0) {
-		newn = 0;
-		for(i = 1; i <= n-1; i++) {
-			if (comparePtr(nodeGetPrev(temp),temp) > 0)/*A[i-1] > A[i]*/ {
+	n = llistGetLength(head);	
+	for(i = 0; i < n; i++) {
+		for(j = 0; j < n; j++) {
+			if (comparePtr(nodeGetPrev(temp),temp) < 0) {
 				swapPtr(head, nodeGetPrev(temp), temp);
-				newn = i;
 			}
 			temp = nodeGetNext(temp);
 		}
 		temp = (*head);
-		n = newn;
-	} 
+	}
 }
 
 void sortByWord (struct lnode** head){
