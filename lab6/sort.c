@@ -12,7 +12,7 @@
 #include "sort.h"
 
 int wordCmp (struct lnode* n1, struct lnode* n2) {
-	return (strcmp(nodeGetWord(n1),nodeGetWord(n2)));
+	return strcmp(nodeGetWord(n1),nodeGetWord(n2));
 }
 
 int lineCmp (struct lnode* n1, struct lnode* n2) {
@@ -45,49 +45,40 @@ void swap (struct lnode** head, struct lnode* n1, struct lnode* n2) {
 	return;
 }
 
-/* Hint: don't forget to use function pointers to reuse code wisely */
-
 int llistGetLength(struct lnode **head);
+
 
 void sort (struct lnode** head,
 			void (*swapPtr)    (struct lnode**, struct lnode*, struct lnode*),
 			int  (*comparePtr) (void*, void*)) {
-	int n, newn, i, j;
-	struct lnode *temp = (*head);
-	n = llistGetLength(head);	
-	for(i = 0; i < n; i++) {
-		for(j = 0; j < n; j++) {
-			if (comparePtr(nodeGetPrev(temp),temp) < 0) {
-				swapPtr(head, nodeGetPrev(temp), temp);
+	int n, length, i, j;
+	struct lnode *currentNode, *nextNode;
+	length = llistGetLength(head);	
+	currentNode = *head;
+	nextNode = nodeGetNext(currentNode);
+	for(i = 0; i < length - 1; i++) {
+		for(j = 0; j < length - 1; j++) {
+			if( comparePtr(currentNode,nextNode) > 0) {
+				swapPtr(head, currentNode, nextNode);
 			}
-			temp = nodeGetNext(temp);
+			nextNode = nodeGetNext(nextNode);
+			currentNode = nodeGetNext(currentNode);
 		}
-		temp = (*head);
+		currentNode = *head;
+		nextNode = nodeGetNext(currentNode);
 	}
 }
 
 void sortByWord (struct lnode** head){
-	void (*swapPtr)(struct lnode **, struct lnode *, struct lnode *);
-	swapPtr = &swap;
-	int (*cmpPtr)(struct lnode*, struct lnode*);
-	cmpPtr = &wordCmp;
-	sort(head, swapPtr, cmpPtr); 
+	sort(head, &swap, &wordCmp); 
 }
 
 void sortByLine (struct lnode** head){
-	void (*swapPtr)(struct lnode **, struct lnode *, struct lnode *);
-	swapPtr = &swap;
-	int (*cmpPtr)(struct lnode*, struct lnode*);
-	cmpPtr = &lineCmp;
-	sort(head, *swapPtr, cmpPtr);
+	sort(head, &swap, &lineCmp); 
 }
 
 void sortByCount (struct lnode** head){
-	void (*swapPtr)(struct lnode **, struct lnode *, struct lnode *);
-	swapPtr = &swap;
-	int (*cmpPtr)(struct lnode*, struct lnode*);
-	cmpPtr = &countCmp;
-	sort(head, *swapPtr, cmpPtr);
+	sort(head, &swap, &countCmp);
 }
 
 int llistGetLength(struct lnode **head) {
@@ -98,4 +89,38 @@ int llistGetLength(struct lnode **head) {
 		length++;
 	}
 	return length;
+}
+
+int main() {
+		struct lnode **headptr;
+		struct lnode *inhead = newNode("z node1",6,10);
+		struct lnode *node = newNode("b node2",15,50);
+		struct lnode *node2 = newNode("a node3",38,90);
+		struct lnode *node3 = newNode("m node4",52,1);
+		struct lnode *node4 = newNode("l node5",10,53);
+		struct lnode *node5 = newNode("k node6",30,99);
+		struct lnode *node6 = newNode("y node7",9,15);
+		struct lnode *node7 = newNode("p node8",4,57);
+		struct lnode *node8 = newNode("j node9",1,92);
+		struct lnode *node9 = newNode("y node10",7,1);
+		headptr = &inhead;
+		insertNode(headptr, inhead, node);
+		insertNode(headptr, node, node2);
+		insertNode(headptr, node2, node3);
+		insertNode(headptr, node3, node4);
+		insertNode(headptr, node4, node5);
+		insertNode(headptr, node5, node6);
+		insertNode(headptr, node6, node7);
+		insertNode(headptr, node7, node8);
+		insertNode(headptr, node8, node9);
+
+		printf("\nsort by line:\n\n");
+		sortByLine(headptr);
+		printList(inhead);
+		printf("\nsort by count:\n\n");
+		sortByCount(headptr);
+		printList(inhead);
+		printf("\nsort by word:\n\n");		
+		sortByWord(headptr);
+		printList(inhead);
 }
