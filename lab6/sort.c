@@ -52,17 +52,19 @@ int llistGetLength(struct lnode **head);
 void sort (struct lnode** head,
 			void (*swapPtr)    (struct lnode**, struct lnode*, struct lnode*),
 			int  (*comparePtr) (void*, void*)) {
-	int n, newn, i, j;
-	struct lnode *temp = (*head);
-	n = llistGetLength(head);	
-	for(i = 0; i < n; i++) {
-		for(j = 0; j < n; j++) {
-			if (comparePtr(nodeGetPrev(temp),temp) < 0) {
-				swapPtr(head, nodeGetPrev(temp), temp);
+	int length, newn, i, j;
+	struct lnode *nextNode, *currentNode;
+	currentNode = (*head);
+	nextNode = nodeGetNext(currentNode);
+	length = llistGetLength(head);
+	for(i = 0; i < length; i++) {
+		while(nextNode != NULL) {
+			if(comparePtr(currentNode, nextNode) < 0) {
+				swapPtr(head, currentNode, nextNode);
 			}
-			temp = nodeGetNext(temp);
+			currentNode = nodeGetNext(currentNode);
+			nextNode = nodeGetNext(currentNode);
 		}
-		temp = (*head);
 	}
 }
 
