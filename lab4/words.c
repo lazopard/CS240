@@ -80,9 +80,11 @@ int readMsg(char* buf) {
 	if (len == 0 && c == EOF) {
 		return EOF;
 	}
-	if (c == '\n') {
+	else if (c == '\n') {
 		*(buf + len) = c;
 		return len + 1;
 	}
-	return len;
+	else {
+		return len;
+	}
 }

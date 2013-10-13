@@ -194,19 +194,29 @@ void deleteList(struct lnode **head) {
 }
 */
 
-/*
+
+
+
+
+int llistGetLength(struct lnode **head) { 
+		int length = 0; 
+		struct lnode *temp = *head; 
+		while(temp != NULL) { 
+				temp = nodeGetNext(temp);    
+				length++; 
+		} 
+		return length; 
+}
+
 int main() {
 	struct lnode **headptr;
 	struct lnode *inhead = newNode("inhead",1);
 	struct lnode *node = newNode("node2",2);
 	struct lnode *node2 = newNode("node3",3);
-	//struct lnode *node3 = newNode("node4",4);
+	struct lnode *node3 = newNode("node4",4);
 	headptr = &inhead;
 	pushNode(headptr,node);
 	pushNode(headptr,node2);
-	printWordCount(headptr);
-	deleteNode(headptr,node2);
-	printWordCount(headptr);
-	printf("counter is %d\n",counter);
+	pushNode(headptr, node3);
+	printf("the length of the list is %d\n", llistGetLength(headptr));
 }
-*/
