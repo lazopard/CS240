@@ -164,6 +164,7 @@
 	 * function, all memory used by the list should be freed, and *head should become NULL.
 	 */
 	void deleteList (NodePtr* head);
+		
 	
 	/**
 	 * Print the list to out starting from the parameter node.

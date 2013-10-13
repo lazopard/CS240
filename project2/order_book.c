@@ -17,10 +17,6 @@
 #include "hash.h"
 #include "default_hash.h"
 
-/**
- * TODO: Feel free to create whatever functions you need.
- */
-
 int main(int argc, char **argv) {
   int i, foundInput, foundOutput, foundHashtable, foundDefault, storageType;
   foundInput=foundOutput=foundHashtable=foundDefault=storageType = 0;

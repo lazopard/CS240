@@ -15,6 +15,7 @@
  * struct hashStorage represents one hash structure.
  * Note: the function that printItem points to should not be implemented in hash.c or hash.h.
  */ 
+
 struct hashStorage {
 	int (*funcHash) (int);
 	void (*printItem) (struct order *, FILE *);
