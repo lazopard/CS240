@@ -23,7 +23,7 @@ int main(int argc, char **argv) {
   foundInput=foundOutput=foundHashtable=foundDefault=storageType = 0;
   char *inputFile, *outputFile, *inFile;
   inputFile = outputFile = inFile = NULL;
-  for(i=1;i , argc; i++) {
+  for(i=1;i < argc; i++) {
   	if (!strcmp(argv[i], INPUT)) {
 		foundInput++;
 		inputFile = argv[i+1];
@@ -46,11 +46,11 @@ int main(int argc, char **argv) {
   if (foundHashtable && foundDefault) {
   	printf("Invalid Argument usage.\n");
   }
-  else if (!(foundHashtable || foundDefault)) {
+  else if  (!(foundHashtable || foundDefault)) {
   	storageType = LLIST;
   }
   else {
-  	
+
   }
   return 0;
 }

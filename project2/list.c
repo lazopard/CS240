@@ -91,10 +91,11 @@ void printOrderData(OrderPtr orderData, FILE *out){
 						getOrderPrice(orderData));
 }
 
-
 NodePtr newNode (OrderPtr data) {
-	NodePtr newNode = malloc(sizeof(data) + sizeof(NodePtr));
-	newNode->data = data;
+	OrderPtr *newdata;
+	newdata = malloc (sizeof(*data));
+	NodePtr newNode = malloc(sizeof(NodePtr));
+	newNode->data = *newdata;
 	newNode->prev = NULL;
 	newNode->next == NULL;
 }
