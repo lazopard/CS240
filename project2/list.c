@@ -118,10 +118,11 @@ NodePtr getOrderNode (NodePtr head, int id) {
 		}
 		currentNode = getNextNode(currentNode);
 	}
+	return NULL;
 }
 
-/** 
- * Return the next node of the given node. 
+		/** 
+		 * Return the next node of the given node. 
  * IMPORTANT: Return NULL if node is NULL. 
  */ 
 NodePtr getNextNode (NodePtr node) {
@@ -224,4 +225,8 @@ void deleteList (NodePtr* head) {
  * The format to print a single item is defined by printItem.
  */
 void printList (NodePtr node, void (*printItem)(OrderPtr, FILE *), FILE *out) {
+	while(node != NULL) {
+		printItem(node->data, out);
+		node = node->next;
+	}
 }
