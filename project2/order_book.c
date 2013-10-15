@@ -46,7 +46,7 @@ int main(int argc, char **argv) {
   if (foundHashtable && foundDefault) {
   	printf("Invalid Argument usage.\n");
   }
-  else if  (!(foundHashtable || foundDefault)) {
+  if  (!(foundHashtable || foundDefault)) {
   	storageType = LLIST;
   }
   else {

@@ -34,8 +34,10 @@
  *  *  myHash is the hash function. If myHash is NULL then the hash should be a linked list and the size should be 1.
  *  *  The struct member table is a pointer to an array, with length size, of linked lists.
  *  */
+
 struct hashStorage* createHash(int size, int (*myHash)(int), void (*printOrder)(struct order*, FILE*)) {
-	return NULL;
+	struct hashStorage *newHash = malloc(sizeof(hashStorage));
+	newHash->size = size;
 }
 
 /**

@@ -101,14 +101,47 @@ void printOrderData(OrderPtr orderData, FILE *out){
 						abort();
 }
 
+/*
+struct order {
+	int id;
+	char symbol[MAX_SYMBOL_LENGTH];
+	char side;
+	int quantity;
+	double price;
+};
+
+typedef struct order* OrderPtr;
+typedef struct onode* NodePtr;
+
+
+ *          * Define the structure for a node.
+ *                   * Double link implementation.
+struct onode {
+	OrderPtr data;
+	NodePtr next;
+	NodePtr prev;
+};
+
+*/
+
 NodePtr newNode (OrderPtr data) {
-	OrderPtr *newdata;
-	newdata = malloc (sizeof(*data));
+	int newId, newQuantity, i;
+	char newSide;
+	double newPrice;
+	newId = data->id;
+	newQuantity = data->quantity;
+	newSide = data->side;
+	newPrice = data->price;
+	OrderPtr newData = malloc(sizeof(data));
+	newData->id = newId;
+	strcpy(newData->symbol, data->symbol);
+	newData->side = newSide;
+	newData->quantity = newQuantity;
+	newData->price = newPrice;
 	NodePtr newNode = malloc(sizeof(NodePtr));
-	newdata = data;
-	newNode->data = *newdata;
+	newNode->data = newData;
 	newNode->prev = NULL;
-	newNode->next == NULL;
+	newNode->next = NULL;
 }
 
 /** 
@@ -261,4 +294,29 @@ void printList (NodePtr node, void (*printItem)(OrderPtr, FILE *), FILE *out) {
 		printItem(node->data, out);
 		node = node->next;
 	}
+}
+
+void printListStdOut(NodePtr *head) {
+	NodePtr currentNode = *head;
+	while(currentNode != NULL) {
+		printf("id is %d, symbol is %s, side is %c, quantity is %d, price is %f\n", currentNode->data->id, currentNode->data->symbol, currentNode->data->side, currentNode->data->quantity, currentNode->data->price);
+		currentNode = currentNode->next;
+	}
+}
+
+int main() {
+	struct order newOrder1 = {.id = 1, .symbol = "AAPL", .side = "a",.quantity = 1, .price = 1.1};
+	OrderPtr newPtr1 = &newOrder1;
+	NodePtr newNode1 = newNode(newPtr1); 
+	struct order newOrder2 = {.id = 2, .symbol = "AAPL", .side = "a",.quantity = 2, .price = 2.2};
+	OrderPtr newPtr2 = &newOrder2;
+	NodePtr newNode2 = newNode(newPtr2);
+	struct order newOrder3 = {.id = 3, .symbol = "AAPL", .side = "a",.quantity = 3, .price = 3.3};
+	OrderPtr newPtr3 = &newOrder3;
+	NodePtr newNode3 = newNode(newPtr3);
+	struct order newOrder4 = {.id = 4, .symbol = "AAPL", .side = "a",.quantity = 4, .price = 4.4};
+	OrderPtr newPtr4 = &newOrder4;
+	NodePtr newNode4 = newNode(newPtr4);
+	NodePtr *head = &newNode1;
+	printListStdOut(head);
 }
