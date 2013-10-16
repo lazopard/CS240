@@ -3,7 +3,7 @@
  *
  * The main program to load input, manipulate internal storage, and generate output.
  */
-
+#define HASHTABLESIZE 100
 #define INPUT "-i"
 #define OUTPUT "-o"
 #define ASCENDING "-asc"
@@ -45,12 +45,26 @@ int main(int argc, char **argv) {
   }
   if (foundHashtable && foundDefault) {
   	printf("Invalid Argument usage.\n");
+	return 1;
   }
-  if  (!(foundHashtable || foundDefault)) {
+  else if  (!(foundHashtable || foundDefault)) {
   	storageType = LLIST;
   }
-  else {
 
+  else {
+  	if (foundInput) {
+		FILE *file = fopen(inputFile,"r");
+		if (file == NULL) {
+			printf("Could not Open file\n");
+			return 1;
+		}
+	}
+	else {
+
+	}
   }
-  return 0;
+}
+
+int myHash(int id) {
+	return (id % HASHTABLESIZE);
 }

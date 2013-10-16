@@ -48,11 +48,11 @@ struct hashStorage* createHash(int size, int (*myHash)(int), void (*printOrder)(
 	newHashStorage->size = size;
 	newHashStorage->printItem = printOrder;
 	newHashStorage->funcHash = myHash;
-	NodePtr newTable[size];
+	NodePtr *newTable = malloc(sizeof(NodePtr)*size);;
 	int i = 0;
 	for(i; i < size; i++) {
 		NodePtr temp = newNode(NULL);
-		newTable[i] = temp;
+		*(newTable + i) = temp;
 	}
 	newHashStorage->table = newTable;
 }
@@ -80,10 +80,9 @@ struct onode** getHashTable (struct hashStorage* hash) {
  *     */
 
 struct onode* addOrder(struct hashStorage* hash, struct order* data) {
-	NodePtr newNode = newNode(data);
-	int index = hash->funcHash(newNode->data->id);
-    hash->table[index] = newNode;
-	return &newNode;
+	NodePtr newOrder = newNode(data);
+	int index = hash->funcHash(newOrder->data->id);
+	pushNode(hash->table + index, newOrder);
 }
 
 /**
@@ -92,7 +91,7 @@ struct onode* addOrder(struct hashStorage* hash, struct order* data) {
  *    */
 
 void cancelOrder(struct hashStorage* hash, struct order* data) {
-
+	
 }
 
 /**
