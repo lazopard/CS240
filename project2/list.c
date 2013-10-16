@@ -151,13 +151,21 @@ NodePtr newNode (OrderPtr data) {
 void pushNode (NodePtr* head, NodePtr node) {
 
 		if ((head) == NULL) {
-				*head = node;
+				head = &node;
 				return;
 		}
 		NodePtr temp = *head;
 		head = &node;
 		node = temp;
 		(*head)->next = node;
+		node->prev = (*head);
+}
+
+void pushNode(NodePtr *head, NodePtr node) {
+	if (head == NULL) {
+
+	}
+	NodePtr temp = *head;
 }
 
 /** 
@@ -318,5 +326,6 @@ int main() {
 	OrderPtr newPtr4 = &newOrder4;
 	NodePtr newNode4 = newNode(newPtr4);
 	NodePtr *head = &newNode1;
+	pushNode(head, newNode2);
 	printListStdOut(head);
 }

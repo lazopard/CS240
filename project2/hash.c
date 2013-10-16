@@ -36,8 +36,6 @@
  *  */
 
 struct hashStorage* createHash(int size, int (*myHash)(int), void (*printOrder)(struct order*, FILE*)) {
-	struct hashStorage *newHash = malloc(sizeof(hashStorage));
-	newHash->size = size;
 }
 
 /**
