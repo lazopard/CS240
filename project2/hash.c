@@ -36,6 +36,25 @@
  *  */
 
 struct hashStorage* createHash(int size, int (*myHash)(int), void (*printOrder)(struct order*, FILE*)) {
+	struct hashStorage *newHashStorage;
+	if (myHash == NULL) {
+		newHashStorage->size = 1;
+		newHashStorage->printItem = printOrder;
+		//deal with hash
+		//deal with table
+		return newHashStorage;
+	}
+	newHashStorage = malloc(sizeof(struct hashStorage));
+	newHashStorage->size = size;
+	newHashStorage->printItem = printOrder;
+	newHashStorage->funcHash = myHash;
+	NodePtr newTable[size];
+	int i = 0;
+	for(i; i < size; i++) {
+		NodePtr temp = newNode(NULL);
+		newTable[i] = temp;
+	}
+	newHashStorage->table = newTable;
 }
 
 /**
@@ -61,7 +80,10 @@ struct onode** getHashTable (struct hashStorage* hash) {
  *     */
 
 struct onode* addOrder(struct hashStorage* hash, struct order* data) {
-
+	NodePtr newNode = newNode(data);
+	int index = hash->funcHash(newNode->data->id);
+    hash->table[index] = newNode;
+	return &newNode;
 }
 
 /**
@@ -101,7 +123,6 @@ void changeOrder(struct hashStorage* hash, struct order* data) {
  *     */
 
 void printOrderBook (struct hashStorage* hash, FILE *out) {
-
 }
 
 /**

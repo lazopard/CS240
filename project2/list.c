@@ -161,13 +161,6 @@ void pushNode (NodePtr* head, NodePtr node) {
 		node->prev = (*head);
 }
 
-void pushNode(NodePtr *head, NodePtr node) {
-	if (head == NULL) {
-
-	}
-	NodePtr temp = *head;
-}
-
 /** 
  * In a linked list with *head as the hhNode(struct lnode** head, struct lnode* node) {
 ad pointer, return the onode with the given order id. 
@@ -307,7 +300,9 @@ void printList (NodePtr node, void (*printItem)(OrderPtr, FILE *), FILE *out) {
 void printListStdOut(NodePtr *head) {
 	NodePtr currentNode = *head;
 	while(currentNode != NULL) {
-		printf("id is %d, symbol is %s, side is %c, quantity is %d, price is %f\n", currentNode->data->id, currentNode->data->symbol, currentNode->data->side, currentNode->data->quantity, currentNode->data->price);
+		printf("id is %d, symbol is %s, side is %c, quantity is %d, price is %f\n",
+			currentNode->data->id, currentNode->data->symbol, currentNode->data->side, 
+								currentNode->data->quantity, currentNode->data->price);
 		currentNode = currentNode->next;
 	}
 }
@@ -326,6 +321,6 @@ int main() {
 	OrderPtr newPtr4 = &newOrder4;
 	NodePtr newNode4 = newNode(newPtr4);
 	NodePtr *head = &newNode1;
-	pushNode(head, newNode2);
+	//pushNode(head, newNode2);
 	printListStdOut(head);
 }
