@@ -142,5 +142,4 @@ void printOrderBook (struct hashStorage* hash, FILE *out) {
  **/
 
 void freeOrderBook  (struct hashStorage** hash) {
-
 }
