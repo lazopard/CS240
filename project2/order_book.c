@@ -54,55 +54,86 @@ int main(int argc, char **argv) {
 		}
 
 		else {
+				char side;
+				char symbol[MAX_SYMBOL_LENGTH];
+				int id, quantity;
+				double price;
+				char transaction;
+
 				if (foundInput) {
 						FILE *file = fopen(inputFile,"r");
-						char side;
-						char symbol[MAX_SYMBOL_LENGTH];
-						int id, quantity;
-						double price;
 						if (file == NULL) {
 								printf("Could not Open file\n");
 								return 1;
 						}
-						char transaction;
 						while((transaction = fgetc(file)) != EOF) {
 								if (transaction == 'A') {
-									fscanf(file, " %d %c %s %d %lf", &id, &side, symbol, &quantity, &price);
+										fscanf(file, " %d %c %s %d %lf", &id, &side, symbol, &quantity, &price);
 								}
 								else if (transaction == 'X') {
-									fscanf(file, " %d %s", &id, symbol);
+										fscanf(file, " %d %s", &id, symbol);
 								}
 								else if (transaction == 'T') {
-									fscanf(file, " %d %s %d", &id, symbol, &quantity);
+										fscanf(file, " %d %s %d", &id, symbol, &quantity);
 
 								}	
 								else if (transaction == 'C') {
-									fscanf(file, " %d %s %d", &id, symbol, &quantity);
+										fscanf(file, " %d %s %d", &id, symbol, &quantity);
 
 								}	
 								else if (transaction == 'R') {
-									fscanf(file, " %d %s %d %lf", &id, symbol, &quantity, &price);
+										fscanf(file, " %d %s %d %lf", &id, symbol, &quantity, &price);
 
 								}
 								else if (transaction == '\n') {
-									continue;
+										continue;
 								}
 								else {
-									printf("Invalid transaction\n");
+										printf("Invalid transaction\n");
 								}
 								clearStr(symbol);
 						}
+				}
+
+				else {
+					while((transaction = getchar()) != EOF) {
+								if (transaction == 'A') {
+										scanf(file, " %d %c %s %d %lf", &id, &side, symbol, &quantity, &price);
+								}
+								else if (transaction == 'X') {
+										scanf(file, " %d %s", &id, symbol);
+								}
+								else if (transaction == 'T') {
+										scanf(file, " %d %s %d", &id, symbol, &quantity);
+
+								}	
+								else if (transaction == 'C') {
+										scanf(file, " %d %s %d", &id, symbol, &quantity);
+
+								}	
+								else if (transaction == 'R') {
+										scanf(file, " %d %s %d %lf", &id, symbol, &quantity, &price);
+
+								}
+								else if (transaction == '\n') {
+										continue;
+								}
+								else {
+										printf("Invalid transaction\n");
+								}
+								clearStr(symbol);
+					}
 				}
 		}
 }
 
 int myHash(int id) {
-	return (id % HASHTABLESIZE);
+		return (id % HASHTABLESIZE);
 }
 
 void clearStr(char *string) {
-	int i = 0;
-	for(i; i < strlen(string); i++) {
-		string[i] = '\0';
-	}
+		int i = 0;
+		for(i; i < strlen(string); i++) {
+				string[i] = '\0';
+		}
 }
