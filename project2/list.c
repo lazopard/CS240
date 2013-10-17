@@ -83,6 +83,7 @@ void setOrderPrice (OrderPtr orderData, double newPrice) {
  */
 
 void setOrderSymbol (OrderPtr orderData, char* newSymbol) {
+	clearStr(orderData->symbol);
 	strncpy(orderData->symbol, newSymbol, MAX_SYMBOL_LENGTH);
 }
 
@@ -152,13 +153,13 @@ void pushNode (NodePtr* head, NodePtr node) {
 
 		if ((head) == NULL) {
 				head = &node;
+				printf("head id is %d\n", (*head)->data->id);
 				return;
 		}
-		NodePtr temp = *head;
+		node->next = (*head);
 		head = &node;
-		node = temp;
-		(*head)->next = node;
-		node->prev = (*head);
+		(*head)->next->prev = (*head);
+		return;
 }
 
 /** 
@@ -300,9 +301,6 @@ void printList (NodePtr node, void (*printItem)(OrderPtr, FILE *), FILE *out) {
 void printListStdOut(NodePtr *head) {
 	NodePtr currentNode = *head;
 	while(currentNode != NULL) {
-		printf("id is %d, symbol is %s, side is %c, quantity is %d, price is %f\n",
-			currentNode->data->id, currentNode->data->symbol, currentNode->data->side, 
-								currentNode->data->quantity, currentNode->data->price);
 		currentNode = currentNode->next;
 	}
 }
@@ -311,16 +309,15 @@ int main() {
 	struct order newOrder1 = {.id = 1, .symbol = "AAPL", .side = "a",.quantity = 1, .price = 1.1};
 	OrderPtr newPtr1 = &newOrder1;
 	NodePtr newNode1 = newNode(newPtr1); 
-	struct order newOrder2 = {.id = 2, .symbol = "AAPL", .side = "a",.quantity = 2, .price = 2.2};
+	struct order newOrder2 = {.id = 2, .symbol = "AAPL", .side = "b",.quantity = 2, .price = 2.2};
 	OrderPtr newPtr2 = &newOrder2;
 	NodePtr newNode2 = newNode(newPtr2);
-	struct order newOrder3 = {.id = 3, .symbol = "AAPL", .side = "a",.quantity = 3, .price = 3.3};
+	struct order newOrder3 = {.id = 3, .symbol = "AAPL", .side = "c",.quantity = 3, .price = 3.3};
 	OrderPtr newPtr3 = &newOrder3;
 	NodePtr newNode3 = newNode(newPtr3);
-	struct order newOrder4 = {.id = 4, .symbol = "AAPL", .side = "a",.quantity = 4, .price = 4.4};
+	struct order newOrder4 = {.id = 4, .symbol = "AAPL", .side = "d",.quantity = 4, .price = 4.4};
 	OrderPtr newPtr4 = &newOrder4;
 	NodePtr newNode4 = newNode(newPtr4);
-	NodePtr *head = &newNode1;
-	//pushNode(head, newNode2);
-	printListStdOut(head);
+	NodePtr *head = NULL;
+	printf("head id is %d\n",(*head)->data->id);
 }

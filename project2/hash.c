@@ -91,7 +91,8 @@ struct onode* addOrder(struct hashStorage* hash, struct order* data) {
  *    */
 
 void cancelOrder(struct hashStorage* hash, struct order* data) {
-	
+	int idIndex = hash->funcHash(data->id);
+
 }
 
 /**
@@ -101,7 +102,12 @@ void cancelOrder(struct hashStorage* hash, struct order* data) {
  * */
 
 void reduceOrderQty(struct hashStorage* hash, struct order* data) {
-
+	int index = hash->funcHash(data->id)
+	setOrderQty((hash->table + index)->data, (hash->table + index)->data->quantity - data->quantity);
+	if ((hash->table + index)->data->quantity <= 0) {
+		cancelOrder(hash, (hash->table + index)->data);
+	}
+	return;
 }
 
 /**
@@ -112,7 +118,14 @@ void reduceOrderQty(struct hashStorage* hash, struct order* data) {
  * **/
 
 void changeOrder(struct hashStorage* hash, struct order* data) {
-
+	int index = hash->funcHash(data->id);
+	setOrderPrice((hash->table + index)->data, data->price)
+	setOrderSymbol((hash->table + index)->data, data->symbol)
+	setOrderQty((hash->table + index)->data, data->quantity)
+	if ((hash->table + index)->data->quatity <= 0) {
+		cancelOrder(hash, (hash->table + index)->data);
+	}
+	return;
 }
 
 /**
