@@ -11,12 +11,6 @@
 #include "list.h"
 #include "hash.h"
 
-/**
- * TODO: In this file, implement all the functions listed in hash.h.
- * 
- * Note: Do not modify the includes.
- */
-
 /*struct hashStorage {
 	int (*funcHash) (int);
 	void (*printItem) (struct order *, FILE *);
@@ -135,6 +129,11 @@ void changeOrder(struct hashStorage* hash, struct order* data) {
  *     */
 
 void printOrderBook (struct hashStorage* hash, FILE *out) {
+	int i;
+	for(i = 0; i < hash->size; i++) {
+		hash->printItem((hash->table + i)->data, out); 
+	}
+	return;
 }
 
 /**
