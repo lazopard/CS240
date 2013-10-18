@@ -73,6 +73,7 @@ void setOrderQty (OrderPtr orderData, int newQty) {
  * Set the price in an order struct to be the value of newPrice.
  */
 
+
 void setOrderPrice (OrderPtr orderData, double newPrice) {
 	orderData->price = newPrice;
 }
@@ -81,6 +82,8 @@ void setOrderPrice (OrderPtr orderData, double newPrice) {
  * Copy the string in newSymbol to the member symbol in an order struct.
  * The maximum length of the symbol is MAX_SYMBOL_LENGTH.
  */
+
+void clearStr(char *string);
 
 void setOrderSymbol (OrderPtr orderData, char* newSymbol) {
 	clearStr(orderData->symbol);
@@ -320,4 +323,11 @@ int main() {
 	NodePtr newNode4 = newNode(newPtr4);
 	NodePtr *head = NULL;
 	printf("head id is %d\n",(*head)->data->id);
+}
+
+void clearStr(char *string) {
+	int i = 0;
+	for(i; i < strlen(string); i++) {
+		string[i] = '\0';
+	}
 }
