@@ -115,6 +115,15 @@ void changeOrder(struct hashStorage* hash, struct order* data) {
  *     */
 
 void printOrderBook (struct hashStorage* hash, FILE *out) {
+	int i = 0;
+	for(i; i < hash->size; i++) {
+		if (*(table + i) == NULL) {
+			continue;
+		}
+		else {
+			hash->printItem(*(table + i),out)
+		}
+	}
 }
 
 /**
@@ -122,4 +131,13 @@ void printOrderBook (struct hashStorage* hash, FILE *out) {
  **/
 
 void freeOrderBook  (struct hashStorage** hash) {
+	int i = 0;
+	for(i; i < hash->size; i++) {
+		if (*(table + i) == NULL) {
+			continue;
+		}
+		else {
+			hash->cancelOrder(*(table + i),out)
+		}
+	}
 }
