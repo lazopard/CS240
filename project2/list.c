@@ -146,6 +146,7 @@ NodePtr newNode (OrderPtr data) {
 	newNode->data = newData;
 	newNode->prev = NULL;
 	newNode->next = NULL;
+	printf("node->data->symbol is %s\n", newNode->data->symbol);
 }
 
 /** 
@@ -308,8 +309,7 @@ void printListStdOut(NodePtr *head) {
 	}
 }
 
-int main() {
-	struct order newOrder1 = {.id = 1, .symbol = "AAPL", .side = "a",.quantity = 1, .price = 1.1};
+int main() { struct order newOrder1 = {.id = 1, .symbol = "AAPL", .side = "a",.quantity = 1, .price = 1.1};
 	OrderPtr newPtr1 = &newOrder1;
 	NodePtr newNode1 = newNode(newPtr1); 
 	struct order newOrder2 = {.id = 2, .symbol = "AAPL", .side = "b",.quantity = 2, .price = 2.2};

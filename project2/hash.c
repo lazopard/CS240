@@ -11,15 +11,6 @@
 #include "list.h"
 #include "hash.h"
 
-/*struct hashStorage {
-	int (*funcHash) (int);
-	void (*printItem) (struct order *, FILE *);
-	NodePtr* table;
-	int size;
-};
-
-*/
-
 /**
  *  * Create a new instance of struct hashStorage, initialize it with the given parameters, and return it.
  *  * Notes:
@@ -32,11 +23,7 @@
 struct hashStorage* createHash(int size, int (*myHash)(int), void (*printOrder)(struct order*, FILE*)) {
 	struct hashStorage *newHashStorage;
 	if (myHash == NULL) {
-		newHashStorage->size = 1;
-		newHashStorage->printItem = printOrder;
-		//deal with hash
-		//deal with table
-		return newHashStorage;
+		//deal with NULL hash function
 	}
 	newHashStorage = malloc(sizeof(struct hashStorage));
 	newHashStorage->size = size;
@@ -86,7 +73,6 @@ struct onode* addOrder(struct hashStorage* hash, struct order* data) {
 
 void cancelOrder(struct hashStorage* hash, struct order* data) {
 	int idIndex = hash->funcHash(data->id);
-
 }
 
 /**
@@ -129,11 +115,6 @@ void changeOrder(struct hashStorage* hash, struct order* data) {
  *     */
 
 void printOrderBook (struct hashStorage* hash, FILE *out) {
-	int i;
-	for(i = 0; i < hash->size; i++) {
-		hash->printItem((hash->table + i)->data, out); 
-	}
-	return;
 }
 
 /**

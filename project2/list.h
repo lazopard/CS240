@@ -109,9 +109,7 @@
 	void pushNode (NodePtr* head, NodePtr node) ;
 
 	/**
-	 * In a linked list with *head as the head pointer, return the onode with the given order id.
-	 */
-	NodePtr getOrderNode (NodePtr head, int id);
+	 * In a linked list with *head as the head pointer, return the onode with the given order id.  */ NodePtr getOrderNode (NodePtr head, int id);
 
 	/**
 	 * Return the next node of the given node.
