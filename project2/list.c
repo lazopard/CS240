@@ -129,8 +129,7 @@ NodePtr newNode (OrderPtr data) {
  */ 
 
 void pushNode (NodePtr* head, NodePtr node) {
-
-		if ((head) == NULL) {
+		if ((*head) == NULL) {
 				head = &node;
 				return;
 		}
@@ -222,10 +221,14 @@ void evictNode (NodePtr* head, NodePtr node) {
 void deleteNode (NodePtr* head, NodePtr node) {
 	if (node == *head) {
 		if ((*head)->next == NULL) {
+			free((*head)->data);
+			free((*head));
 			head = NULL;
 			return;
 		}
 		head = &node->next;
+		free(node->data);
+		free(node);
 	}
 	evictNode(head, node);
 	free(node->data);
@@ -288,4 +291,32 @@ void clearStr(char *string) {
 	for(i; i < strlen(string); i++) {
 		string[i] = '\0';
 	}
+}
+
+int main() {
+	OrderPtr newOrder1= malloc(sizeof(OrderPtr));
+	newOrder1->id = 1;
+	newOrder1->side = 'a';
+	strcpy(newOrder1->symbol, "AAPL");
+	newOrder1->quantity = 1;
+	newOrder1->price = 1.1;
+	NodePtr newNode1 = newNode(newOrder1);
+	NodePtr *head = &newNode1;
+//	OrderPtr newOrder2= malloc(sizeof(OrderPtr));
+//	newOrder2->id = 2;
+//	newOrder2->side = 'a';
+//	strcpy(newOrder2->symbol, "AAPL");
+//	newOrder2->quantity = 2;
+//	newOrder2->price = 2.2;
+//	NodePtr newNode2 = newNode(newOrder2);
+//	pushNode(head, newNode2);
+//	OrderPtr newOrder3= malloc(sizeof(OrderPtr));
+//	newOrder3->id = 3;
+//	newOrder3->side = 'a';
+//	strcpy(newOrder3->symbol, "AAPL");
+//	newOrder3->quantity = 3;
+//	newOrder3->price = 3.3;
+//	NodePtr newNode3 = newNode(newOrder3);
+//	pushNode(head, newNode3);
+	deleteNode(head, newNode1);
 }
