@@ -114,7 +114,7 @@ int main(int argc, char **argv) {
 										cancelOrder(hash, (*(hash->table + index))->data);
 								}
 								else {
-										cancelOrder(hash, getOrderNode((*(hash->table)), id));
+										cancelOrder(hash, (getOrderNode((*(hash->table)), id))->data);
 								}
 						}
 						else if (transaction == 'T') {
@@ -173,10 +173,10 @@ int main(int argc, char **argv) {
 								scanf(inFile, " %d %s", &id, symbol); 
 								if (foundHashtable || foundDefault) {
 										index = hash->funcHash(id);
-										cancelOrder(hash, *(hash->table + index));
+										cancelOrder(hash, (*(hash->table + index))->data);
 								}
 								else {
-										cancelOrder(hash, getOrderNode(getHashTable(hash), id));
+										cancelOrder(hash, (getOrderNode(*(hash->table), id))->data);
 								}		
 						}
 						else if (transaction == 'T') {
@@ -224,7 +224,7 @@ int main(int argc, char **argv) {
 						if (foundAscending) {
 								sort(hash->table, &swap, &idCompare);
 						}
-						printList(hash->table, hash->printItem, outFile);
+						printList(*(hash->table), hash->printItem, outFile);
 				}
 				else {
 						printOrderBook(hash, outFile);
@@ -232,15 +232,15 @@ int main(int argc, char **argv) {
 		}
 		else { //print to stdout
 				for(i = 0; i < hash->size; i++) {
-						if (hash->table[i] == NULL) {
+						if ((hash->table + i) == NULL) {
 								continue;
 						}
 						else {
-								printListStdOut(hash->table[i]);
+								printListStdOut(hash->table + i);
 						}
 				}
 		}
-		freeOrderBook(hash);
+		freeOrderBook(&hash);
 		return 0;
 }
 
@@ -303,5 +303,6 @@ void printListStdOut(NodePtr *head) {
 }
 
 void printOrder(struct order *currentOrder, FILE *file) {
-
+	fprintf(file, "%d %c %s %d %lf", currentOrder->id, currentOrder->side, currentOrder->symbol, currentOrder->quantity, currentOrder->price);
+	return;
 }
