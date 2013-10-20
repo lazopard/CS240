@@ -84,19 +84,13 @@ int main(int argc, char **argv) {
 				}
 		}
 
-		char side;
+		char side, transaction;
 		char symbol[MAX_SYMBOL_LENGTH];
 		int id, quantity, index;
 		double price;
-		char transaction;
 		struct order newOrder;
 
-		if (foundInput) {
-				FILE *inFile = fopen(inputFile,"r");
-				if (inFile == NULL) {
-						printf("Could not open file\n");
-						return 1;
-				}
+		if (foundInput) { FILE *inFile = fopen(inputFile,"r");
 				while((transaction = fgetc(inFile)) != EOF) {
 						if (transaction == 'A') {
 								fscanf(inFile, " %d %c %s %d %lf", &id, &side, symbol, &quantity, &price);
@@ -150,6 +144,7 @@ int main(int argc, char **argv) {
 								continue;
 						}
 						else {
+								printf("transaction is %c\n", transaction);
 								printf("Invalid transaction\n");
 						}
 						clearStr(symbol);
