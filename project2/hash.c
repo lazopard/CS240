@@ -23,19 +23,23 @@
 struct hashStorage* createHash(int size, int (*myHash)(int), void (*printOrder)(struct order*, FILE*)) {
 	struct hashStorage *newHashStorage;
 	if (myHash == NULL) {
-		//
+		newHashStorage->funcHash = NULL;
+		newHashStorage->size = 1;
+		newHashStorage->printItem = NULL;
+		newHashStorage->table = (NodePtr *) malloc(sizeof(NodePtr *));
 	}
 	newHashStorage = malloc(sizeof(struct hashStorage));
 	newHashStorage->size = size;
 	newHashStorage->printItem = printOrder;
 	newHashStorage->funcHash = myHash;
-	NodePtr *newTable = malloc(sizeof(NodePtr)*size);;
+	NodePtr *newTable = malloc(sizeof(NodePtr *)*size);;
 	int i = 0;
 	for(i; i < size; i++) {
 		NodePtr temp = newNode(NULL);
-		*(newTable + hash->funcHash(i)) = temp;
+		*(newTable + newHashStorage->funcHash(i)) = temp;
 	}
 	newHashStorage->table = newTable;
+	return newHashStorage;
 }
 
 /**
@@ -63,7 +67,7 @@ struct onode** getHashTable (struct hashStorage* hash) {
 struct onode* addOrder(struct hashStorage* hash, struct order* data) {
 	NodePtr newOrder = newNode(data);
 	int index = hash->funcHash(newOrder->data->id);
-	pushNode(hash->table + index, newOrder);
+	pushNode((hash->table + index), newOrder);
 }
 
 /**
@@ -73,17 +77,17 @@ struct onode* addOrder(struct hashStorage* hash, struct order* data) {
 
 void cancelOrder(struct hashStorage* hash, struct order* data) {
 		int idIndex = hash->funcHash(data->id);
-		if (*(hash->table + index)->next != NULL) {
-				NodePtr temp = *(table + index);
+		if (hash->table[idIndex]->next != NULL) {
+				NodePtr temp = hash->table[idIndex];
 				while(temp != NULL) {
 						if (!strcmp(temp->data->symbol, data->symbol)) {
-							deleteNode(table + index, temp)
+							deleteNode((hash->table + idIndex), temp);
 						}
 						temp = temp->next;
 				}
 
 		}
-		deleteList(hash->table + index);
+		deleteList(hash->table + idIndex);
 }
 
 /**
@@ -94,30 +98,21 @@ void cancelOrder(struct hashStorage* hash, struct order* data) {
 
 void reduceOrderQty(struct hashStorage* hash, struct order* data) {
 		int index = hash->funcHash(data->id);
-		setOrderQty((hash->table + index)->data, (hash->table + index)->data->quantity - data->quantity);
-		if ((hash->table + index)->data->quantity <= 0) {
-				if (*(table + index)->next != NULL) {
-						NodePtr temp = *(table + index);
+		setOrderQty((*(hash->table + index))->data, (*(hash->table + index))->data->quantity - data->quantity);
+		if ( (*(hash->table + index))->data->quantity <= 0) {
+				if (hash->table[index]->next != NULL) {
+						NodePtr temp = *(hash->table + index);
 						while(temp != NULL) {
 								if (!strcmp(temp->data->symbol, data->symbol)) {
-										cancelOrder(hash, *temp);
+										cancelOrder(hash, temp->data);
 										return;
 								}
 								temp = temp->next;
 						}
-						cancelOrder(hash, (hash->table + index)->data);
-						if (*(table + index)->next != NULL) {
-			NodePtr temp = *(table + index);
-			while(temp != NULL) {
-				if (!strcmp(temp->data->symbol, data->symbol)) {
-					cancelOrder(hash, *temp);
+						cancelOrder(hash, (*(hash->table + index))->data);
 				}
-				temp = temp->next;
-			}}
-				return;
 		}
 }
-
 /**
  * * Change the symbol, quantity, and price of the order whose id is data->id to
  * * be the values of data->symbol, data->quantity, and data->price.
@@ -127,21 +122,21 @@ void reduceOrderQty(struct hashStorage* hash, struct order* data) {
 
 void changeOrder(struct hashStorage* hash, struct order* data) {
 	int index = hash->funcHash(data->id);
-	setOrderPrice((hash->table + index)->data, data->price)
-	setOrderSymbol((hash->table + index)->data, data->symbol)
-	setOrderQty((hash->table + index)->data, data->quantity)
-	if ((hash->table + index)->data->quatity <= 0) {
-		if (*(table + index)->next != NULL) {
-			NodePtr temp = *(table + index);
+	setOrderPrice((*(hash->table + index))->data, data->price);
+	setOrderSymbol((*(hash->table + index))->data, data->symbol);
+	setOrderQty((*(hash->table + index))->data, data->quantity);
+	if ((*(hash->table + index))->data->quantity <= 0) {
+		if (hash->table[index]->next != NULL) {
+			NodePtr temp = *(hash->table + index);
 			while(temp != NULL) {
 				if (!strcmp(temp->data->symbol, data->symbol)) {
-					cancelOrder(hash, *temp);
+					cancelOrder(hash, temp->data);
 					return;
 				}
 				temp = temp->next;
 			}
 		}
-		cancelOrder(hash, (hash->table + index)->data);
+		cancelOrder(hash, (*(hash)->table + index)->data);
 	}
 	return;
 }
@@ -155,11 +150,11 @@ void changeOrder(struct hashStorage* hash, struct order* data) {
 void printOrderBook (struct hashStorage* hash, FILE *out) {
 	int i = 0;
 	for(i; i < hash->size; i++) {
-		if (*(table + i) == NULL) {
+		if (hash->table[i] == NULL) {
 			continue;
 		}
 		else {
-			hash->printItem(*(table + i),out)
+			hash->printItem((*(hash->table + i))->data,out);
 		}
 	}
 }
@@ -168,14 +163,14 @@ void printOrderBook (struct hashStorage* hash, FILE *out) {
  ** Destroy the order book and free all the memory allocated for that hash.
  **/
 
-void freeOrderBook  (struct hashStorage** hash) {
+void freeOrderBook  (struct hashStorage **hash) {
 	int i = 0;
-	for(i; i < hash->size; i++) {
-		if (*(table + i) == NULL) {
+	for(i; i < (*hash)->size; i++) {
+		if (((*hash)->table + i) == NULL) {
 			continue;
 		}
 		else {
-			deleteList(table + i);
+			deleteList(((*hash)->table + i));
 		}
 	}
 }

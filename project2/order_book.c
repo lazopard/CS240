@@ -20,6 +20,12 @@
 
 void clearStr(char *string);
 
+void printListStdOut(NodePtr *head);
+
+void sort(NodePtr *head,
+		void (*swapPtr)    (NodePtr *, NodePtr, NodePtr),
+		int  (*comparePtr) (void*, void*));
+
 int main(int argc, char **argv) {
 	int i, foundInput, foundOutput, foundHashtable, foundDefault, storageType, foundAscending;
 	foundInput=foundOutput=foundHashtable=foundDefault=storageType = 0;
@@ -188,7 +194,14 @@ int main(int argc, char **argv) {
 			}
 		}
 		else {
-			//print to stdout
+			for(i = 0; i < hash->size; i++) {
+				if (hash->table[i] == NULL) {
+					continue;
+				}
+				else {
+					printListStdOut(hash->table[i]);
+				}
+			}
 		}
 		freeOrderBook(hash);
 		return 0;
@@ -210,7 +223,9 @@ int idCompare(NodePtr n1, NodePtr n2) {
 	return n1->data->id - n2->data->id;
 }
 
-void swap(NodePtr *head, NodePtr n1, NodePtr n2) {
+void swap(No
+			i/print to stdout
+Ptr *head, NodePtr n1, NodePtr n2) {
 	if (n1 == n2) {
 		return;
 	}
@@ -244,4 +259,11 @@ void sort(NodePtr *head,
 			currentNode = nodeGetNext(currentNode);
 		}
 	}
+}
+
+void printListStdOut(NodePtr *head) {
+		NodePtr currentNode = *head;
+		while(currentNode != NULL) {
+				currentNode = currentNode->next;
+		}
 }

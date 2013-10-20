@@ -206,6 +206,8 @@ void evictNode (NodePtr* head, NodePtr node) {
 		if (currentNode == node) {
 			node->prev->next = node->next;
 			node->next->prev = node->prev;
+			node->next = NULL;
+			node->prev = NULL;
 			return;
 		}
 	}
@@ -226,13 +228,16 @@ void deleteNode (NodePtr* head, NodePtr node) {
 			head = NULL;
 			return;
 		}
-		head = &node->next;
+		head = &(node->next);
 		free(node->data);
 		free(node);
+		node = NULL;
+		return;
 	}
 	evictNode(head, node);
 	free(node->data);
 	free(node);
+	node = NULL;
 }
 
 /**
