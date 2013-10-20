@@ -30,7 +30,7 @@ void sort(NodePtr *head,
 
 int myHash(int id);
 
-void printOrder(struct order, FILE *);
+void printOrder(struct order *, FILE *);
 
 int idCompare(NodePtr n1, NodePtr n2);
 
@@ -38,6 +38,10 @@ int main(int argc, char **argv) {
 		int i, foundInput, foundOutput, foundHashtable, foundDefault, storageType, foundAscending;
 		foundInput=foundOutput=foundHashtable=foundDefault=storageType = 0;
 		struct hashStorage *hash;
+		int (*myHashPtr)(int);
+		myHashPtr = &myHash;
+		void (*printOrderPtr)(struct order *, FILE *);
+		printOrderPtr = &printOrder;
 		char *inputFile, *outputFile, *inFile;
 		inputFile = outputFile = inFile = NULL;
 		for(i=1;i < argc; i++) {
@@ -69,14 +73,14 @@ int main(int argc, char **argv) {
 		}
 		else if  (!(foundHashtable || foundDefault)) {
 				storageType = LLIST;
-				hash = createHash(HASHTABLESIZE, NULL, &printOrder);
+				hash = createHash(HASHTABLESIZE, NULL, printOrderPtr);
 		}
 		else {
 				if (foundHashtable) {
-						hash = createHash(HASHTABLESIZE, &myHash, &printOrder);
+						hash = createHash(HASHTABLESIZE, myHashPtr, printOrderPtr);
 				}
 				else {
-						hash = createHash(HASHTABLESIZE, &default_hash, &printOrder);
+						hash = createHash(HASHTABLESIZE, &default_hash, printOrderPtr);
 				}
 		}
 
@@ -107,10 +111,10 @@ int main(int argc, char **argv) {
 								fscanf(inFile, " %d %s", &id, symbol);
 								if (foundHashtable || foundDefault) {
 										int index = hash->funcHash(id);
-										cancelOrder(hash, *(hash->table + index));
+										cancelOrder(hash, (*(hash->table + index))->data);
 								}
 								else {
-										cancelOrder(hash, getOrderNode(getHashTable(hash), id));
+										cancelOrder(hash, getOrderNode((*(hash->table)), id));
 								}
 						}
 						else if (transaction == 'T') {
@@ -125,7 +129,7 @@ int main(int argc, char **argv) {
 						else if (transaction == 'C') {
 								fscanf(inFile, " %d %s %d", &id, symbol, &quantity);
 								newOrder.id = id;
-								newOrder.symbol = symbol;
+								strcpy(newOrder.symbol, symbol);
 								newOrder.side = 'a';
 								newOrder.quantity = quantity;
 								newOrder.price = 0.0;
@@ -135,7 +139,7 @@ int main(int argc, char **argv) {
 								fscanf(inFile, " %d %s %d %lf", &id, symbol, &quantity, &price);
 								index = hash->funcHash(id);
 								newOrder.id = id;
-								newOrder.symbol = symbol;
+								strcpy(newOrder.symbol, symbol);
 								newOrder.side = 'a';
 								newOrder.quantity = quantity;
 								newOrder.price = price;
@@ -159,7 +163,7 @@ int main(int argc, char **argv) {
 								scanf(inFile, " %d %c %s %d %lf", &id, &side, symbol, &quantity, &price);
 								newOrder.id = id;
 								newOrder.side = side;
-								newOrder.symbol = symbol;
+								strcpy(newOrder.symbol, symbol);
 								newOrder.quantity = quantity;
 								newOrder.price = price;
 								addOrder(hash, &newOrder);
@@ -298,6 +302,6 @@ void printListStdOut(NodePtr *head) {
 		}
 }
 
-void printOrder(struct order currentOrder, FILE *file) {
+void printOrder(struct order *currentOrder, FILE *file) {
 
 }
