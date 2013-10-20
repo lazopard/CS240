@@ -173,4 +173,7 @@ void freeOrderBook  (struct hashStorage **hash) {
 			deleteList(((*hash)->table + i));
 		}
 	}
+	free((*hash)->table);
+	free(*hash);
+	hash = NULL;
 }
