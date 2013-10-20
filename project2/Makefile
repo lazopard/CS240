@@ -3,8 +3,8 @@ CFLAGS = -std=c99 -m32
 
 all: orderbook
 
-orderbook: order_book.c libhash.a liblist.a
-	 $(CC) $(CFLAGS) -o orderbook order_book.c -L. -llist -lhash
+orderbook: order_book.c libhash.a liblist.a libdefault_hash.a
+	 $(CC) $(CFLAGS) -o orderbook order_book.c -L. -llist -lhash -ldefault_hash
 
 libhash.a: hash.o
 	ar rcu libhash.a hash.o
