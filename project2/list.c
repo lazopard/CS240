@@ -111,14 +111,14 @@ NodePtr newNode (OrderPtr data) {
 	newQuantity = data->quantity;
 	newSide = data->side;
 	newPrice = data->price;
-	OrderPtr newData = malloc(sizeof(data));
-	newData->id = newId;
-	strcpy(newData->symbol, data->symbol);
-	newData->side = newSide;
-	newData->quantity = newQuantity;
-	newData->price = newPrice;
-	NodePtr newNode = malloc(sizeof(NodePtr));
-	newNode->data = newData;
+	struct order newData;
+	newData.id = newId;
+	strcpy(newData.symbol, data->symbol);
+	newData.side = newSide;
+	newData.quantity = newQuantity;
+	newData.price = newPrice;
+	NodePtr newNode = (NodePtr) malloc(sizeof(struct onode));
+	newNode->data = &newData;
 	newNode->prev = NULL;
 	newNode->next = NULL;
 	return newNode;
@@ -129,13 +129,13 @@ NodePtr newNode (OrderPtr data) {
  */ 
 
 void pushNode (NodePtr* head, NodePtr node) {
-		if ((*head) == NULL) {
-				head = &node;
+		if (head == NULL) {
+				*head = node;
 				return;
 		}
+		(*head)->prev = node;
 		node->next = (*head);
-		head = &node;
-		(*head)->next->prev = (*head);
+		*head = node;
 		return;
 }
 
@@ -204,12 +204,14 @@ void evictNode (NodePtr* head, NodePtr node) {
 	NodePtr currentNode = *head;
 	while(currentNode != NULL) {
 		if (currentNode == node) {
+			printf("got here\n");
 			node->prev->next = node->next;
 			node->next->prev = node->prev;
 			node->next = NULL;
 			node->prev = NULL;
 			return;
 		}
+		currentNode = currentNode->next;
 	}
 }
 
@@ -222,8 +224,7 @@ void evictNode (NodePtr* head, NodePtr node) {
 
 void deleteNode (NodePtr* head, NodePtr node) {
 	if (node == *head) {
-		if ((*head)->next == NULL) {
-			free((*head)->data);
+		if ((*head)->next == NULL) { //handles this case well
 			free((*head));
 			head = NULL;
 			return;
@@ -238,6 +239,7 @@ void deleteNode (NodePtr* head, NodePtr node) {
 	free(node->data);
 	free(node);
 	node = NULL;
+	return;
 }
 
 /**
@@ -299,29 +301,29 @@ void clearStr(char *string) {
 }
 
 int main() {
-	OrderPtr newOrder1= malloc(sizeof(OrderPtr));
-	newOrder1->id = 1;
-	newOrder1->side = 'a';
-	strcpy(newOrder1->symbol, "AAPL");
-	newOrder1->quantity = 1;
-	newOrder1->price = 1.1;
-	NodePtr newNode1 = newNode(newOrder1);
-	NodePtr *head = &newNode1;
-//	OrderPtr newOrder2= malloc(sizeof(OrderPtr));
-//	newOrder2->id = 2;
-//	newOrder2->side = 'a';
-//	strcpy(newOrder2->symbol, "AAPL");
-//	newOrder2->quantity = 2;
-//	newOrder2->price = 2.2;
-//	NodePtr newNode2 = newNode(newOrder2);
-//	pushNode(head, newNode2);
-//	OrderPtr newOrder3= malloc(sizeof(OrderPtr));
-//	newOrder3->id = 3;
-//	newOrder3->side = 'a';
-//	strcpy(newOrder3->symbol, "AAPL");
-//	newOrder3->quantity = 3;
-//	newOrder3->price = 3.3;
-//	NodePtr newNode3 = newNode(newOrder3);
-//	pushNode(head, newNode3);
-	deleteNode(head, newNode1);
+	struct order newOrder1;
+	newOrder1.id = 1;
+	newOrder1.side = 'a';
+	strcpy(newOrder1.symbol, "AAPL");
+	newOrder1.quantity = 1;
+	newOrder1.price = 1.1;
+	NodePtr newNode1 = newNode(&newOrder1);
+	NodePtr *head = NULL;
+	pushNode(head, newNode1);
+	printf("%d\n", (*head)->data->id);
+//	struct order newOrder2;
+//	newOrder2.id = 2;
+//	newOrder2.side = 'a';
+//	strcpy(newOrder2.symbol, "AAPL");
+//	newOrder2.quantity = 2;
+//	newOrder2.price = 2.2;
+//	NodePtr newNode2 = newNode(&newOrder2);
+//	struct order newOrder3;
+//	newOrder3.id = 3;
+//	newOrder3.side = 'a';
+//	strcpy(newOrder3.symbol, "AAPL");
+//	newOrder3.quantity = 3;
+//	newOrder3.price = 3.3;
+//	NodePtr newNode3 = newNode(&newOrder3);
+	deleteNode(head,newNode1);
 }
