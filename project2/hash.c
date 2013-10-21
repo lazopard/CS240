@@ -3,6 +3,7 @@
  *
  * Define the functions used for a hash.
  */
+#define	HASHTABLESIZE 100
 
 #include <stdlib.h>
 #include <stdio.h>
@@ -23,21 +24,18 @@
 struct hashStorage* createHash(int size, int (*myHash)(int), void (*printOrder)(struct order*, FILE*)) {
 	struct hashStorage *newHashStorage;
 	if (myHash == NULL) {
+		newHashStorage = malloc(sizeof(struct hashStorage));
 		newHashStorage->funcHash = NULL;
+		newHashStorage->printItem = printOrder;
 		newHashStorage->size = 1;
-		newHashStorage->printItem = NULL;
 		newHashStorage->table = (NodePtr *) malloc(sizeof(NodePtr *));
+		return newHashStorage;
 	}
 	newHashStorage = malloc(sizeof(struct hashStorage));
 	newHashStorage->size = size;
 	newHashStorage->printItem = printOrder;
 	newHashStorage->funcHash = myHash;
 	NodePtr *newTable = malloc(sizeof(NodePtr *)*size);;
-	int i = 0;
-	for(i; i < size; i++) {
-		NodePtr temp = newNode(NULL);
-		*(newTable + newHashStorage->funcHash(i)) = temp;
-	}
 	newHashStorage->table = newTable;
 	return newHashStorage;
 }
@@ -150,11 +148,11 @@ void changeOrder(struct hashStorage* hash, struct order* data) {
 void printOrderBook (struct hashStorage* hash, FILE *out) {
 	int i = 0;
 	for(i; i < hash->size; i++) {
-		if (hash->table[i] == NULL) {
+		if ((hash->table + i) == NULL) {
 			continue;
 		}
 		else {
-			hash->printItem((*(hash->table + i))->data,out);
+			printList(*(hash->table + i), hash->printItem, out);
 		}
 	}
 }
@@ -176,4 +174,34 @@ void freeOrderBook  (struct hashStorage **hash) {
 	free((*hash)->table);
 	free(*hash);
 	hash = NULL;
+}
+
+int myHash(int id) {
+	return (id % HASHTABLESIZE);
+}
+
+void printOrder(struct order *currentOrder, FILE *file) {
+	fprintf(file, "%d %c %s %d %lf", currentOrder->id, currentOrder->side, currentOrder->symbol, currentOrder->quantity, currentOrder->price);
+	return;
+}
+
+int main() {
+
+	struct order newOrder1;
+	newOrder1.id = 1;
+	newOrder1.side = 'a';
+	strcpy(newOrder1.symbol, "AAPL");
+	newOrder1.quantity = 1;
+	newOrder1.price = 1.1;
+	struct order newOrder2;
+	newOrder2.id = 2;
+	newOrder2.side = 'a';
+	strcpy(newOrder2.symbol, "AAPL");
+	newOrder2.quantity = 2;
+	newOrder2.price = 2.2;
+	struct hashStorage *newHash = createHash(2, &myHash, &printOrder);
+	FILE *outFile = fopen("out.txt", "w");
+	addOrder(newHash, &newOrder1);
+	printOrderBook(newHash, outFile);
+	freeOrderBook(&newHash);
 }

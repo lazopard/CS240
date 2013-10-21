@@ -130,7 +130,10 @@ NodePtr newNode (OrderPtr data) {
 
 void pushNode (NodePtr* head, NodePtr node) {
 		if (head == NULL) {
+				node->prev = NULL;
+				head = &node;
 				*head = node;
+				printf("head is %d\n", (*head)->data->id);
 				return;
 		}
 		(*head)->prev = node;
@@ -310,7 +313,6 @@ int main() {
 	NodePtr newNode1 = newNode(&newOrder1);
 	NodePtr *head = NULL;
 	pushNode(head, newNode1);
-	printf("%d\n", (*head)->data->id);
 //	struct order newOrder2;
 //	newOrder2.id = 2;
 //	newOrder2.side = 'a';
@@ -325,5 +327,4 @@ int main() {
 //	newOrder3.quantity = 3;
 //	newOrder3.price = 3.3;
 //	NodePtr newNode3 = newNode(&newOrder3);
-	deleteNode(head,newNode1);
 }
