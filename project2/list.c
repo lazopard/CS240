@@ -138,7 +138,7 @@ void pushNode (NodePtr* head, NodePtr node) {
 		}
 		(*head)->prev = node;
 		node->next = (*head);
-		*head = node;
+		head = &node;
 		return;
 }
 
@@ -189,12 +189,12 @@ void insertNode (NodePtr* head, NodePtr prevNode, NodePtr insertingNode) {
 	NodePtr currentNode = *head;
 	while(currentNode != NULL) {
 		if (currentNode == prevNode) {
-			insertingNode->next = getNextNode(prevNode);
+			insertingNode->next = prevNode->next;
 			prevNode->next = insertingNode;
 			insertingNode->prev = prevNode;
 			return;
 		}
-		currentNode = getNextNode(currentNode);
+		currentNode = currentNode->next;
 	}
 }
 
@@ -204,18 +204,22 @@ void insertNode (NodePtr* head, NodePtr prevNode, NodePtr insertingNode) {
  */
 
 void evictNode (NodePtr* head, NodePtr node) {
-	NodePtr currentNode = *head;
-	while(currentNode != NULL) {
-		if (currentNode == node) {
-			printf("got here\n");
-			node->prev->next = node->next;
-			node->next->prev = node->prev;
-			node->next = NULL;
-			node->prev = NULL;
-			return;
-		}
-		currentNode = currentNode->next;
+	if ((*head) == node) {
+		head = &(node->next);
+		node->next->prev = NULL;
+		node->next = NULL;
+		return;
 	}
+	if (node->next == NULL) {
+		node->prev->next = NULL;
+		node->prev = NULL;
+		return;
+	}
+	node->prev->next = node->next;
+	node->next->prev = node->prev;
+	node->next = NULL;
+	node->prev = NULL;
+	return;
 }
 
 /**
@@ -226,12 +230,18 @@ void evictNode (NodePtr* head, NodePtr node) {
  */
 
 void deleteNode (NodePtr* head, NodePtr node) {
+	if (head == NULL) {
+		printf("invalid operation\n");
+		return 1;
+	}
 	if (node == *head) {
-		if ((*head)->next == NULL) { //handles this case well
+		if ((*head)->next == NULL) { 
+			free((*head)->data);
 			free((*head));
 			head = NULL;
 			return;
 		}
+		node->next->prev = NULL;
 		head = &(node->next);
 		free(node->data);
 		free(node);
@@ -268,11 +278,30 @@ void swapNodes (NodePtr* head, NodePtr n1, NodePtr n2) {
 
 
 void deleteList (NodePtr* head) {
-	NodePtr currentNode = *head;
+	if ((*head)->next == NULL) {
+		free((*head)->data);
+		free(*head);
+		head = NULL;
+		return;
+	}
+	NodePtr currentNode = (*head)->next;
+	NodePtr prevNode;
 	while(currentNode != NULL) {
-		currentNode = getPrevNode(currentNode);
-		free(getPrevNode(currentNode)->data);
-		free(getPrevNode(currentNode));
+		prevNode = currentNode->prev;
+		if (currentNode->next == NULL) {
+			free(currentNode->data);
+			free(currentNode);
+			currentNode = NULL;
+			free(prevNode->data);
+			free(prevNode);
+			prevNode = NULL;
+			head = NULL;
+			return;
+		}
+		free(prevNode->data);
+		free(prevNode);
+		prevNode = NULL;
+		currentNode = currentNode->next;
 	}
 	return;
 }

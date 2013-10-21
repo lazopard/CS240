@@ -144,7 +144,6 @@ int main(int argc, char **argv) {
 								continue;
 						}
 						else {
-								printf("transaction is %c\n", transaction);
 								printf("Invalid transaction\n");
 						}
 						clearStr(symbol);
@@ -290,14 +289,7 @@ void sort(NodePtr *head,
 		}
 }
 
-void printListStdOut(NodePtr *head) {
-		NodePtr currentNode = *head;
-		while(currentNode != NULL) {
-				currentNode = currentNode->next;
-		}
-}
-
-void printOrder(struct order *currentOrder, FILE *file) {
-	fprintf(file, "%d %c %s %d %lf", currentOrder->id, currentOrder->side, currentOrder->symbol, currentOrder->quantity, currentOrder->price);
+void printOrderData(OrderPtr orderData, FILE *out) {
+	fprintf(file, "%d %c %s %d %lf", orderData->id, orderData->side, orderData->symbol, orderData->quantity, orderData->price);
 	return;
 }

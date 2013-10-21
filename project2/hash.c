@@ -80,6 +80,7 @@ void cancelOrder(struct hashStorage* hash, struct order* data) {
 				while(temp != NULL) {
 						if (!strcmp(temp->data->symbol, data->symbol)) {
 							deleteNode((hash->table + idIndex), temp);
+							return;
 						}
 						temp = temp->next;
 				}
@@ -147,6 +148,10 @@ void changeOrder(struct hashStorage* hash, struct order* data) {
 
 void printOrderBook (struct hashStorage* hash, FILE *out) {
 	int i = 0;
+	if (hash->size == 1) {
+		printList(*(hash->table), hash->printItem, out);
+		return;
+	}
 	for(i; i < hash->size; i++) {
 		if ((hash->table + i) == NULL) {
 			continue;
@@ -162,6 +167,13 @@ void printOrderBook (struct hashStorage* hash, FILE *out) {
  **/
 
 void freeOrderBook  (struct hashStorage **hash) {
+/*	if ((*hash)->size == 1) {
+		deleteList((*hash)->table);
+		free((*hash)->table);
+		free(*hash);
+		*hash = NULL;
+		return;
+	}
 	int i = 0;
 	for(i; i < (*hash)->size; i++) {
 		if (((*hash)->table + i) == NULL) {
@@ -174,14 +186,17 @@ void freeOrderBook  (struct hashStorage **hash) {
 	free((*hash)->table);
 	free(*hash);
 	hash = NULL;
+*/
 }
 
+
+/*
 int myHash(int id) {
 	return (id % HASHTABLESIZE);
 }
 
-void printOrder(struct order *currentOrder, FILE *file) {
-	fprintf(file, "%d %c %s %d %lf", currentOrder->id, currentOrder->side, currentOrder->symbol, currentOrder->quantity, currentOrder->price);
+void printOrderData(OrderPtr orderPtr, FILE *out) {
+	fprintf(file, "%d %c %s %d %lf", orderPtr->id, orderPtr->side, orderPtr->symbol, orderPtr->quantity, orderPtr->price);
 	return;
 }
 
@@ -202,6 +217,8 @@ int main() {
 	struct hashStorage *newHash = createHash(2, &myHash, &printOrder);
 	FILE *outFile = fopen("out.txt", "w");
 	addOrder(newHash, &newOrder1);
+	addOrder(newHash, &newOrder2);
 	printOrderBook(newHash, outFile);
 	freeOrderBook(&newHash);
 }
+*/
