@@ -8,9 +8,8 @@
 
 int main(int argc, char **argv) {
 	int i, decode;
-	int finput, foutput;
-	const char inputFile, outputFile, codeFile;
-	for(i =0; i < argc; i++) { //deal with command-line arguments
+	char *inputFile, *outputFile, *codeFile;
+	for(i = 1; i < argc; i++) { //deal with command-line arguments
 		if (!strncmp(argv[i], INPUTFILE,2)) {
 			if (!strcmp(argv[i], INPUTFILE))  //input file is binary
 				decode = 1;
@@ -35,16 +34,9 @@ int main(int argc, char **argv) {
 		}
 	}
 
-	finput = open(inputFile, O_RDONLY);
-	foutput = open(outputFile, O_WRONLY);
-
 	if (!decode) {
-		
 	}
 
 	else { //decode
-
 	}
-	close(finput);
-	close(foutput);
 }
