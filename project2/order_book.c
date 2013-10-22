@@ -41,7 +41,7 @@ int main(int argc, char **argv) {
 		int (*myHashPtr)(int);
 		myHashPtr = &myHash;
 		void (*printOrderPtr)(struct order *, FILE *);
-		printOrderPtr = &printOrder;
+		printOrderPtr = &printOrderData;
 		char *inputFile, *outputFile, *inFile;
 		inputFile = outputFile = inFile = NULL;
 		for(i=1;i < argc; i++) {
@@ -90,7 +90,8 @@ int main(int argc, char **argv) {
 		double price;
 		struct order newOrder;
 
-		if (foundInput) { FILE *inFile = fopen(inputFile,"r");
+		if (foundInput) { 
+				FILE *inFile = fopen(inputFile,"r");
 				while((transaction = fgetc(inFile)) != EOF) {
 						if (transaction == 'A') {
 								fscanf(inFile, " %d %c %s %d %lf", &id, &side, symbol, &quantity, &price);
@@ -209,6 +210,7 @@ int main(int argc, char **argv) {
 								printf("Invalid transaction\n");
 						}
 						clearStr(symbol);
+						clearstr(newOrder.symbol);
 				}
 		}
 
@@ -224,18 +226,35 @@ int main(int argc, char **argv) {
 						printOrderBook(hash, outFile);
 				}
 		}
-		else { //print to stdout
-				for(i = 0; i < hash->size; i++) {
-						if ((hash->table + i) == NULL) {
-								continue;
+		else {
+				if (storageType == LLIST) {
+						if (foundAscending) {
+								sort(hash->table, &swap, &idCompare);
 						}
-						else {
-								printListStdOut(hash->table + i);
+						printListStdout(*(hash->table));
+				}
+				else {
+						for(i = 0; i < hash->size; i++) {
+								if ((hash->table + i) == NULL) {
+										continue;
+								}
+								else {
+										printListStdOut(hash->table + i);
+								}
 						}
 				}
 		}
 		freeOrderBook(&hash);
 		return 0;
+}
+
+printListStdout(NodePtr *head) {
+		NodePtr currentNode = *head;
+		for(;currentNode != NULL; currentNode = currentNode->next) {
+				printf(out, "%d %c %s %d %f\n", currentNode->data->id, currentNode->data->side,
+								currentNode->data->symbol, currentNode->quantity,
+								currentNode->price);
+		}
 }
 
 int myHash(int id) {
@@ -290,6 +309,6 @@ void sort(NodePtr *head,
 }
 
 void printOrderData(OrderPtr orderData, FILE *out) {
-	fprintf(file, "%d %c %s %d %lf", orderData->id, orderData->side, orderData->symbol, orderData->quantity, orderData->price);
-	return;
+		fprintf(out, "%d %c %s %d %lf", orderData->id, orderData->side, orderData->symbol, orderData->quantity, orderData->price);
+		return;
 }

@@ -31,11 +31,11 @@ struct hashStorage* createHash(int size, int (*myHash)(int), void (*printOrder)(
 		newHashStorage->table = (NodePtr *) malloc(sizeof(NodePtr *));
 		return newHashStorage;
 	}
+	NodePtr *newTable = malloc(sizeof(NodePtr *)*size);;
 	newHashStorage = malloc(sizeof(struct hashStorage));
 	newHashStorage->size = size;
 	newHashStorage->printItem = printOrder;
 	newHashStorage->funcHash = myHash;
-	NodePtr *newTable = malloc(sizeof(NodePtr *)*size);;
 	newHashStorage->table = newTable;
 	return newHashStorage;
 }
@@ -63,9 +63,10 @@ struct onode** getHashTable (struct hashStorage* hash) {
  *     */
 
 struct onode* addOrder(struct hashStorage* hash, struct order* data) {
-	NodePtr newOrder = newNode(data);
-	int index = hash->funcHash(newOrder->data->id);
-	pushNode((hash->table + index), newOrder);
+	NodePtr newOrderNode = newNode(data);
+	int index = hash->funcHash(newOrderNode->data->id);
+	pushNode((hash->table + index), newOrderNode);
+	return newOrderNode;
 }
 
 /**
@@ -112,6 +113,7 @@ void reduceOrderQty(struct hashStorage* hash, struct order* data) {
 				}
 		}
 }
+
 /**
  * * Change the symbol, quantity, and price of the order whose id is data->id to
  * * be the values of data->symbol, data->quantity, and data->price.
@@ -167,7 +169,7 @@ void printOrderBook (struct hashStorage* hash, FILE *out) {
  **/
 
 void freeOrderBook  (struct hashStorage **hash) {
-/*	if ((*hash)->size == 1) {
+	if ((*hash)->size == 1) {
 		deleteList((*hash)->table);
 		free((*hash)->table);
 		free(*hash);
@@ -186,7 +188,6 @@ void freeOrderBook  (struct hashStorage **hash) {
 	free((*hash)->table);
 	free(*hash);
 	hash = NULL;
-*/
 }
 
 
@@ -214,7 +215,7 @@ int main() {
 	strcpy(newOrder2.symbol, "AAPL");
 	newOrder2.quantity = 2;
 	newOrder2.price = 2.2;
-	struct hashStorage *newHash = createHash(2, &myHash, &printOrder);
+	struct hashStorage *newHash = createHash(100, &myHash, &printOrder);
 	FILE *outFile = fopen("out.txt", "w");
 	addOrder(newHash, &newOrder1);
 	addOrder(newHash, &newOrder2);

@@ -87,8 +87,42 @@ void clearStr(char *string);
 
 void setOrderSymbol (OrderPtr orderData, char* newSymbol) {
 	clearStr(orderData->symbol);
-	strncpy(orderData->symbol, newSymbol, MAX_SYMBOL_LENGTH);
+	strcpy(orderData->symbol, newSymbol);
 }
+
+/** 
+ * Return the next node of the given node. 
+ * IMPORTANT: Return NULL if node is NULL. 
+ */ 
+
+NodePtr getNextNode (NodePtr node) {
+	if (node == NULL) {
+		return NULL;
+	}
+	return node->next;
+}
+
+/** 
+ * Return the previous node of the given node. 
+ * IMPORTANT: Return NULL if node is NULL. 
+ */ 
+
+NodePtr getPrevNode (NodePtr node) {
+	if (node == NULL) {
+		return NULL;
+	}
+	return node->prev;
+}
+
+//returns the data field of the node
+
+OrderPtr getOrderData (NodePtr node) {
+	if (node == NULL) {
+		return NULL;
+	}
+	return node->data;
+}
+
 
 /**
  * Default print function. Custom printers should adhere to this format.
@@ -104,21 +138,14 @@ void printOrderData(OrderPtr orderData, FILE *out){
 }
 
 NodePtr newNode (OrderPtr data) {
-	int newId, newQuantity, i;
-	char newSide;
-	double newPrice;
-	newId = data->id;
-	newQuantity = data->quantity;
-	newSide = data->side;
-	newPrice = data->price;
-	struct order newData;
-	newData.id = newId;
-	strcpy(newData.symbol, data->symbol);
-	newData.side = newSide;
-	newData.quantity = newQuantity;
-	newData.price = newPrice;
+	OrderPtr newOrderPtr = malloc(sizeof(struct order));
+	setOrderId(newOrderPtr, getOrderId(data));
+	setOrderSymbol(newOrderPtr, getOrderSymbol(data));
+	setOrderSide(newOrderPtr, getOrderSide(data));
+	setOrderQty(newOrderPtr, getOrderQty(data));
+	setOrderPrice(newOrderPtr, getOrderPrice(data));
 	NodePtr newNode = (NodePtr) malloc(sizeof(struct onode));
-	newNode->data = &newData;
+	newNode->data = newOrderPtr;
 	newNode->prev = NULL;
 	newNode->next = NULL;
 	return newNode;
@@ -132,8 +159,6 @@ void pushNode (NodePtr* head, NodePtr node) {
 		if (head == NULL) {
 				node->prev = NULL;
 				head = &node;
-				*head = node;
-				printf("head is %d\n", (*head)->data->id);
 				return;
 		}
 		(*head)->prev = node;
@@ -150,34 +175,12 @@ ad pointer, return the onode with the given order id.
 NodePtr getOrderNode (NodePtr head, int id) {
 	NodePtr currentNode = head;
 	while(currentNode != NULL) {
-		if(currentNode->data->id == id) {
+		if(getOrderId(getOrderData(currentNode)) == id) {
 			return currentNode;
 		}
-		currentNode = currentNode->next;
+		currentNode = getNextNode(currentNode);
 	}
 	return NULL;
-}
-
-/** 
- * Return the next node of the given node. 
- * IMPORTANT: Return NULL if node is NULL. 
- */ 
-
-NodePtr getNextNode (NodePtr node) {
-	return node->next;
-}
-
-/** 
- * Return the previous node of the given node. 
- * IMPORTANT: Return NULL if node is NULL. 
- */ 
-
-NodePtr getPrevNode (NodePtr node) {
-	return node->prev;
-}
-
-OrderPtr getOrderData (NodePtr node) {
-	return node->data;
 }
 
 /*Insert the given node (insertingNode) after the node prevNode into the list with
@@ -189,12 +192,12 @@ void insertNode (NodePtr* head, NodePtr prevNode, NodePtr insertingNode) {
 	NodePtr currentNode = *head;
 	while(currentNode != NULL) {
 		if (currentNode == prevNode) {
-			insertingNode->next = prevNode->next;
+			insertingNode->next = getNextNode(prevNode);
 			prevNode->next = insertingNode;
 			insertingNode->prev = prevNode;
 			return;
 		}
-		currentNode = currentNode->next;
+		currentNode = getNextNode(currentNode);
 	}
 }
 
@@ -206,17 +209,17 @@ void insertNode (NodePtr* head, NodePtr prevNode, NodePtr insertingNode) {
 void evictNode (NodePtr* head, NodePtr node) {
 	if ((*head) == node) {
 		head = &(node->next);
-		node->next->prev = NULL;
+		(getNextNode(node))->prev = NULL;
 		node->next = NULL;
 		return;
 	}
-	if (node->next == NULL) {
-		node->prev->next = NULL;
+	if (getNextNode(node) == NULL) {
+		(getNextNode(node))->next = NULL;
 		node->prev = NULL;
 		return;
 	}
-	node->prev->next = node->next;
-	node->next->prev = node->prev;
+	(getPrevNode(node))->next = getNextNode(node);
+	(getNextNode(node))->prev = getPrevNode(node);
 	node->next = NULL;
 	node->prev = NULL;
 	return;
@@ -232,24 +235,23 @@ void evictNode (NodePtr* head, NodePtr node) {
 void deleteNode (NodePtr* head, NodePtr node) {
 	if (head == NULL) {
 		printf("invalid operation\n");
-		return 1;
 	}
 	if (node == *head) {
-		if ((*head)->next == NULL) { 
-			free((*head)->data);
-			free((*head));
+		if (getNextNode(*head) == NULL) { 
+			free(getOrderData(*head));
+			free(*head);
 			head = NULL;
 			return;
 		}
-		node->next->prev = NULL;
+		(node->next)->prev = NULL;
 		head = &(node->next);
-		free(node->data);
+		free(getOrderData(node));
 		free(node);
 		node = NULL;
 		return;
 	}
 	evictNode(head, node);
-	free(node->data);
+	free(getOrderData(node));
 	free(node);
 	node = NULL;
 	return;
@@ -278,30 +280,30 @@ void swapNodes (NodePtr* head, NodePtr n1, NodePtr n2) {
 
 
 void deleteList (NodePtr* head) {
-	if ((*head)->next == NULL) {
-		free((*head)->data);
+	if (getNextNode(*head) == NULL) {
+		free(getOrderData(*head));
 		free(*head);
 		head = NULL;
 		return;
 	}
-	NodePtr currentNode = (*head)->next;
+	NodePtr currentNode = getNextNode(*head);
 	NodePtr prevNode;
 	while(currentNode != NULL) {
-		prevNode = currentNode->prev;
-		if (currentNode->next == NULL) {
-			free(currentNode->data);
+		prevNode = getPrevNode(currentNode);
+		if (getNextNode(currentNode) == NULL) {
+			free(getOrderData(currentNode));
 			free(currentNode);
 			currentNode = NULL;
-			free(prevNode->data);
+			free(getOrderData(prevNode));
 			free(prevNode);
 			prevNode = NULL;
 			head = NULL;
 			return;
 		}
-		free(prevNode->data);
+		free(getOrderData(prevNode));
 		free(prevNode);
 		prevNode = NULL;
-		currentNode = currentNode->next;
+		currentNode = getNextNode(currentNode);;
 	}
 	return;
 }
@@ -312,16 +314,10 @@ void deleteList (NodePtr* head) {
  */
 
 void printList (NodePtr node, void (*printItem)(OrderPtr, FILE *), FILE *out) {
-	while(node != NULL) {
-		printItem(node->data, out);
-		node = node->next;
-	}
-}
-
-void printListStdOut(NodePtr *head) {
-	NodePtr currentNode = *head;
+	NodePtr currentNode = node;
 	while(currentNode != NULL) {
-		currentNode = currentNode->next;
+		printItem(getOrderData(currentNode), out);
+		currentNode = getNextNode(currentNode);
 	}
 }
 
@@ -332,6 +328,7 @@ void clearStr(char *string) {
 	}
 }
 
+/*
 int main() {
 	struct order newOrder1;
 	newOrder1.id = 1;
@@ -357,3 +354,5 @@ int main() {
 //	newOrder3.price = 3.3;
 //	NodePtr newNode3 = newNode(&newOrder3);
 }
+
+*/
