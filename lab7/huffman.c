@@ -1,3 +1,4 @@
+#define BUFFERSIZE 10000
 #define INPUTFILE "-ib"
 #define OUTPUTFILE "-o"
 #define CODEFILE "--code"
@@ -8,9 +9,13 @@
 
 unsigned char charToCode(char c, FILE *code);
 
+void initBuffer(char **buffer);
+
 int main(int argc, char **argv) {
 	int i, decode, c, byteCount, charCode;
 	const char *inputFile, *outputFile, *codeFile;
+  char *buffer = (char *) malloc(sizeof(char)*BUFFERSIZE);
+  initBuffer(buffer);
 	for(i = 1; i < argc; i++) { //deal with command-line arguments
 		if (!strncmp(argv[i], INPUTFILE,2)) {
 			if (!strcmp(argv[i], INPUTFILE))  //input file is binary
@@ -53,17 +58,15 @@ int main(int argc, char **argv) {
 	}
 
 	//encode input
-	if (!decode) {
-		while((c = fgetc(input)) != EOF) {
-			charCode = charToCode(c,code);
-			fwrite(&charCode,sizeof(char),1,output);
-		}
+	if (!decode) {			
+				for(i = 0;(((*(buffer + i)) = fgetc(input)) != EOF); i++);
 	}
 	//decode input
 	else {
-		
+				for(i = 0;(((*(buffer + i)) = fgetc(input)) != EOF); i++);
 	}
 
+  free(buffer);
 	fclose(input);
 	fclose(output);
 	fclose(code);
@@ -79,4 +82,12 @@ unsigned char charToCode(char c, FILE *code) {
 		}
 	}
 	return 1;
+}
+
+void initBuffer(char **buffer) {
+				int i = 0;
+				for(i;i < BUFFERSIZE; i++) {
+								*(buffer[i]) = '\0';
+				}
+				return;
 }
