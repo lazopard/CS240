@@ -7,15 +7,24 @@
 #include <string.h>
 #include <stdio.h>
 
+struct charByte {
+				unsigned char byte;
+				char c;
+};
+
 unsigned char charToCode(char c, FILE *code);
 
 void initBuffer(char **buffer);
 
 int main(int argc, char **argv) {
-	int i, decode, c, byteCount, charCode;
+	int i, charCode, decode;
 	const char *inputFile, *outputFile, *codeFile;
   char *buffer = (char *) malloc(sizeof(char)*BUFFERSIZE);
-  initBuffer(buffer);
+  if (argc < 7) {
+				printf("not enough arguments\n");
+				return 1;
+  }
+  
 	for(i = 1; i < argc; i++) { //deal with command-line arguments
 		if (!strncmp(argv[i], INPUTFILE,2)) {
 			if (!strcmp(argv[i], INPUTFILE))  //input file is binary
@@ -46,7 +55,13 @@ int main(int argc, char **argv) {
 		printf("File %s does not exist.\n", inputFile);
 		return 1;
 	}
-	FILE *output = fopen(outputFile, "w");
+  FILE *output;
+  if (!decode) {
+				*output = fopen(outputFile, "bw");
+	}
+  else {
+				*output = fopen(outputFile, "w");
+  }
 	if (output == NULL) {
 		printf("File %s does not exist.\n", outputFile);
 		return 1;
@@ -57,13 +72,61 @@ int main(int argc, char **argv) {
 		return 1;
 	}
 
+  int c, charByteArraySize;
+  c = 0;
+  charByteArraySize = 0;
+  while((c = fgetc(code)) != EOF) {
+				if (c == '\n') {
+								charByteArraySize++;
+				}
+  }
+  rewind(code);  
+
+  struct charByte charByteArray[charByteArraySize];
+
+  //populate charByteArray
+
+  while((c = fgetc(code)) != EOF) {
+				if (c == '=') {
+								//previous of c is char
+								//after c is binary
+				}
+  }
+
+  int sizeOfWrite, j;
+  j =0;
+
 	//encode input
-	if (!decode) {			
-				for(i = 0;(((*(buffer + i)) = fgetc(input)) != EOF); i++);
+	if (!decode) {
+				while((c = fgetc(input)) != EOF) {
+								for(i = 0; i < charByteArraySize; i++) {
+												if (c == charByteArray[i].c) {
+																buffer[j] = charByteArray[i].byte;
+																j++;
+												}	
+								}
+				}
+				//deal with padding 0s
+				//add them to the buffer
+				fwrite(buffer, sizeof(char), j, output);
 	}
+
 	//decode input
+
+  /* facts about decoding:
+				* ends with a period
+				* after this last period, there are only padding 0s
+				* So if we find a period either part or all of which lies in the last byte,
+				  and after this period all the remaining bits are 0, then this period has to be
+				  the last period
+        * You can assume that the period will not have code consisting f only 0s, or code that is 
+				  longer than a byte
+  */
+
 	else {
-				for(i = 0;(((*(buffer + i)) = fgetc(input)) != EOF); i++);
+				//using the | operator might work			
+				//| every byte with 0000000 until it doesn't change
+				//then those have to be the padding 0s
 	}
 
   free(buffer);
@@ -73,21 +136,3 @@ int main(int argc, char **argv) {
 	return 0;
 }
 
-unsigned char charToCode(char c, FILE *code) {
-	char temp;
-	while((temp = fgetc(code)) != EOF) {
-		if (temp == c) {
-			fgetc(code);
-			return fgetc(code);
-		}
-	}
-	return 1;
-}
-
-void initBuffer(char **buffer) {
-				int i = 0;
-				for(i;i < BUFFERSIZE; i++) {
-								*(buffer[i]) = '\0';
-				}
-				return;
-}
