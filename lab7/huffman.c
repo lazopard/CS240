@@ -1,3 +1,4 @@
+#define MAXBINARYSTRING 20
 #define BUFFERSIZE 10000
 #define INPUTFILE "-ib"
 #define OUTPUTFILE "-o"
@@ -7,153 +8,198 @@
 #include <string.h>
 #include <stdio.h>
 
-struct charByte {
-				unsigned char byte;
-				char c;
+struct charBinary {
+	unsigned char binary;
+	char c;
 };
 
-void printCharByteArray(struct charByte[], int size);
+void printCharBinaryArray(struct charBinary[], int size);
+
+int getSizeOfCharBinaryArray(FILE *code);
+
+unsigned char convertToBinary(char *binaryString);
 
 int main(int argc, char **argv) {
-				int i, charCode, decode;
-				i=charCode=decode=0;
-				const char *inputFile, *outputFile, *codeFile;
-				inputFile=outputFile=codeFile=NULL;
-				char *buffer = (char *) malloc(sizeof(char)*BUFFERSIZE);
-				if (argc < 7) {
-								printf("not enough arguments\n");
-								return 1;
-				}
-				for(i = 1; i < argc; i++) { //deal with command-line arguments
-								if (!strncmp(argv[i], INPUTFILE,2)) {
-												if (!strcmp(argv[i], INPUTFILE)) { //input is binary
-																decode = 1;
-												}
-												inputFile = argv[i+1];
-												i++;
-								}
+	int i, j, charCode, decode;
+	i=charCode=j=decode=0;
+	const char *inputFile, *outputFile, *codeFile;
+	inputFile=outputFile=codeFile=NULL;
+	char *buffer = (char *) malloc(sizeof(char)*BUFFERSIZE);
+	if (argc < 7) {
+		printf("not enough arguments\n");
+		return 1;
+	}
+	for(i = 1; i < argc; i++) { //deal with command-line arguments
+		if (!strncmp(argv[i], INPUTFILE,2)) {
+			if (!strcmp(argv[i], INPUTFILE)) { //input is binary
+				decode = 1;
+			}
+			inputFile = argv[i+1];
+			i++;
+		}
 
-								else if (!strcmp(argv[i], OUTPUTFILE)) {
-												outputFile = argv[i+1];	
-												i++;
-								}
+		else if (!strcmp(argv[i], OUTPUTFILE)) {
+			outputFile = argv[i+1];	
+			i++;
+		}
 
-								else if (!strcmp(argv[i], CODEFILE)) {
-												codeFile = argv[i+1];
-												i++;
-								}
-								else { //unknown command-line argument
-												printf("Invalid argument");
-												return 1;
-								}
-				}
+		else if (!strcmp(argv[i], CODEFILE)) {
+			codeFile = argv[i+1];
+			i++;
+		}
+		else { //unknown command-line argument
+			printf("Invalid argument");
+			return 1;
+		}
+	}
 
-				FILE *input;
-				if (!decode) {
-								input = fopen(inputFile, "r");
-				}
-				else {
-								input = fopen(inputFile, "rb");
-				}
-				if (input == NULL) {
-								printf("File %s does not exist.\n", inputFile);
-								return 1;
-				}
-				FILE *output;
-				if (!decode) {
-								output = fopen(outputFile, "wb+");
-				}
-				else {
-								output = fopen(outputFile, "w");
-				}
-				if (output == NULL) {
-								printf("File %s does not exist.\n", outputFile);
-								return 1;
-				}
-				FILE *code = fopen(outputFile, "r");
-				if (code == NULL) {
-								printf("File %s does not exist.\n", codeFile);
-								return 1;
-				}
+	FILE *input;
+	if (!decode) {
+		input = fopen(inputFile, "r");
+	}
+	else {
+		input = fopen(inputFile, "rb");
+	}
+	if (input == NULL) {
+		printf("File %s does not exist.\n", inputFile);
+		return 1;
+	}
+	FILE *output;
+	if (!decode) {
+		output = fopen(outputFile, "wb+");
+	}
+	else {
+		output = fopen(outputFile, "w");
+	}
+	if (output == NULL) {
+		printf("File %s does not exist.\n", outputFile);
+		return 1;
+	}
+	FILE *code = fopen(codeFile, "r");
+	if (code == NULL) {
+		printf("File %s does not exist.\n", codeFile);
+		return 1;
+	}
 
-				int c, charByteArraySize;
+	int c, charBinaryArraySize;
 
-				while((c = fgetc(code)) != EOF) { 
-								if (c == '\n') {
-												charByteArraySize++;
-								}
-				}
-				charByteArraySize++;
+	charBinaryArraySize = getSizeOfCharBinaryArray(code);
 
-				rewind(code);  
+	fseek(code,0, SEEK_SET);	
 
-				struct charByte charByteArray[charByteArraySize];
+	struct charBinary charBinaryArray[charBinaryArraySize];
 
-				//populate charByteArray
+	//populate charBinaryArray
 
-				i = 0, c = 0;
-				while((c = fgetc(code)) != EOF) {
-								if (c == '=') {
-												charByteArray[i].c = ungetc(c,code);
-												//previous of c is char
-												//after c is binary
-												charByteArray[i].byte = fgetc(code);
-												i++;
-								}
-				}
+	i = 0, c = 0;
+	char *binaryString = malloc(sizeof(char)*MAXBINARYSTRING);
 
-				int sizeOfWrite, j;
-				j = 0;
+	while((c = fgetc(code)) != EOF) {
+		if (i < 1) {
+			charBinaryArray[i].c = c;
+			fgetc(code);
+			binaryString = fgets(binaryString,MAXBINARYSTRING,code);
+			binary = convertToBinary(binaryString);
+			charBinaryArray[i].binary = binary;
+			i++;
 
-				//encode input
-				if (!decode) {
-								while((c = fgetc(input)) != EOF) {
-												for(i = 0; i < charByteArraySize; i++) {
-																if (c == charByteArray[i].c) {
-																				buffer[j] = charByteArray[i].byte;
-																				j++;
-																}	
-												}
-								}
-								//deal with padding 0s
-								unsigned char padding = 00000000;
-								buffer[j + 1] = padding;
-								fwrite(buffer, sizeof(char), j, output);
-				}
+		}
+		else if (c == '\n') {
+			c = fgetc(code);
+			fgetc(code);
+			binary = fgetc(code);
+			charBinaryArray[i].c = c;
+			charBinaryArray[i].binary = binary;
+			i++;
+		}
+		else {
+			continue;
+		}
+	}
+	free(binaryString);
+	binaryString = NULL;
 
-				//decode input
+	c = 0;
+	printCharBinaryArray(charBinaryArray, charBinaryArraySize);
 
-				/* facts about decoding:
-				 * ends with a period
-				 * after this last period, there are only padding 0s
-				 * So if we find a period either part or all of which lies in the last byte,
-				 and after this period all the remaining bits are 0, then this period has to be
-				 the last period
-				 * You can assume that the period will not have code consisting f only 0s, or code that is 
-				 longer than a byte
-				 */
+	//encode input
+	 
+	if (!decode) {
+		while((c = fgetc(input)) != EOF) {
+			for(i = 0; i < charBinaryArraySize; i++) {
+				if (c == charBinaryArray[i].c) {
+					buffer[j] = charBinaryArray[i].binary;
+					j++;
+				}	
+			}
+		}
+		//deal with padding 0s
+		fwrite(buffer, sizeof(char), j, output);
+	}
 
-				else {
-								//using the | operator might work			
-								//| every byte with 0000000 until it doesn't change
-								//then those have to be the padding 0s
-				}
+	//decode input
 
-				free(buffer);
-				fclose(input);
-				fclose(output);
-				fclose(code);
-				buffer = NULL;
-				return 0;
+	/* facts about decoding:
+	 * ends with a period
+	 * after this last period, there are only padding 0s
+	 * So if we find a period either part or all of which lies in the last byte,
+	 and after this period all the remaining bits are 0, then this period has to be
+	 the last period
+	 * You can assume that the period will not have code consisting f only 0s, or code that is 
+	 longer than a byte
+	 */
+
+	else {
+		//using the | operator might work			
+		//| every byte with 0000000 until it doesn't change
+		//then those have to be the padding 0s
+	}
+
+	free(buffer);
+	fclose(input);
+	fclose(output);
+	fclose(code);
+	buffer = NULL;
+	return 0;
 }
 
 
-void printCharByteArray(struct charByte charByteArray[], int size) {
-				int i;
-				for(i = 0; i < size; i++) {
-								printf("charByteArray[i].c is %c, charByteArray[i].byte is %u\n", charByteArray[i].c,
-																charByteArray[i].byte);
-				}
-				return;
+void printCharBinaryArray(struct charBinary charBinaryArray[], int size) {
+	int i;
+	for(i = 0; i < size; i++) {
+		printf("charBinaryArray[i].c is (%c), charBinaryArray[i].binary is (%c)\n", charBinaryArray[i].c,
+				charBinaryArray[i].binary);
+	}
+	return;
 }
 
+int getSizeOfCharBinaryArray(FILE *code) {
+	
+	int c, charBinaryArraySize;
+	c=charBinaryArraySize=0;
+
+	while((c = fgetc(code)) != EOF) { 
+		if (c == '\n') {
+			charBinaryArraySize++;
+		}
+	}
+	return charBinaryArraySize;
+}
+
+
+unsigned char convertToBinary(char *binaryString) {
+	unsigned char binary = 00000000;
+	char tempBit = 0;
+	int i = strlen(binaryString) - 1;
+	int j = 0, twoPow = 1;
+	while(i > 0) {
+		if (*(binaryString + i) == 1) {
+			for(j;j < i;j++) {
+				twoPwo *= 2;
+			}
+			binary | twoPwo;
+		}
+		i--;
+	}
+	return binary;
+}
