@@ -29,8 +29,6 @@ int main(int argc, char **argv) {
 		if (!strncmp(argv[i], INPUTFILE,2)) {
 			if (!strcmp(argv[i], INPUTFILE))  //input file is binary
 				decode = 1;
-			else 
-				decode = 0;
 			inputFile = argv[i+1];
 			i++;
 		}
@@ -57,8 +55,8 @@ int main(int argc, char **argv) {
 	}
   FILE *output;
   if (!decode) {
-				*output = fopen(outputFile, "bw");
-	}
+				*output = fopen(outputFile, "bw+");
+  }
   else {
 				*output = fopen(outputFile, "w");
   }
@@ -75,21 +73,28 @@ int main(int argc, char **argv) {
   int c, charByteArraySize;
   c = 0;
   charByteArraySize = 0;
-  while((c = fgetc(code)) != EOF) {
+
+  while((c = fgetc(code)) != EOF) { 
 				if (c == '\n') {
 								charByteArraySize++;
 				}
   }
+
   rewind(code);  
 
   struct charByte charByteArray[charByteArraySize];
 
   //populate charByteArray
 
+  i = 0;
   while((c = fgetc(code)) != EOF) {
 				if (c == '=') {
+						printf("%d\n",ungetc(c,code));
+						charByteArray[i].c = ungetc(c,code);
 								//previous of c is char
 								//after c is binary
+						printf("%c\n",fgetc(code));
+						charByteArray[i].byte = fgetc(code);
 				}
   }
 
