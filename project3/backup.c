@@ -1,12 +1,31 @@
+/*dir ops
+ * scandir
+ * rmdir
+ * opendir
+ * readdir
+ * mkdir
+ * ///
+ * file ops
+ * fopen
+ * fread/fwrite
+ * fprintf
+ */
+
+
 #define SOURCE "-s"
 #define DESTINATION "-d"
 #define MAXBACKUPS "-m"
+#define NTYPES 2
 
 #include <signal.h>
 #include <stdlib.h>
 #include <stdio.h>
+#include <time.h>
+#include <sys/stat.h>
 #include "string.h"
 #include "backup.h"
+#include <dirent.h>
+#include <assert.h>
 
 int main(int argc, char **argv) {
 	
@@ -58,7 +77,55 @@ int main(int argc, char **argv) {
 	return 0;
 }
 
+
+
+char *getFStats(char *fileName) {
+	struct stat fileStats;
+	assert(!stat(fileName, &fileStats));
+	int i;
+
+	// get type 
+	const char *type;
+	for(i = 0;i < NTYPES;i++) {
+
+		if(S_ISDIR(fileStats.st_mode))
+			type = "DT_DIR";
+		else if(S_ISREG(fileStats.st_mode)) 
+			type = "DT_REG";
+		else {
+			fprintf(stderr,"Unknown file type\n");
+			abort();
+		}
+	}
+
+	//get size in bytes
+	int size = fileStats.st_size;
+
+	//get creation time
+	
+	struct tm *creationTime;
+
+	//get last mod time
+	
+	//get dataName
+	
+
+
+	return "Incomplete function\n";
+}
+
+	
+
 void createLog(char *sourceDir, char *logFilePath) {
+	DIR *dir = opendir(sourceDir);
+	assert(dir != NULL);
+	FILE *newLog = fopen(logFilePath, "w");
+	assert(newLog != NULL);
+
+	
+
+	fclose(newLog);
+	closedir(dir);
 	return;
 }
 
