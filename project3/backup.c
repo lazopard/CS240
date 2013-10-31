@@ -2,6 +2,7 @@
 #define DESTINATION "-d"
 #define MAXBACKUPS "-m"
 
+#include <signal.h>
 #include <stdlib.h>
 #include <stdio.h>
 #include "string.h"
@@ -9,7 +10,7 @@
 
 int main(int argc, char **argv) {
 	
-	//Arguments processing
+	/* Arguments processing */
 	
 	char *sourceDir, *destDir;
 	int foundS, foundDest, foundMaxB, i, maxB;
@@ -50,7 +51,7 @@ int main(int argc, char **argv) {
 		maxB = DEFAULT_MAX_BACKUPS;
 	}
 
-	//Arguments processing end
+	/* Arguments processing end */
 	
 
 
@@ -61,8 +62,13 @@ void createLog(char *sourceDir, char *logFilePath) {
 	return;
 }
 
-int compareLog(FILE *oldLogFile, FILE *newLogFile) {
-	return 0;
+int compareLog(FILE *oldLogFile, FILE *newLogFile) { /* not tested */
+	int c1,c2;
+	while((c1 = fgetc(oldLogFile)) == (c2 = fgetc(newLogFile)) && (c1 != EOF && c2 != EOF));
+	if (c1 == c2)  
+		return 1;
+	else
+		return 0;
 }
 
 int copyFile(char *sourcePath, char *destinationPath) {

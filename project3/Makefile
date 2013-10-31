@@ -1,5 +1,5 @@
 CC=gcc
-CFLAGS=-Wall -m32 -g -ansi -g -o backup
+CFLAGS=-Wall -m32 -std=c99 -g -ansi -g -o backup
 
 all: backup
 
