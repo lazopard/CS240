@@ -6,6 +6,7 @@
 /**
  * Required function stub signatures
  */
+
 void createLog(char *sourceDir, char *logFilePath);
 int compareLog(FILE *oldLogFile, FILE *newLogFile);
 
