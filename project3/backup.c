@@ -11,7 +11,7 @@
  * fprintf
  */
 
-
+#define MAXFORMATSIZE 120
 #define SOURCE "-s"
 #define DESTINATION "-d"
 #define MAXBACKUPS "-m"
@@ -26,6 +26,11 @@
 #include "backup.h"
 #include <dirent.h>
 #include <assert.h>
+
+const char *weekdays[] = { "Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"};
+
+const char *months[] = { "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep",
+								"Oct", "Nov", "Dec"};
 
 int main(int argc, char **argv) {
 	
@@ -79,13 +84,15 @@ int main(int argc, char **argv) {
 
 
 
-char *getFStats(char *fileName) {
+void putFStats(char *fileName, char **buf) {
+
 	struct stat fileStats;
 	assert(!stat(fileName, &fileStats));
 	int i;
 
 	// get type 
 	const char *type;
+
 	for(i = 0;i < NTYPES;i++) {
 
 		if(S_ISDIR(fileStats.st_mode))
@@ -97,37 +104,65 @@ char *getFStats(char *fileName) {
 			abort();
 		}
 	}
-
-	//get size in bytes
-	int size = fileStats.st_size;
-
-	//get creation time
 	
-	struct tm *creationTime;
+	//get size in bytes
+	size_t size = fileStats.st_size;
+
+	//get creation time use st_ctime
+	
+	const time_t creationTime = fileStats.st_ctime;
+	const char *cTime = ctime(&creationTime);
 
 	//get last mod time
 	
-	//get dataName
+	const time_t modTime = fileStats.st_mtime;
+	const char *mTime = ctime(&modTime);
 	
-
-
-	return "Incomplete function\n";
+	//build stats string
+	
+	sprintf(*buf,"%s\t%zu\t%s\t%s\t%s\n",type,size,cTime,mTime,fileName);
 }
-
-	
 
 void createLog(char *sourceDir, char *logFilePath) {
 	DIR *dir = opendir(sourceDir);
 	assert(dir != NULL);
-	FILE *newLog = fopen(logFilePath, "w");
+	struct dirent *tempEnt;
+	FILE *newLog = fopen(logFilePath, "a");
 	assert(newLog != NULL);
-
-	
-
+	char *buffer = malloc(sizeof(char)*MAXFORMATSIZE);
+	assert(buffer != NULL);
+	while((tempEnt = readdir(dir))){
+		if (!strcmp(tempEnt->d_name,".") || !strcmp(tempEnt->d_name, "..")) {
+			continue;
+		}
+		if (S_ISDIR(tempEnt->d_type)) {
+			char *subDirSource = malloc(sizeof(sourceDir) +
+										sizeof(tempEnt->d_name) +
+										2);
+			subDirSource = strcat(subDirSource, sourceDir);
+			subDirSource = strcat(subDirSource, "/");
+			subDirSource = strcat(subDirSource,tempEnt->d_name);
+			createLog(subDirSource,logFilePath);
+			free(subDirSource);
+			subDirSource = NULL;
+		}
+		else {
+			putFStats(tempEnt->d_name, &buffer);
+			fputs(buffer, newLog);
+			fputc('\n',newLog);
+			memset(buffer, '\0', MAXFORMATSIZE);
+		}
+	}
+	free(buffer);
+	buffer = NULL;
 	fclose(newLog);
+	newLog = NULL;
 	closedir(dir);
+	dir = NULL;
 	return;
 }
+
+//Compare every char, if one differs return 1, else 0
 
 int compareLog(FILE *oldLogFile, FILE *newLogFile) { /* not tested */
 	int c1,c2;

@@ -5,3 +5,6 @@ all: backup
 
 backup: backup.c backup.h
 	$(CC) $(CFLAGS) backup.c
+
+clean:
+	rm backup
