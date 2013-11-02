@@ -158,12 +158,12 @@ NodePtr newNode (OrderPtr data) {
 void pushNode (NodePtr* head, NodePtr node) {
 		if (head == NULL) {
 				node->prev = NULL;
-				head = &node;
+				(*head) = node;
 				return;
 		}
 		(*head)->prev = node;
 		node->next = (*head);
-		head = &node;
+		(*head) = node;
 		return;
 }
 
