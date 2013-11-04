@@ -1,4 +1,3 @@
-#define SIZEOFDATE 19
 #define MAXFORMATSIZE 120
 #define SOURCE "-s"
 #define DESTINATION "-d"
@@ -47,14 +46,14 @@ int main(int argc, char **argv) {
 		}
 		else {
 			fputs("Usage:\n./backup ‐s sourceDir [‐d destinationDir ‐m X]\n",stderr);
-			return 0;
+			return 1;
 
 		}
 	}
 
 	if (((argc-1) % 2 != 0) || !foundS) {
 		fputs("Usage:\n./backup ‐s sourceDir [‐d destinationDir ‐m X]\n",stderr);
-		return 0;
+		return 1;
 	}
 	if (!foundDest) {
 		destDir = DEFAULT_DEST_DIR;
@@ -64,46 +63,20 @@ int main(int argc, char **argv) {
 	}
 
 	/* Arguments processing end */
-	
-	//createLog();
-	
-	//FILE *newLog = fopen(,"r");
-	//FILE *oldLog = fopen(,"r");
 
-	/*if (!compareLog(newLog, oldLog)) {
-		return 1;
-	}
 
-	else {
-		//get date and build destDir full path
-		//including date
-		if (!copyDir(sourceDir,destDir)) {
-			perror("Copying the directory failed.\n");
-			return 0;
-	}
-	*/
-
-	//check if there are too many backups
-	if (getNumOfBackup(destDir) > maxB) {
-		if(!removeOldestBackup(destDir)) {
-			perror("Removing oldest backup failed.\n");
-			return 0;
-		}
-	}
-
-	//fclose(newLog);
-	//fclose(oldLog);
-
-	return 1;
+	return 0;
 }
 
 
 
-void putFStats(char *fileName, char **buf) { //not tested
+void putFStats(char *fileName, char **buf) {
 
 	struct stat fileStats;
 	assert(!stat(fileName, &fileStats));
 	int i;
+
+	// get type 
 	const char *type;
 
 	for(i = 0;i < NTYPES;i++) {
@@ -113,7 +86,7 @@ void putFStats(char *fileName, char **buf) { //not tested
 		else if(S_ISREG(fileStats.st_mode)) 
 			type = "DT_REG";
 		else {
-			perror("Unknown file type\n");
+			fprintf(stderr,"Unknown file type\n");
 			abort();
 		}
 	}
@@ -136,7 +109,7 @@ void putFStats(char *fileName, char **buf) { //not tested
 	sprintf(*buf,"%s\t%zu\t%s\t%s\t%s\n",type,size,cTime,mTime,fileName);
 }
 
-void createLog(char *sourceDir, char *logFilePath) { //not tested, does not deal with adding tabs
+void createLog(char *sourceDir, char *logFilePath) {
 
 	DIR *dir = opendir(sourceDir);
 	assert(dir != NULL);
@@ -161,15 +134,14 @@ void createLog(char *sourceDir, char *logFilePath) { //not tested, does not deal
 			free(subDirSource);
 			subDirSource = NULL;
 		}
-
 		else {
+
 			putFStats(tempEnt->d_name, &buffer); 
 			fputs(buffer, newLog);
 			fputc('\n',newLog);
 			memset(buffer, '\0', MAXFORMATSIZE);
 
 		}
-
 	}
 
 	free(buffer);
@@ -182,7 +154,7 @@ void createLog(char *sourceDir, char *logFilePath) { //not tested, does not deal
 
 //Compare every char, if one differs return 1, else 0
 
-int compareLog(FILE *oldLogFile, FILE *newLogFile) { //tested
+int compareLog(FILE *oldLogFile, FILE *newLogFile) { /* not tested */
 	int c1,c2;
 	while((c1 = fgetc(oldLogFile)) == (c2 = fgetc(newLogFile)) && (c1 != EOF && c2 != EOF));
 	if (c1 == c2)  
@@ -191,7 +163,7 @@ int compareLog(FILE *oldLogFile, FILE *newLogFile) { //tested
 		return 0;
 }
 
-int copyFile(char *sourcePath, char *destinationPath) { //fails when given absolute path
+int copyFile(char *sourcePath, char *destinationPath) {
 	FILE *source = fopen(sourcePath, "r");
 	assert(source != NULL);
 	FILE *destination = fopen(destinationPath, "w");
@@ -199,7 +171,7 @@ int copyFile(char *sourcePath, char *destinationPath) { //fails when given absol
 	char c;
 	while((c = fgetc(source)) != EOF) {
 		if ((fputc(c,destination)) == EOF) {
-			fprintf(stderr,"write to %s failed, function copyFile", destinationPath);
+			printf("write to %s failed, function copyFile", destinationPath);
 			return 0;
 		}
 	}
@@ -209,7 +181,7 @@ int copyFile(char *sourcePath, char *destinationPath) { //fails when given absol
 }
 
 int copyDir(char *sourceDir, char *backupDir) {
-
+	//use recursion
 	return 0;
 }
 
@@ -242,11 +214,10 @@ int removeOldestBackup(char *destinationDir) {
 		if (!strcmp(tempEnt->d_name,".") || strcmp(tempEnt->d_name,".."))
 			continue;
 
-		/*if(1) { //compare dirs time_t's, compare as floats as it is guaranteed to work
+		if(1) { //compare dirs time_t's, compare as floats as it is guaranteed to work
 			struct stat fileStats;
 			//assert(!stat(fileName, &fileStats));	
 		}
-		*/
 	}
 	//remove backup/ use recursion
 	closedir(destination);
