@@ -19,7 +19,6 @@ const char *weekdays[] = { "Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"};
 
 const char *months[] = { "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep",
 								"Oct", "Nov", "Dec"};
-
 int main(int argc, char **argv) {
 	
 	/* Arguments processing */
@@ -46,14 +45,14 @@ int main(int argc, char **argv) {
 			i++;
 		}
 		else {
-			fputs("Usage:\n./backup ‐s sourceDir [‐d destinationDir ‐m X]\n",stderr);
+			fputs("Usage:\n./backup -s sourceDir [-d destinationDir -m X]\n",stderr);
 			return 0;
 
 		}
 	}
 
 	if (((argc-1) % 2 != 0) || !foundS) {
-		fputs("Usage:\n./backup ‐s sourceDir [‐d destinationDir ‐m X]\n",stderr);
+		fputs("Usage:\n./backup -s sourceDir [-d destinationDir -m X]\n",stderr);
 		return 0;
 	}
 	if (!foundDest) {
@@ -64,26 +63,37 @@ int main(int argc, char **argv) {
 	}
 
 	/* Arguments processing end */
-	
-	//createLog();
-	
-	//FILE *newLog = fopen(,"r");
-	//FILE *oldLog = fopen(,"r");
 
-	/*if (!compareLog(newLog, oldLog)) {
+	char *logFilePath = malloc(sizeof(char)*strlen(destDir) +
+			sizeof(char)*strlen(LOG_NEW_FILENAME) + 1);
+	
+	logFilePath = destDir;
+	logFilePath = strcat(logFilePath, "/");
+	logFilePath = strcat(logFilePath,LOG_NEW_FILENAME);
+	createLog(sourceDir,logFilePath);
+	char *oldLogFilePath = malloc(sizeof(char)*strlen(destDir) +
+			sizeof(char)*strlen(LOG_LAST_FILENAME) + 1);
+	oldLogFilePath = destDir;
+	oldLogFilePath = strcat(oldLogFilePath, "/");
+	oldLogFilePath = strcat(oldLogFilePath,LOG_LAST_FILENAME);
+	FILE *newLog = fopen(logFilePath,"r");
+	assert(newLog != NULL);
+	FILE *oldLog = fopen(oldLogFilePath,"r");
+	assert(oldLog != NULL);
+
+	if (!compareLog(newLog, oldLog)) {
 		return 1;
 	}
 
 	else {
 		//get date and build destDir full path
-		//including date
 		if (!copyDir(sourceDir,destDir)) {
 			perror("Copying the directory failed.\n");
 			return 0;
+		}
+		//update name of newlog to oldlog
 	}
-	*/
 
-	//check if there are too many backups
 	if (getNumOfBackup(destDir) > maxB) {
 		if(!removeOldestBackup(destDir)) {
 			perror("Removing oldest backup failed.\n");
@@ -91,8 +101,8 @@ int main(int argc, char **argv) {
 		}
 	}
 
-	//fclose(newLog);
-	//fclose(oldLog);
+	fclose(newLog);
+	fclose(oldLog);
 
 	return 1;
 }
