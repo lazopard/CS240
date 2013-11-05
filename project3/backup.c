@@ -209,8 +209,19 @@ int copyFile(char *sourcePath, char *destinationPath) { //fails when given absol
 }
 
 int copyDir(char *sourceDir, char *backupDir) {
+	DIR *source = opendir(sourceDir);
+	assert(source != NULL);
+	struct dirent *tempEnt;
+	while((tempEnt = readdir(source))) {
 
-	return 0;
+		if (!strcmp(tempEnt->d_name,".") || !strcmp(tempEnt->d_name, ".."))
+			continue;
+		if (S_ISDIR(tempEnt->d_type))
+			printf("copyDir");//copyDir(this dir, folder inside backupDir);
+		else 
+			copyFile(sourceDir, backupDir);
+	}
+	return 1;
 }
 
 int getNumOfBackup(char *destinationDir) {
@@ -229,6 +240,10 @@ int getNumOfBackup(char *destinationDir) {
 	closedir(destination);
 	
 	return backupCount;
+}
+
+int removeDir(char *dirToRemove) {
+	return 0;
 }
 
 int removeOldestBackup(char *destinationDir) {
