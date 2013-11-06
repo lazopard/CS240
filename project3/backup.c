@@ -28,7 +28,7 @@ int main(int argc, char **argv) {
 
 	foundS=maxB=foundDest=foundMaxB=0;
 
-	for(i=0; i < argc;i++) {
+	for(i=1; i < argc;i++) {
 		if (!strcmp(argv[i],SOURCE)) {
 			sourceDir = argv[i+1];
 			foundS++;
@@ -66,10 +66,7 @@ int main(int argc, char **argv) {
 
 	char *logFilePath = malloc(sizeof(char)*strlen(destDir) +
 			sizeof(char)*strlen(LOG_NEW_FILENAME) + 1);
-	
-	logFilePath = destDir;
-	logFilePath = strcat(logFilePath, "/");
-	logFilePath = strcat(logFilePath,LOG_NEW_FILENAME);
+  sprintf(logFilePath,"%s/%s",destDir,LOG_NEW_FILENAME);
 	createLog(sourceDir,logFilePath);
 	char *oldLogFilePath = malloc(sizeof(char)*strlen(destDir) +
 			sizeof(char)*strlen(LOG_LAST_FILENAME) + 1);
@@ -109,7 +106,7 @@ int main(int argc, char **argv) {
 
 
 
-void putFStats(char *fileName, char **buf) { //not tested
+void putFStats(char *fileName, char **buf) { //tested
 
 	struct stat fileStats;
 	assert(!stat(fileName, &fileStats));
@@ -142,7 +139,12 @@ void putFStats(char *fileName, char **buf) { //not tested
 	const char *mTime = ctime(&modTime);
 	
 	//build stats string
-	
+  char fcTime[strlen(cTime)];
+  char fmTime[strlen(mTime)];
+  strncpy(fcTime, cTime,strlen(cTime) - 1);
+  fcTime[strlen(cTime) - 1] = '\0';
+  strncpy(fmTime, mTime,strlen(mTime) - 1);
+  fmTime[strlen(mTime) - 1] = '\0';
 	sprintf(*buf,"%s\t%zu\t%s\t%s\t%s\n",type,size,cTime,mTime,fileName);
 }
 
@@ -201,7 +203,7 @@ int compareLog(FILE *oldLogFile, FILE *newLogFile) { //tested
 		return 0;
 }
 
-int copyFile(char *sourcePath, char *destinationPath) { //fails when given absolute path
+int copyFile(char *sourcePath, char *destinationPath) { //tested: fails when given absolute path
 	FILE *source = fopen(sourcePath, "r");
 	assert(source != NULL);
 	FILE *destination = fopen(destinationPath, "w");
@@ -218,7 +220,7 @@ int copyFile(char *sourcePath, char *destinationPath) { //fails when given absol
 	return 1;
 }
 
-int copyDir(char *sourceDir, char *backupDir) {
+int copyDir(char *sourceDir, char *backupDir) { //incomplete, depends on copyFile
 	DIR *source = opendir(sourceDir);
 	assert(source != NULL);
 	struct dirent *tempEnt;
@@ -234,13 +236,12 @@ int copyDir(char *sourceDir, char *backupDir) {
 	return 1;
 }
 
-int getNumOfBackup(char *destinationDir) {
+int getNumOfBackup(char *destinationDir) { //tested
 	DIR *destination = opendir(destinationDir);
 	assert(destination != NULL);
 	struct dirent *tempEnt;
 	int backupCount = 0;
 	while((tempEnt = readdir(destination))) {
-
 		if (!strcmp(tempEnt->d_name,".") || !strcmp(tempEnt->d_name, ".."))
 			continue;
 		if (S_ISDIR(tempEnt->d_type)) 
@@ -256,7 +257,7 @@ int removeDir(char *dirToRemove) {
 	return 0;
 }
 
-int removeOldestBackup(char *destinationDir) {
+int removeOldestBackup(char *destinationDir) { //incomplete, depends on removeDir
 	DIR *destination = opendir(destinationDir);
 	assert(destination != NULL);
 	struct dirent *tempEnt;
