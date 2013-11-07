@@ -7,7 +7,7 @@
  * Required function stub signatures
  */
 
-void createLog(char *sourceDir, char *logFilePath);
+void createLog(char *sourceDir, char *logFilePath, int level);
 int compareLog(FILE *oldLogFile, FILE *newLogFile);
 
 int copyFile(char *sourcePath, char *destinationPath);

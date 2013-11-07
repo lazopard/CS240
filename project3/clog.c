@@ -56,12 +56,15 @@ void putFStats(char *fileName, char **buf) { //tested
 	fcTime[strlen(cTime) - 1] = '\0';
 	strncpy(fmTime, mTime,strlen(mTime) - 1);
 	fmTime[strlen(mTime) - 1] = '\0';
+	//strip filename of path
+	if (strrchr(fileName,'/') != NULL) {
+		fileName = &(strrchr(fileName,'/')[1]);
+	}
 	//build stats string
 	sprintf(*buf,"%s\t%zu\t%s\t%s\t%s\n",type,size,fcTime,fmTime,fileName);
-	printf("%s\n",*buf);
 }
 
-void createLog(char *sourceDir, char *logFilePath) { //fopen does not work with path
+void createLog(char *sourceDir, char *logFilePath, int level) { //fopen does not work with path
 
 	DIR *dir = opendir(sourceDir);
 	assert(dir != NULL);
@@ -70,6 +73,7 @@ void createLog(char *sourceDir, char *logFilePath) { //fopen does not work with 
 	assert(newLog != NULL);
 	char *buffer = malloc(sizeof(char)*MAXFORMATSIZE);
 	assert(buffer != NULL);
+	int i;
 
 	while((tempEnt = readdir(dir))){ 
 		if (!strcmp(tempEnt->d_name,".") || !strcmp(tempEnt->d_name, "..")) {
@@ -80,20 +84,23 @@ void createLog(char *sourceDir, char *logFilePath) { //fopen does not work with 
 					sizeof(tempEnt->d_name) +
 					4);
 			sprintf(subDirSource,"%s/%s",sourceDir,tempEnt->d_name);
-			printf("%s\n",subDirSource);
-			createLog(subDirSource,logFilePath);
+			putFStats(subDirSource, &buffer);
+			for(i = 0; i < level;i++) 
+				fputc('\t',newLog);
+			fputs(buffer, newLog);
+			memset(buffer, '\0', MAXFORMATSIZE);
+			createLog(subDirSource,logFilePath,level + 1);
 			free(subDirSource);
 			subDirSource = NULL;
 		}
 		else {
-			printf("%s is a file\n",tempEnt->d_name);
 			char *pathToFile = malloc(sizeof(char)*strlen(tempEnt->d_name) +
 						  sizeof(char)*strlen(sourceDir) + 4); 
 			sprintf(pathToFile,"%s/%s",sourceDir,tempEnt->d_name);
-			printf("%s\n",pathToFile);
 			putFStats(pathToFile, &buffer);
+			for(i = 0; i < level;i++) 
+				fputc('\t',newLog);
 			fputs(buffer, newLog);
-			fputc('\n',newLog);
 			memset(buffer, '\0', MAXFORMATSIZE);
 
 		}
@@ -108,8 +115,7 @@ void createLog(char *sourceDir, char *logFilePath) { //fopen does not work with 
 
 int main() {
 	char *buff = malloc(sizeof(char)*100000);
-	//char *filename = "userData/empty2/seriously/kidding/LICENSE";
 	char *filename = "userData";
-	//putFStats(filename,&buff);
-	createLog(filename, "log.new");
+	createLog(filename, "log.new",0);
+	free(buff);
 }

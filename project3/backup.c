@@ -66,7 +66,7 @@ int main(int argc, char **argv) {
 
 	char *logFilePath = malloc(sizeof(char)*strlen(destDir) +
 			sizeof(char)*strlen(LOG_NEW_FILENAME) + 1);
-  sprintf(logFilePath,"%s/%s",destDir,LOG_NEW_FILENAME);
+  	sprintf(logFilePath,"%s/%s",destDir,LOG_NEW_FILENAME);
 	createLog(sourceDir,logFilePath);
 	char *oldLogFilePath = malloc(sizeof(char)*strlen(destDir) +
 			sizeof(char)*strlen(LOG_LAST_FILENAME) + 1);
