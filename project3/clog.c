@@ -3,6 +3,7 @@
 #define DESTINATION "-d"
 #define MAXBACKUPS "-m"
 #define NTYPES 2
+#define _BSD_SOURCE
 
 #include <signal.h>
 #include <stdlib.h>
@@ -57,6 +58,7 @@ void putFStats(char *fileName, char **buf) { //tested
 	fmTime[strlen(mTime) - 1] = '\0';
 	//build stats string
 	sprintf(*buf,"%s\t%zu\t%s\t%s\t%s\n",type,size,fcTime,fmTime,fileName);
+	printf("%s\n",*buf);
 }
 
 void createLog(char *sourceDir, char *logFilePath) { //fopen does not work with path
@@ -73,10 +75,10 @@ void createLog(char *sourceDir, char *logFilePath) { //fopen does not work with 
 		if (!strcmp(tempEnt->d_name,".") || !strcmp(tempEnt->d_name, "..")) {
 			continue;
 		}
-		if (S_ISDIR(tempEnt->d_type)) { 
+		if (tempEnt->d_type == DT_DIR) { 
 			char *subDirSource = malloc(sizeof(sourceDir) +  	
 					sizeof(tempEnt->d_name) +
-					2);
+					4);
 			sprintf(subDirSource,"%s/%s",sourceDir,tempEnt->d_name);
 			printf("%s\n",subDirSource);
 			createLog(subDirSource,logFilePath);
@@ -84,16 +86,18 @@ void createLog(char *sourceDir, char *logFilePath) { //fopen does not work with 
 			subDirSource = NULL;
 		}
 		else {
-			char *pathToFile = malloc(sizeof(char)*strlen(tempEnt->d_name +
-									  sizeof(char)*strlen(:
-			putFStats(tempEnt->d_name, &buffer); //needs to work with full path
+			printf("%s is a file\n",tempEnt->d_name);
+			char *pathToFile = malloc(sizeof(char)*strlen(tempEnt->d_name) +
+						  sizeof(char)*strlen(sourceDir) + 4); 
+			sprintf(pathToFile,"%s/%s",sourceDir,tempEnt->d_name);
+			printf("%s\n",pathToFile);
+			putFStats(pathToFile, &buffer);
 			fputs(buffer, newLog);
 			fputc('\n',newLog);
 			memset(buffer, '\0', MAXFORMATSIZE);
 
 		}
 	}
-
 	free(buffer);
 	buffer = NULL;
 	fclose(newLog);
@@ -104,6 +108,8 @@ void createLog(char *sourceDir, char *logFilePath) { //fopen does not work with 
 
 int main() {
 	char *buff = malloc(sizeof(char)*100000);
+	//char *filename = "userData/empty2/seriously/kidding/LICENSE";
 	char *filename = "userData";
+	//putFStats(filename,&buff);
 	createLog(filename, "log.new");
 }
