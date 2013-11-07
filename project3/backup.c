@@ -148,8 +148,8 @@ void putFStats(char *fileName, char **buf) { //tested
 	sprintf(*buf,"%s\t%zu\t%s\t%s\t%s\n",type,size,cTime,mTime,fileName);
 }
 
-void createLog(char *sourceDir, char *logFilePath) { //not tested, does not deal with adding tabs
-
+void createLog(char *sourceDir, char *logFilePath) { //not tested, does not deal with adding tabs, needs to work with
+													 //full path
 	DIR *dir = opendir(sourceDir);
 	assert(dir != NULL);
 	struct dirent *tempEnt; 
