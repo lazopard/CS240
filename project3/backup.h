@@ -7,6 +7,8 @@
  * Required function stub signatures
  */
 
+
+
 void createLog(char *sourceDir, char *logFilePath, int level);
 int compareLog(FILE *oldLogFile, FILE *newLogFile);
 
@@ -15,3 +17,5 @@ int copyDir(char *sourceDir, char *backupDir);
 
 int getNumOfBackup(char *destinationDir);
 int removeOldestBackup(char *destinationDir);
+
+void getCurrentTime(char **timeBuf);

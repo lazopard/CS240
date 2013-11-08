@@ -76,6 +76,7 @@ void createLog(char *sourceDir, char *logFilePath, int level) { //fopen does not
 	int i;
 
 	while((tempEnt = readdir(dir))){ 
+		printf("%s\n",tempEnt->d_name);
 		if (!strcmp(tempEnt->d_name,".") || !strcmp(tempEnt->d_name, "..")) {
 			continue;
 		}
@@ -85,8 +86,9 @@ void createLog(char *sourceDir, char *logFilePath, int level) { //fopen does not
 					4);
 			sprintf(subDirSource,"%s/%s",sourceDir,tempEnt->d_name);
 			putFStats(subDirSource, &buffer);
-			for(i = 0; i < level;i++) 
+			for(i = 0; i < level;i++) {
 				fputc('\t',newLog);
+			}
 			fputs(buffer, newLog);
 			memset(buffer, '\0', MAXFORMATSIZE);
 			createLog(subDirSource,logFilePath,level + 1);
@@ -98,11 +100,13 @@ void createLog(char *sourceDir, char *logFilePath, int level) { //fopen does not
 						  sizeof(char)*strlen(sourceDir) + 4); 
 			sprintf(pathToFile,"%s/%s",sourceDir,tempEnt->d_name);
 			putFStats(pathToFile, &buffer);
-			for(i = 0; i < level;i++) 
+			for(i = 0; i < level;i++) { //add right amount of tabs
 				fputc('\t',newLog);
+			}
 			fputs(buffer, newLog);
 			memset(buffer, '\0', MAXFORMATSIZE);
-
+			free(pathToFile);
+			pathToFile = NULL;
 		}
 	}
 	free(buffer);
