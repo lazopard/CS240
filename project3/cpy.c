@@ -11,7 +11,6 @@ int copyFile(char *sourcePath, char *destinationPath) { //fopen does not work wi
 	FILE *source = fopen(sourcePath, "r");
 	if (source == NULL) {
 				perror("opening source failed\n");
-				printf("source is %s\n", sourcePath);
 				return 0;
   }
 	if (strrchr(sourcePath,'/') != NULL) {
@@ -67,10 +66,20 @@ int copyDir(char *sourceDir, char *backupDir) {
 					sizeof(tempEnt->d_name) +
 					4);
 			sprintf(subDirSource,"%s/%s",sourceDir,tempEnt->d_name);
-			mkdir(subDirSource,0777);
-			copyDir(subDirSource,subDirSource);
-			free(subDirSource);
+      if (strrchr(subDirSource,'/') != NULL) {
+				subDirSource = &(strrchr(subDirSource,'/')[1]);
+     	}
+      char *pathToBackup = malloc(sizeof(char)*strlen(backupDir) +
+																sizeof(char)*strlen(subDirSource) +
+																				2);
+      sprintf(pathToBackup,"%s/%s",backupDir,subDirSource);
+			mkdir(pathToBackup,0777);
+      sprintf(subDirSource,"%s/%s",sourceDir,tempEnt->d_name);
+			copyDir(subDirSource,pathToBackup);
+			//free(subDirSource);
+      //free(pathToBackup);
 			subDirSource = NULL;
+      pathToBackup = NULL;
 		}
 		else {
 			char *pathToFile = malloc(sizeof(char)*strlen(tempEnt->d_name) +
@@ -87,7 +96,7 @@ int copyDir(char *sourceDir, char *backupDir) {
 
 int main(void) {
 	char *source = "userData";
-	char *destination = "~/CS/CS240/project3/backupDir";
-	//copyDir(source,destination);
-	copyFile("backup.c",destination);
+	char *destination = "/home/adminuser/CS/CS240/project3/backupDir";
+	copyDir(source,destination);
+	//copyFile("backup.c",destination);
 }
