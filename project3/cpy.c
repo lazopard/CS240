@@ -60,7 +60,6 @@ int copyDir(char *sourceDir, char *backupDir) {
 	while((tempEnt = readdir(source))) {
 		if (!strcmp(tempEnt->d_name,".") || !strcmp(tempEnt->d_name, ".."))
 			continue;
-
 		if (tempEnt->d_type == DT_DIR) {
 			char *subDirSource = malloc(sizeof(sourceDir) +
 					sizeof(tempEnt->d_name) +
@@ -88,8 +87,6 @@ int copyDir(char *sourceDir, char *backupDir) {
 
 			copyFile(pathToFile,backupDir);
 		}
-
-
 	}
 	return 1;
 }
