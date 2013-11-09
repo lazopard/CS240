@@ -20,11 +20,11 @@
 const char *weekdays[] = { "Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"};
 
 const char *months[] = { "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep",
-								"Oct", "Nov", "Dec"};
+	"Oct", "Nov", "Dec"};
 int main(int argc, char **argv) {
-	
+
 	/* Arguments processing */
-	
+
 	char *sourceDir, *destDir;
 	int foundS, foundDest, foundMaxB, i, maxB;
 
@@ -68,7 +68,7 @@ int main(int argc, char **argv) {
 
 	char *logFilePath = malloc(sizeof(char)*strlen(destDir) +
 			sizeof(char)*strlen(LOG_NEW_FILENAME) + 1);
-  	sprintf(logFilePath,"%s/%s",destDir,LOG_NEW_FILENAME);
+	sprintf(logFilePath,"%s/%s",destDir,LOG_NEW_FILENAME);
 	createLog(sourceDir,logFilePath,0);
 	char *oldLogFilePath = malloc(sizeof(char)*strlen(destDir) +
 			sizeof(char)*strlen(LOG_LAST_FILENAME) + 2);
@@ -87,10 +87,11 @@ int main(int argc, char **argv) {
 
 	else {
 		char *backupPath = malloc(sizeof(char)*strlen(destDir) + 
-					sizeof(char)*TIMELENGTH);
+				sizeof(char)*TIMELENGTH);
 		char *currentTime = malloc(sizeof(char)*TIMELENGTH);
 		getCurrentTime(&currentTime);
 		sprintf(backupPath,"%s/%s",destDir,currentTime);
+		mkdir(backupPath,0777);
 		if (!copyDir(sourceDir,backupPath)) {
 			perror("Copying the directory failed.\n");
 			return 0;
@@ -355,14 +356,14 @@ int removeOldestBackup(char *destinationDir) {
 	time_t min = 99999999;
 	char *dirToRemove;
 	while((tempEnt = readdir(destination))) { //find oldest backup
-			
+
 		if (!strcmp(tempEnt->d_name,".") || strcmp(tempEnt->d_name,"..")) {
 			continue;
 		}
 		if (tempEnt->d_type == DT_DIR) {
 			struct stat fileStats;
 			char *currentDir = malloc(sizeof(char)*strlen(tempEnt->d_name) +
-						+ sizeof(char)*strlen(destinationDir) + 2);
+					+ sizeof(char)*strlen(destinationDir) + 2);
 			sprintf(currentDir,"%s/%s",tempEnt->d_name, destinationDir);
 			assert(!stat(currentDir,&fileStats));	if (fileStats.st_ctime < min) {
 				min = fileStats.st_ctime;

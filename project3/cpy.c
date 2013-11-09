@@ -1,19 +1,36 @@
 #include <assert.h>
 #include <stdio.h>
+#include <unistd.h>
 #include <stdlib.h> 
+#include <string.h>
+#include <dirent.h>
+#include <sys/stat.h>
 
-int copyFile(char *sourcePath, char *destinationPath) {
+int copyFile(char *sourcePath, char *destinationPath) { //fopen does not work with full path
 	FILE *source = fopen(sourcePath, "r");
 	assert(source != NULL);
-	FILE *destination = fopen(destinationPath, "w");
-	assert(destination != NULL);
+	if (strrchr(sourcePath,'/') != NULL) {
+				sourcePath = &(strrchr(sourcePath,'/')[1]);
+	}
+	char *fileToCopy = malloc(sizeof(char)*strlen(destinationPath) +
+						sizeof(char)*strlen(sourcePath) + 2);
+	sprintf(fileToCopy,"%s/%s",destinationPath,sourcePath);
+	FILE *destination = fopen(fileToCopy, "w");
+	if (destination == NULL) {
+		perror("opening destination failed\n");
+		return 0;
+	}
 	char c;
 	while((c = fgetc(source)) != EOF) {
 		if ((fputc(c,destination)) == EOF) {
-			printf("write to %s failed, function copyFile", destinationPath);
+			printf("write to %s failed, function copyFile", fileToCopy);
+			free(fileToCopy);
+			fclose(source);
+			fclose(destination);
 			return 0;
 		}
 	}
+	free(fileToCopy);
 	fclose(source);
 	fclose(destination);
 	return 1;
@@ -33,7 +50,6 @@ int copyDir(char *sourceDir, char *backupDir) {
 	assert(source != NULL);
 	struct dirent *tempEnt;
 	while((tempEnt = readdir(source))) {
-
 		if (!strcmp(tempEnt->d_name,".") || !strcmp(tempEnt->d_name, ".."))
 			continue;
 
@@ -42,7 +58,8 @@ int copyDir(char *sourceDir, char *backupDir) {
 					sizeof(tempEnt->d_name) +
 					4);
 			sprintf(subDirSource,"%s/%s",sourceDir,tempEnt->d_name);
-			copyDir(subDirSource,backupDir);
+			mkdir(subDirSource,0777);
+			copyDir(subDirSource,subDirSource);
 			free(subDirSource);
 			subDirSource = NULL;
 		}
@@ -50,7 +67,8 @@ int copyDir(char *sourceDir, char *backupDir) {
 			char *pathToFile = malloc(sizeof(char)*strlen(tempEnt->d_name) +
 					sizeof(char)*strlen(sourceDir) + 4);
 			sprintf(pathToFile,"%s/%s",sourceDir,tempEnt->d_name);
-			copyFile(pathToFile,backupDir)
+
+			copyFile(pathToFile,backupDir);
 		}
 
 
@@ -59,8 +77,8 @@ int copyDir(char *sourceDir, char *backupDir) {
 }
 
 int main(void) {
-	char *source = "backup.c";
-	char *destination = "newBackup.c";
-	(compareLog(fopen(source, "r"), fopen(destination, "r"))) ? printf("copyFile succeded\n") : printf("copyFile failed\n");
-	return 0;
+	char *source = "userData";
+	char *destination = "~/CS240/project3/backupDir";
+	//copyDir(source,destination);
+	copyFile("backup.c",destination);
 }
