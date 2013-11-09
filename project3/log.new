@@ -1,15 +1,19 @@
-			DT_REG	417	Thu Nov  7 14:39:32 2013	Thu Nov  7 14:39:32 2013	LICENSE
-			DT_REG	41094	Tue Nov  5 13:40:48 2013	Tue Nov  5 13:40:48 2013	arribba.wav
-		DT_DIR	4096	Thu Nov  7 15:42:24 2013	Thu Nov  7 15:42:24 2013	kidding
-	DT_DIR	4096	Tue Nov  5 13:40:48 2013	Tue Nov  5 13:40:48 2013	seriously
-		DT_REG	32	Tue Nov  5 13:40:48 2013	Tue Nov  5 13:40:48 2013	backup.c
-	DT_DIR	4096	Tue Nov  5 13:40:48 2013	Tue Nov  5 13:40:48 2013	solution
-	DT_REG	548	Tue Nov  5 13:40:48 2013	Tue Nov  5 13:40:48 2013	hello.s
-	DT_REG	83	Tue Nov  5 13:40:48 2013	Tue Nov  5 13:40:48 2013	hello.c
-	DT_REG	89554	Tue Nov  5 13:40:48 2013	Tue Nov  5 13:40:48 2013	essay.docx
-	DT_REG	164200	Tue Nov  5 13:40:48 2013	Tue Nov  5 13:40:48 2013	essay.pdf
-DT_DIR	4096	Tue Nov  5 13:40:48 2013	Tue Nov  5 13:40:48 2013	empty2
-DT_REG	10072	Tue Nov  5 13:40:48 2013	Tue Nov  5 13:40:48 2013	in-class journal.jnt
-DT_DIR	4096	Tue Nov  5 13:40:48 2013	Tue Nov  5 13:40:48 2013	cs240
-DT_DIR	4096	Thu Nov  7 14:51:12 2013	Thu Nov  7 14:51:12 2013	engl106
-DT_REG	55796	Tue Nov  5 13:40:48 2013	Tue Nov  5 13:40:48 2013	boss.jpg
+			DT_DIR	4096	Sat Oct 12 18:55:30 2013	Sat Oct 12 18:55:30 2013	real-empty
+			DT_REG	41094	Fri Oct  4 23:59:02 2013	Fri Oct  4 23:59:02 2013	arribba.wav
+			DT_REG	417	Fri Nov  8 11:41:47 2013	Fri Nov  8 11:41:47 2013	LICENSE
+		DT_DIR	4096	Fri Nov  8 11:41:47 2013	Fri Nov  8 11:41:47 2013	kidding
+	DT_DIR	4096	Sat Oct 19 00:01:46 2013	Sat Oct 19 00:01:46 2013	seriously
+	DT_REG	89554	Fri Oct  4 23:38:24 2013	Fri Oct  4 23:38:24 2013	essay.docx
+	DT_REG	164200	Fri Oct  4 23:56:38 2013	Fri Oct  4 23:56:38 2013	essay.pdf
+	DT_DIR	4096	Sat Oct 12 18:55:30 2013	Sat Oct 12 18:55:30 2013	Empty
+		DT_REG	32	Fri Oct  4 23:52:20 2013	Fri Oct  4 23:52:20 2013	backup.c
+	DT_DIR	4096	Sat Oct 19 00:01:46 2013	Sat Oct 19 00:01:46 2013	solution
+	DT_REG	83	Fri Oct  4 23:39:34 2013	Fri Oct  4 23:39:34 2013	hello.c
+	DT_REG	90096	Fri Oct  4 23:40:40 2013	Fri Oct  4 23:40:40 2013	hello.exe
+	DT_REG	548	Fri Oct  4 23:40:44 2013	Fri Oct  4 23:40:44 2013	hello.s
+DT_DIR	4096	Sat Oct 19 00:01:46 2013	Sat Oct 19 00:01:46 2013	empty2
+DT_DIR	4096	Sat Oct 19 00:01:46 2013	Sat Oct 19 00:01:46 2013	engl106
+DT_DIR	4096	Sat Oct 19 00:01:46 2013	Sat Oct 19 00:01:46 2013	empty
+DT_REG	55796	Sat Feb  4 23:46:22 2012	Sat Feb  4 23:46:22 2012	boss.jpg
+DT_REG	10072	Fri Oct  4 23:43:54 2013	Fri Oct  4 23:43:54 2013	in-class journal.jnt
+DT_DIR	4096	Wed Oct 23 00:14:04 2013	Wed Oct 23 00:14:04 2013	cs240

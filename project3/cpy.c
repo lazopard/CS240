@@ -1,4 +1,5 @@
-#include <assert.h>
+#define _BSD_SOURCE
+
 #include <stdio.h>
 #include <unistd.h>
 #include <stdlib.h> 
@@ -8,7 +9,11 @@
 
 int copyFile(char *sourcePath, char *destinationPath) { //fopen does not work with full path
 	FILE *source = fopen(sourcePath, "r");
-	assert(source != NULL);
+	if (source == NULL) {
+				perror("opening source failed\n");
+				printf("source is %s\n", sourcePath);
+				return 0;
+  }
 	if (strrchr(sourcePath,'/') != NULL) {
 				sourcePath = &(strrchr(sourcePath,'/')[1]);
 	}
@@ -17,13 +22,14 @@ int copyFile(char *sourcePath, char *destinationPath) { //fopen does not work wi
 	sprintf(fileToCopy,"%s/%s",destinationPath,sourcePath);
 	FILE *destination = fopen(fileToCopy, "w");
 	if (destination == NULL) {
-		perror("opening destination failed\n");
+		perror("opening failed\n");
+    printf("destination is %s\n", fileToCopy);
 		return 0;
 	}
 	char c;
 	while((c = fgetc(source)) != EOF) {
 		if ((fputc(c,destination)) == EOF) {
-			printf("write to %s failed, function copyFile", fileToCopy);
+			perror("write to file failed, function copyFile");
 			free(fileToCopy);
 			fclose(source);
 			fclose(destination);
@@ -47,7 +53,10 @@ int compareLog(FILE *oldLogFile, FILE *newLogFile) {
 
 int copyDir(char *sourceDir, char *backupDir) { 
 	DIR *source = opendir(sourceDir);
-	assert(source != NULL);
+	if (source == NULL) {
+				perror("opendir failed, function copyDir");
+				return 0;
+  }
 	struct dirent *tempEnt;
 	while((tempEnt = readdir(source))) {
 		if (!strcmp(tempEnt->d_name,".") || !strcmp(tempEnt->d_name, ".."))
@@ -78,7 +87,7 @@ int copyDir(char *sourceDir, char *backupDir) {
 
 int main(void) {
 	char *source = "userData";
-	char *destination = "~/CS240/project3/backupDir";
+	char *destination = "~/CS/CS240/project3/backupDir";
 	//copyDir(source,destination);
 	copyFile("backup.c",destination);
 }
