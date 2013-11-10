@@ -13,8 +13,7 @@
 #include "string.h"
 #include "backup.h"
 #include <dirent.h>
-#include <assert.h>
-
+#include <assert.h> 
 void putFStats(char *fileName, char **buf) { //tested
 
 	struct stat fileStats;
@@ -79,7 +78,6 @@ void createLog(char *sourceDir, char *logFilePath, int level) {
 	int i;
 
 	while((tempEnt = readdir(dir))){ 
-		printf("%s\n",tempEnt->d_name);
 		if (!strcmp(tempEnt->d_name,".") || !strcmp(tempEnt->d_name, "..")) {
 			continue;
 		}
@@ -141,15 +139,15 @@ void createLog2(char *sourceDir, char *logFilePath, int level) {
 	n = scandir(sourceDir, &dirList, skipWdPd, alphasort); //filter working and parent dirs
 
 	if (n < 0)
-		perror("directory empty");
+		perror("scandir failed");
 	else {
 		while (n--) {	
 
-			if (dirList[i]->d_type == DT_DIR) { 
+			if (dirList[n]->d_type == DT_DIR) { 
 				char *subDirSource = malloc(sizeof(sourceDir) +  	
-						sizeof(dirList[i]->d_name) +
+						sizeof(dirList[n]->d_name) +
 						4);
-				sprintf(subDirSource,"%s/%s",sourceDir,dirList[i]->d_name);
+				sprintf(subDirSource,"%s/%s",sourceDir,dirList[n]->d_name);
 				putFStats(subDirSource, &buffer);
 				for(i = 0; i < level;i++) {
 					fputc('\t',newLog);
@@ -158,13 +156,14 @@ void createLog2(char *sourceDir, char *logFilePath, int level) {
 				memset(buffer, '\0', MAXFORMATSIZE);
 				createLog(subDirSource,logFilePath,level + 1);
 				free(subDirSource);
+				free(dirList[n]);
 				subDirSource = NULL;
 			}
 
 			else {
-				char *pathToFile = malloc(sizeof(char)*strlen(dirList[i]->d_name) +
+				char *pathToFile = malloc(sizeof(char)*strlen(dirList[n]->d_name) +
 						sizeof(char)*strlen(sourceDir) + 4); 
-				sprintf(pathToFile,"%s/%s",sourceDir,dirList[i]->d_name);
+				sprintf(pathToFile,"%s/%s",sourceDir,dirList[n]->d_name);
 				putFStats(pathToFile, &buffer);
 				for(i = 0; i < level;i++) { //add right amount of tabs
 					fputc('\t',newLog);
@@ -176,6 +175,7 @@ void createLog2(char *sourceDir, char *logFilePath, int level) {
 			}
 
 		}
+				free(dirList);
 	}
 	free(buffer);
 	buffer = NULL;
