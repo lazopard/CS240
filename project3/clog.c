@@ -14,6 +14,7 @@
 #include "backup.h"
 #include <dirent.h>
 #include <assert.h> 
+
 void putFStats(char *fileName, char **buf) { //tested
 
 	struct stat fileStats;
@@ -63,69 +64,24 @@ void putFStats(char *fileName, char **buf) { //tested
 	sprintf(*buf,"%s\t%zu\t%s\t%s\t%s\n",type,size,fcTime,fmTime,fileName);
 }
 
-void createLog(char *sourceDir, char *logFilePath, int level) {
 
-	DIR *dir = opendir(sourceDir);
-	assert(dir != NULL);
-	struct dirent *tempEnt; 
-	FILE *newLog = fopen(logFilePath, "a");
-	if (newLog == NULL) {
-		perror("fopen failed opening logFilePath, function newLog");
-		return;
-	}
-	char *buffer = malloc(sizeof(char)*MAXFORMATSIZE);
-	assert(buffer != NULL);
-	int i;
-
-	while((tempEnt = readdir(dir))){ 
-		if (!strcmp(tempEnt->d_name,".") || !strcmp(tempEnt->d_name, "..")) {
-			continue;
-		}
-		if (tempEnt->d_type == DT_DIR) { 
-			char *subDirSource = malloc(sizeof(sourceDir) +  	
-					sizeof(tempEnt->d_name) +
-					4);
-			sprintf(subDirSource,"%s/%s",sourceDir,tempEnt->d_name);
-			putFStats(subDirSource, &buffer);
-			for(i = 0; i < level;i++) {
-				fputc('\t',newLog);
-			}
-			fputs(buffer, newLog);
-			memset(buffer, '\0', MAXFORMATSIZE);
-			createLog(subDirSource,logFilePath,level + 1);
-			free(subDirSource);
-			subDirSource = NULL;
-		}
-		else {
-			char *pathToFile = malloc(sizeof(char)*strlen(tempEnt->d_name) +
-					sizeof(char)*strlen(sourceDir) + 4); 
-			sprintf(pathToFile,"%s/%s",sourceDir,tempEnt->d_name);
-			putFStats(pathToFile, &buffer);
-			for(i = 0; i < level;i++) { //add right amount of tabs
-				fputc('\t',newLog);
-			}
-			fputs(buffer, newLog);
-			memset(buffer, '\0', MAXFORMATSIZE);
-			free(pathToFile);
-			pathToFile = NULL;
-		}
-	}
-	free(buffer);
-	buffer = NULL;
-	fclose(newLog);
-	newLog = NULL;
-	closedir(dir);
-	dir = NULL;
-}
 
 int skipWdPd(const struct dirent *dir) {
 	 return !(!strcmp(dir->d_name,".") || !strcmp(dir->d_name, ".."));
 }
 
-void createLog2(char *sourceDir, char *logFilePath, int level) {
+
+void createLog(char *sourceDir, char *logFilePath, int level) {
 
 	struct dirent **dirList;
-	FILE *newLog = fopen(logFilePath, "a");
+	FILE *newLog;
+	 if (level == 0) {
+		newLog = fopen(logFilePath,"w+");	
+	}
+	else {
+		newLog = fopen(logFilePath, "a");
+	}
+	
 	char *buffer = malloc(sizeof(char)*MAXFORMATSIZE);
 	assert(buffer != NULL);
 
@@ -142,25 +98,31 @@ void createLog2(char *sourceDir, char *logFilePath, int level) {
 		perror("scandir failed");
 	else {
 		while (n--) {	
-
-			if (dirList[n]->d_type == DT_DIR) { 
+			fprintf(stderr,"d_type is %d\n",dirList[n]->d_type);
+			if (((int)dirList[n]->d_type) == ((int) DT_DIR)) { 
 				char *subDirSource = malloc(sizeof(sourceDir) +  	
 						sizeof(dirList[n]->d_name) +
 						4);
 				sprintf(subDirSource,"%s/%s",sourceDir,dirList[n]->d_name);
+				printf("subDirSource is %s\n",subDirSource);
 				putFStats(subDirSource, &buffer);
 				for(i = 0; i < level;i++) {
 					fputc('\t',newLog);
 				}
+				printf("buffer is %s\n",buffer);
 				fputs(buffer, newLog);
 				memset(buffer, '\0', MAXFORMATSIZE);
+				printf("subDirSource is %s, logfilePath is %s, %d\n",subDirSource, logFilePath, level);
+				fclose(newLog);
 				createLog(subDirSource,logFilePath,level + 1);
+				newLog = fopen(logFilePath, "a");
 				free(subDirSource);
 				free(dirList[n]);
 				subDirSource = NULL;
 			}
 
 			else {
+				printf("dirList[n] is a file, name: %s\n",dirList[n]->d_name);
 				char *pathToFile = malloc(sizeof(char)*strlen(dirList[n]->d_name) +
 						sizeof(char)*strlen(sourceDir) + 4); 
 				sprintf(pathToFile,"%s/%s",sourceDir,dirList[n]->d_name);
@@ -168,14 +130,14 @@ void createLog2(char *sourceDir, char *logFilePath, int level) {
 				for(i = 0; i < level;i++) { //add right amount of tabs
 					fputc('\t',newLog);
 				}
+				printf("buffer is %s\n",buffer);
 				fputs(buffer, newLog);
 				memset(buffer, '\0', MAXFORMATSIZE);
 				free(pathToFile);
 				pathToFile = NULL;
 			}
-
 		}
-				free(dirList);
+		free(dirList);
 	}
 	free(buffer);
 	buffer = NULL;
@@ -186,6 +148,6 @@ void createLog2(char *sourceDir, char *logFilePath, int level) {
 int main() {
 	char *buff = malloc(sizeof(char)*100000);
 	char *filename = "userData";
-	createLog2(filename, "log.new",0);
+	createLog(filename, "log.new",0);
 	free(buff);
 }

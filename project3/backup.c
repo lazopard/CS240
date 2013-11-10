@@ -8,8 +8,8 @@
 #define NTYPES 2
 #define _BSD_SOURCE
 
-#include <signal.h>
 #include <limits.h>
+#include <signal.h>
 #include <stdlib.h>
 #include <stdio.h>
 #include <time.h>
@@ -65,26 +65,48 @@ int main(int argc, char **argv) {
 
 	/* Arguments processing end */
 
-	char *logFilePath = malloc(sizeof(char)*strlen(destDir) +
+	char *newLogFilePath = malloc(sizeof(char)*strlen(destDir) + //create new log
 			sizeof(char)*strlen(LOG_NEW_FILENAME) + 1);
-	sprintf(logFilePath,"%s/%s",destDir,LOG_NEW_FILENAME);
-	createLog(sourceDir,logFilePath,0);
+	sprintf(newLogFilePath,"%s/%s",destDir,LOG_NEW_FILENAME);
+	createLog(sourceDir,newLogFilePath,0);
 	char *oldLogFilePath = malloc(sizeof(char)*strlen(destDir) +
 			sizeof(char)*strlen(LOG_LAST_FILENAME) + 2);
 	sprintf(oldLogFilePath,"%s/%s",destDir,LOG_LAST_FILENAME);
-	FILE *newLog = fopen(logFilePath,"r");
-	assert(newLog != NULL);
-	FILE *oldLog = fopen(oldLogFilePath,"r");
-	assert(oldLog != NULL);
+	FILE *newLog = fopen(newLogFilePath,"r");
 
-	if (!compareLog(newLog, oldLog)) {
-		//replace LOG_LAST_FILENAME with LOG_NEW_FILENAME
+	if (newLog == NULL) {
+		perror("fopen failed");
+		printf(" trying to open %s\n",newLogFilePath);
+		return 0;
+	}
+	FILE *oldLog = fopen(oldLogFilePath,"r");
+	if (oldLog == NULL) {
+		perror("fopen failed");
+		printf(" trying to open %s\n",oldLogFilePath);
+		return 0;
+	}
+
+	if (!compareLog(newLog, oldLog)) { //if they are the same, just rename log.new
+		fclose(oldLog);
+		fclose(newLog);
+		remove(oldLogFilePath);
+		rename(newLogFilePath, oldLogFilePath);
+		free(newLogFilePath);
+		free(oldLogFilePath);
+		newLogFilePath = NULL;
+		oldLogFilePath = NULL;
 		return 1;
 	}
 
-	//replace LOG_LAST_FILENAME with LOG_NEW_FILENAME
-
-	else {
+	else { //if there is any change, create a new backup
+		fclose(oldLog);
+		fclose(newLog);
+		remove(oldLogFilePath);
+		rename(newLogFilePath, oldLogFilePath);
+		free(newLogFilePath);
+		free(oldLogFilePath);
+		newLogFilePath = NULL;
+		oldLogFilePath = NULL;
 		char *backupPath = malloc(sizeof(char)*strlen(destDir) + 
 				sizeof(char)*TIMELENGTH);
 		char *currentTime = malloc(sizeof(char)*TIMELENGTH);
@@ -95,17 +117,19 @@ int main(int argc, char **argv) {
 			perror("Copying the directory failed.\n");
 			return 0;
 		}
+		free(backupPath);
+		backupPath = NULL;
+		free(currentTime);
+		currentTime = NULL;
 	}
 
+	//check number of backups, removeOldest if neccesary
 	if (getNumOfBackup(destDir) > maxB) {
 		if(!removeOldestBackup(destDir)) {
 			perror("Removing oldest backup failed.\n");
 			return 0;
 		}
 	}
-
-	fclose(newLog);
-	fclose(oldLog);
 
 	return 1;
 }
@@ -182,10 +206,18 @@ void putFStats(char *fileName, char **buf) { //tested
 void createLog(char *sourceDir, char *logFilePath, int level) { //formatting terribly wrong
 
 	DIR *dir = opendir(sourceDir);
-	assert(dir != NULL);
+	if(dir != NULL) {
+		perror("failed to open");
+		printf("%s\n",sourceDir);
+		abort();
+	}
 	struct dirent *tempEnt; 
-	FILE *newLog = fopen(logFilePath, "a");
-	assert(newLog != NULL);
+	FILE *newLog = fopen(logFilePath, "w+");
+	if (newLog == NULL) {
+		perror("fopen failed at opening ");
+		printf("%s at createLog\n",logFilePath);
+		abort();
+	}
 	char *buffer = malloc(sizeof(char)*MAXFORMATSIZE);
 	assert(buffer != NULL);
 	int i;
@@ -334,7 +366,7 @@ int copyDir(char *sourceDir, char *backupDir) { //tested, does not free memory
 //get number of backups on destinationDir
 
 int getNumOfBackup(char *destinationDir) { // I make the assumption that every dir in 
-										  // destinationDir is a backup
+	// destinationDir is a backup
 
 	DIR *destination = opendir(destinationDir);
 	assert(destination != NULL);
