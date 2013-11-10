@@ -64,13 +64,16 @@ void putFStats(char *fileName, char **buf) { //tested
 	sprintf(*buf,"%s\t%zu\t%s\t%s\t%s\n",type,size,fcTime,fmTime,fileName);
 }
 
-void createLog(char *sourceDir, char *logFilePath, int level) { //fopen does not work with path
+void createLog(char *sourceDir, char *logFilePath, int level) {
 
 	DIR *dir = opendir(sourceDir);
 	assert(dir != NULL);
 	struct dirent *tempEnt; 
 	FILE *newLog = fopen(logFilePath, "a");
-	assert(newLog != NULL);
+	if (newLog == NULL) {
+		perror("fopen failed opening logFilePath, function newLog");
+		return;
+	}
 	char *buffer = malloc(sizeof(char)*MAXFORMATSIZE);
 	assert(buffer != NULL);
 	int i;
@@ -97,7 +100,7 @@ void createLog(char *sourceDir, char *logFilePath, int level) { //fopen does not
 		}
 		else {
 			char *pathToFile = malloc(sizeof(char)*strlen(tempEnt->d_name) +
-						  sizeof(char)*strlen(sourceDir) + 4); 
+					sizeof(char)*strlen(sourceDir) + 4); 
 			sprintf(pathToFile,"%s/%s",sourceDir,tempEnt->d_name);
 			putFStats(pathToFile, &buffer);
 			for(i = 0; i < level;i++) { //add right amount of tabs
@@ -117,9 +120,72 @@ void createLog(char *sourceDir, char *logFilePath, int level) { //fopen does not
 	dir = NULL;
 }
 
+int skipWdPd(const struct dirent *dir) {
+	 return !(!strcmp(dir->d_name,".") || !strcmp(dir->d_name, ".."));
+}
+
+void createLog2(char *sourceDir, char *logFilePath, int level) {
+
+	struct dirent **dirList;
+	FILE *newLog = fopen(logFilePath, "a");
+	char *buffer = malloc(sizeof(char)*MAXFORMATSIZE);
+	assert(buffer != NULL);
+
+	if (newLog == NULL) {
+		perror("fopen failed opening logFilePath, function newLog");
+		return;
+	}
+
+	int n, i;
+
+	n = scandir(sourceDir, &dirList, skipWdPd, alphasort); //filter working and parent dirs
+
+	if (n < 0)
+		perror("directory empty");
+	else {
+		while (n--) {	
+
+			if (dirList[i]->d_type == DT_DIR) { 
+				char *subDirSource = malloc(sizeof(sourceDir) +  	
+						sizeof(dirList[i]->d_name) +
+						4);
+				sprintf(subDirSource,"%s/%s",sourceDir,dirList[i]->d_name);
+				putFStats(subDirSource, &buffer);
+				for(i = 0; i < level;i++) {
+					fputc('\t',newLog);
+				}
+				fputs(buffer, newLog);
+				memset(buffer, '\0', MAXFORMATSIZE);
+				createLog(subDirSource,logFilePath,level + 1);
+				free(subDirSource);
+				subDirSource = NULL;
+			}
+
+			else {
+				char *pathToFile = malloc(sizeof(char)*strlen(dirList[i]->d_name) +
+						sizeof(char)*strlen(sourceDir) + 4); 
+				sprintf(pathToFile,"%s/%s",sourceDir,dirList[i]->d_name);
+				putFStats(pathToFile, &buffer);
+				for(i = 0; i < level;i++) { //add right amount of tabs
+					fputc('\t',newLog);
+				}
+				fputs(buffer, newLog);
+				memset(buffer, '\0', MAXFORMATSIZE);
+				free(pathToFile);
+				pathToFile = NULL;
+			}
+
+		}
+	}
+	free(buffer);
+	buffer = NULL;
+	fclose(newLog);
+	newLog = NULL;
+}
+
 int main() {
 	char *buff = malloc(sizeof(char)*100000);
 	char *filename = "userData";
-	createLog(filename, "log.new",0);
+	createLog2(filename, "log.new",0);
 	free(buff);
 }

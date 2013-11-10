@@ -191,6 +191,7 @@ void createLog(char *sourceDir, char *logFilePath, int level) { //formatting ter
 	int i;
 
 	while((tempEnt = readdir(dir))){ 
+
 		if (!strcmp(tempEnt->d_name,".") || !strcmp(tempEnt->d_name, "..")) {
 			continue;
 		}
@@ -208,6 +209,7 @@ void createLog(char *sourceDir, char *logFilePath, int level) { //formatting ter
 			free(subDirSource);
 			subDirSource = NULL;
 		}
+
 		else {
 			char *pathToFile = malloc(sizeof(char)*strlen(tempEnt->d_name) +
 					sizeof(char)*strlen(sourceDir) + 4); 
@@ -220,6 +222,7 @@ void createLog(char *sourceDir, char *logFilePath, int level) { //formatting ter
 
 		}
 	}
+
 	free(buffer);
 	buffer = NULL;
 	fclose(newLog);
@@ -251,6 +254,7 @@ int copyFile(char *sourcePath, char *destinationPath) { //tested
 	if (strrchr(sourcePath,'/') != NULL) {
 		sourcePath = &(strrchr(sourcePath,'/')[1]);
 	}
+
 	char *fileToCopy = malloc(sizeof(char)*strlen(destinationPath) +
 			sizeof(char)*strlen(sourcePath) + 2);
 	sprintf(fileToCopy,"%s/%s",destinationPath,sourcePath);
@@ -260,6 +264,8 @@ int copyFile(char *sourcePath, char *destinationPath) { //tested
 		printf("destination is %s\n", fileToCopy);
 		return 0;
 	}
+
+	//copy a byte at a time
 	char c;
 	while((c = fgetc(source)) != EOF) {
 		if ((fputc(c,destination)) == EOF) {
@@ -270,6 +276,7 @@ int copyFile(char *sourcePath, char *destinationPath) { //tested
 			return 0;
 		}
 	}
+
 	free(fileToCopy);
 	fclose(source);
 	fclose(destination);
@@ -286,10 +293,12 @@ int copyDir(char *sourceDir, char *backupDir) { //tested, does not free memory
 		return 0;
 	}
 	struct dirent *tempEnt;
+
 	while((tempEnt = readdir(source))) {
 		if (!strcmp(tempEnt->d_name,".") || !strcmp(tempEnt->d_name, ".."))
 			continue;
-		if (tempEnt->d_type == DT_DIR) {
+
+		if (tempEnt->d_type == DT_DIR) { // if dir mkdir in backupDir, and copyDir on it 
 			char *subDirSource = malloc(sizeof(sourceDir) +
 					sizeof(tempEnt->d_name) +
 					4);
@@ -309,7 +318,8 @@ int copyDir(char *sourceDir, char *backupDir) { //tested, does not free memory
 			subDirSource = NULL;
 			pathToBackup = NULL;
 		}
-		else {
+
+		else { //if file, copy
 			char *pathToFile = malloc(sizeof(char)*strlen(tempEnt->d_name) +
 					sizeof(char)*strlen(sourceDir) + 4);
 			sprintf(pathToFile,"%s/%s",sourceDir,tempEnt->d_name);
@@ -317,13 +327,14 @@ int copyDir(char *sourceDir, char *backupDir) { //tested, does not free memory
 			copyFile(pathToFile,backupDir);
 		}
 	}
-	return 1;
 
+	return 1;
 }
 
 //get number of backups on destinationDir
 
-int getNumOfBackup(char *destinationDir) { //tested
+int getNumOfBackup(char *destinationDir) { // I make the assumption that every dir in 
+										  // destinationDir is a backup
 
 	DIR *destination = opendir(destinationDir);
 	assert(destination != NULL);
@@ -331,7 +342,7 @@ int getNumOfBackup(char *destinationDir) { //tested
 	while((tempEnt = readdir(destination))) {
 		if (!strcmp(tempEnt->d_name,".") || !strcmp(tempEnt->d_name, ".."))
 			continue;
-		if(tempEnt->d_type == DT_DIR)
+		if(tempEnt->d_type == DT_DIR) 
 			backupCount++;
 	}
 
@@ -352,11 +363,12 @@ int clearDir(char *pathToDir) { //tested
 
 	struct dirent *tempEnt;
 
-	while((tempEnt = readdir(dir))){
+	while((tempEnt = readdir(dir))){ //if file remove, if dir clearDir and remove
 
 		if (!strcmp(tempEnt->d_name,".") || !strcmp(tempEnt->d_name, "..")) {
 			continue;
 		}
+
 		if (tempEnt->d_type == DT_DIR) {
 			char *subDirSource = malloc(sizeof(pathToDir) +
 					sizeof(tempEnt->d_name) +
@@ -367,6 +379,7 @@ int clearDir(char *pathToDir) { //tested
 			free(subDirSource);
 			subDirSource = NULL;
 		}
+
 		else {
 			char *pathToFile = malloc(sizeof(char)*strlen(tempEnt->d_name) +
 					sizeof(char)*strlen(pathToDir) + 4);
@@ -375,6 +388,7 @@ int clearDir(char *pathToDir) { //tested
 			free(pathToFile);
 			pathToFile = NULL;
 		}
+
 	}
 	closedir(dir);
 	dir = NULL;
@@ -391,6 +405,7 @@ int removeOldestBackup(char *destinationDir) { //tested
 	struct dirent *tempEnt;
 	time_t min = LONG_MAX;
 	char *dirToRemove = malloc(sizeof(char)*MAXPATHLEN);
+
 	while((tempEnt = readdir(destination))) { //find oldest backup
 		if (!strcmp(tempEnt->d_name,".") || !strcmp(tempEnt->d_name,"..")) {
 			continue;
@@ -413,9 +428,8 @@ int removeOldestBackup(char *destinationDir) { //tested
 			currentDir = NULL;
 		}
 	}
-	printf("dirToRemove is %s\n",dirToRemove);
 
-	if (!clearDir(dirToRemove)) {
+	if (!clearDir(dirToRemove)) { //remove every file inside the directory
 		perror("clearDir failed\n");
 		return 0;
 	}
@@ -423,6 +437,7 @@ int removeOldestBackup(char *destinationDir) { //tested
 		perror("rmdir failed\n");
 		return 0;
 	}
+
 	free(dirToRemove);
 	closedir(destination);
 	return 1;
