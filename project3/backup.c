@@ -1,3 +1,4 @@
+#define MAXDATE 9999999
 #define TIMELENGTH 19
 #define MAXFORMATSIZE 120
 #define SOURCE "-s"
@@ -17,10 +18,6 @@
 #include <assert.h>
 #include <unistd.h>
 
-const char *weekdays[] = { "Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"};
-
-const char *months[] = { "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep",
-				"Oct", "Nov", "Dec"};
 int main(int argc, char **argv) {
 
 				/* Arguments processing */
@@ -89,7 +86,7 @@ int main(int argc, char **argv) {
 								char *backupPath = malloc(sizeof(char)*strlen(destDir) + 
 																sizeof(char)*TIMELENGTH);
 								char *currentTime = malloc(sizeof(char)*TIMELENGTH);
-								getCurrentTime(&currentTime);
+								putCurrentTime(&currentTime);
 								sprintf(backupPath,"%s/%s",destDir,currentTime);
 								mkdir(backupPath,0777);
 								if (!copyDir(sourceDir,backupPath)) {
@@ -113,7 +110,8 @@ int main(int argc, char **argv) {
 
 //store current time with the appropiate format in timeBuff
 
-void getCurrentTime(char **timeBuf) {
+void putCurrentTime(char **timeBuf) { //tested
+
 				time_t rawtime;
 				struct tm * timeinfo;
 				time ( &rawtime );
@@ -128,7 +126,7 @@ void getCurrentTime(char **timeBuf) {
 
 //put a formatted string with the stats of a file in buff
 
-void putFStats(char *fileName, char **buf){ 
+void putFStats(char *fileName, char **buf) { //tested
 
 				struct stat fileStats;
 				assert(!stat(fileName, &fileStats));
@@ -179,7 +177,7 @@ void putFStats(char *fileName, char **buf){
 
 //create a log with the status of all the files in sourceDir
 
-void createLog(char *sourceDir, char *logFilePath, int level) {
+void createLog(char *sourceDir, char *logFilePath, int level) { //formatting terribly wrong
 
 				DIR *dir = opendir(sourceDir);
 				assert(dir != NULL);
@@ -241,7 +239,7 @@ int compareLog(FILE *oldLogFile, FILE *newLogFile) { //tested
 
 //copies a file
 
-int copyFile(char *sourcePath, char *destinationPath) {
+int copyFile(char *sourcePath, char *destinationPath) { //tested
 
 				FILE *source = fopen(sourcePath, "r");
 				if (source == NULL) {
@@ -278,7 +276,7 @@ int copyFile(char *sourcePath, char *destinationPath) {
 
 //copies a directory
 
-int copyDir(char *sourceDir, char *backupDir) {
+int copyDir(char *sourceDir, char *backupDir) { //tested, does not free memory
 
 				DIR *source = opendir(sourceDir);
 				if (source == NULL) {
@@ -324,6 +322,7 @@ int copyDir(char *sourceDir, char *backupDir) {
 //get number of backups on destinationDir
 
 int getNumOfBackup(char *destinationDir) { //tested
+
 				DIR *destination = opendir(destinationDir);
 				assert(destination != NULL);
 				struct dirent *tempEnt; int backupCount = 0;
@@ -341,7 +340,7 @@ int getNumOfBackup(char *destinationDir) { //tested
 
 //removes the oldest backup in destinationDir
 
-int clearDir(char *pathToDir) {
+int clearDir(char *pathToDir) { //not tested
 
 				DIR *dir = opendir(pathToDir);
 				assert(dir != NULL);
@@ -376,14 +375,14 @@ int clearDir(char *pathToDir) {
 				return 1;
 }
 
-int removeOldestBackup(char *destinationDir) { 
+int removeOldestBackup(char *destinationDir) { //not tested
 				DIR *destination = opendir(destinationDir);
 				if (destination == NULL) {
 								perror("at removeOldestBackup, destination is NULL\n");
 								return 0;
 				}
 				struct dirent *tempEnt;
-				time_t min = 99999999;
+				time_t min = MAXDATE;
 				char *dirToRemove;
 				while((tempEnt = readdir(destination))) { //find oldest backup
 

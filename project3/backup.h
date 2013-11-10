@@ -18,4 +18,4 @@ int copyDir(char *sourceDir, char *backupDir);
 int getNumOfBackup(char *destinationDir);
 int removeOldestBackup(char *destinationDir);
 
-void getCurrentTime(char **timeBuf);
+void putCurrentTime(char **timeBuf);
