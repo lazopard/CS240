@@ -76,6 +76,7 @@ int main(int argc, char **argv) {
 				}
 				if (!foundDest) {
 								destDir = DEFAULT_DEST_DIR;
+								mkdir(DEFAULT_DEST_DIR, 0777);
 				}
 				if (!foundMaxB) {
 								maxB = DEFAULT_MAX_BACKUPS;
@@ -89,7 +90,7 @@ int main(int argc, char **argv) {
 				createLogFile(sourceDir,newLogFilePath,0);
 				char *oldLogFilePath = malloc(sizeof(char)*strlen(destDir) +
 												sizeof(char)*strlen(LOG_LAST_FILENAME) + 2);
-				sprintf(oldLogFilePath,"%s%s",destDir,LOG_LAST_FILENAME);
+				sprintf(oldLogFilePath,"%s/%s",destDir,LOG_LAST_FILENAME);
 
 				FILE *newLog = fopen(newLogFilePath,"r");
 
@@ -110,7 +111,7 @@ int main(int argc, char **argv) {
 																sizeof(char)*TIMELENGTH);
 								char *currentTime = malloc(sizeof(char)*TIMELENGTH);
 								putCurrentTime(&currentTime);
-								sprintf(backupPath,"%s%s",destDir,currentTime);
+								sprintf(backupPath,"%s/%s",destDir,currentTime);
 								mkdir(backupPath,0777);
 								printf("source is %s\nbackupPath is %s\n",sourceDir, backupPath);
 								if (!copyDir(sourceDir,backupPath)) {
