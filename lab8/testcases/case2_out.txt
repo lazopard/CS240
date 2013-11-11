@@ -1,0 +1,20 @@
+> echo "Wow!	<-This TAB is not an arg delimiter!"
+Wow!	<-This TAB is not an arg delimiter!
+
+> grep "echo" case2.txt
+echo "Wow!	<-This TAB is not an arg delimiter!"
+grep "echo" case2.txt
+
+> sudo -s
+Command "sudo" needs higher permission to run. Please contact the administrator.
+
+> cat hello.c
+#include <stdio.h>
+
+int main(void){
+	printf("%s\n", "Hello World!");
+	
+	return 0;
+}
+
+> 
