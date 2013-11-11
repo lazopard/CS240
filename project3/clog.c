@@ -75,6 +75,7 @@ void createLog(char *sourceDir, char *logFilePath, int level) {
 
 	struct dirent **dirList;
 	FILE *newLog;
+
 	 if (level == 0) {
 		newLog = fopen(logFilePath,"w+");	
 	}
@@ -98,21 +99,17 @@ void createLog(char *sourceDir, char *logFilePath, int level) {
 		perror("scandir failed");
 	else {
 		while (n--) {	
-			fprintf(stderr,"d_type is %d\n",dirList[n]->d_type);
 			if (((int)dirList[n]->d_type) == ((int) DT_DIR)) { 
 				char *subDirSource = malloc(sizeof(sourceDir) +  	
 						sizeof(dirList[n]->d_name) +
 						4);
 				sprintf(subDirSource,"%s/%s",sourceDir,dirList[n]->d_name);
-				printf("subDirSource is %s\n",subDirSource);
 				putFStats(subDirSource, &buffer);
 				for(i = 0; i < level;i++) {
 					fputc('\t',newLog);
 				}
-				printf("buffer is %s\n",buffer);
 				fputs(buffer, newLog);
 				memset(buffer, '\0', MAXFORMATSIZE);
-				printf("subDirSource is %s, logfilePath is %s, %d\n",subDirSource, logFilePath, level);
 				fclose(newLog);
 				createLog(subDirSource,logFilePath,level + 1);
 				newLog = fopen(logFilePath, "a");
@@ -122,7 +119,6 @@ void createLog(char *sourceDir, char *logFilePath, int level) {
 			}
 
 			else {
-				printf("dirList[n] is a file, name: %s\n",dirList[n]->d_name);
 				char *pathToFile = malloc(sizeof(char)*strlen(dirList[n]->d_name) +
 						sizeof(char)*strlen(sourceDir) + 4); 
 				sprintf(pathToFile,"%s/%s",sourceDir,dirList[n]->d_name);
@@ -130,7 +126,6 @@ void createLog(char *sourceDir, char *logFilePath, int level) {
 				for(i = 0; i < level;i++) { //add right amount of tabs
 					fputc('\t',newLog);
 				}
-				printf("buffer is %s\n",buffer);
 				fputs(buffer, newLog);
 				memset(buffer, '\0', MAXFORMATSIZE);
 				free(pathToFile);

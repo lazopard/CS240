@@ -201,67 +201,85 @@ void putFStats(char *fileName, char **buf) { //tested
 	sprintf(*buf,"%s\t%zu\t%s\t%s\t%s\n",type,size,fcTime,fmTime,fileName);
 }
 
+//filter function for scandir
+
+int skipWdPd(const struct dirent *dir) {
+	return !(!strcmp(dir->d_name,".") || !strcmp(dir->d_name, ".."));
+}
+
+
 //create a log with the status of all the files in sourceDir
 
-void createLog(char *sourceDir, char *logFilePath, int level) { //formatting terribly wrong
+void createLog(char *sourceDir, char *logFilePath, int level) { //tested
 
-	DIR *dir = opendir(sourceDir);
-	if(dir != NULL) {
-		perror("failed to open");
-		printf("%s\n",sourceDir);
-		abort();
+	struct dirent **dirList;
+	FILE *newLog;
+
+	if (level == 0) {
+		newLog = fopen(logFilePath,"w+");   
 	}
-	struct dirent *tempEnt; 
-	FILE *newLog = fopen(logFilePath, "w+");
-	if (newLog == NULL) {
-		perror("fopen failed at opening ");
-		printf("%s at createLog\n",logFilePath);
-		abort();
+	else {
+		newLog = fopen(logFilePath, "a");
 	}
+
 	char *buffer = malloc(sizeof(char)*MAXFORMATSIZE);
 	assert(buffer != NULL);
-	int i;
 
-	while((tempEnt = readdir(dir))){ 
-
-		if (!strcmp(tempEnt->d_name,".") || !strcmp(tempEnt->d_name, "..")) {
-			continue;
-		}
-		if (tempEnt->d_type == DT_DIR) { 
-			char *subDirSource = malloc(sizeof(sourceDir) +  	
-					sizeof(tempEnt->d_name) +
-					4);
-			sprintf(subDirSource,"%s/%s",sourceDir,tempEnt->d_name);
-			putFStats(subDirSource, &buffer);
-			for(i = 0; i < level;i++) 
-				fputc('\t',newLog);
-			fputs(buffer, newLog);
-			memset(buffer, '\0', MAXFORMATSIZE);
-			createLog(subDirSource,logFilePath,level + 1);
-			free(subDirSource);
-			subDirSource = NULL;
-		}
-
-		else {
-			char *pathToFile = malloc(sizeof(char)*strlen(tempEnt->d_name) +
-					sizeof(char)*strlen(sourceDir) + 4); 
-			sprintf(pathToFile,"%s/%s",sourceDir,tempEnt->d_name);
-			putFStats(pathToFile, &buffer);
-			for(i = 0; i < level;i++) 
-				fputc('\t',newLog);
-			fputs(buffer, newLog);
-			memset(buffer, '\0', MAXFORMATSIZE);
-
-		}
+	if (newLog == NULL) {
+		perror("fopen failed opening logFilePath, function newLog");
+		return;
 	}
 
+	int n, i;
+
+	n = scandir(sourceDir, &dirList, skipWdPd, alphasort); //filter working and parent dirs
+
+	if (n < 0)
+		perror("scandir failed");
+	else {
+		while (n--) {   
+			if (((int)dirList[n]->d_type) == ((int) DT_DIR)) { 
+				char *subDirSource = malloc(sizeof(sourceDir) +     
+						sizeof(dirList[n]->d_name) +
+						4);
+				sprintf(subDirSource,"%s/%s",sourceDir,dirList[n]->d_name);
+				putFStats(subDirSource, &buffer);
+				for(i = 0; i < level;i++) {
+					fputc('\t',newLog);
+				}
+				fputs(buffer, newLog);
+				memset(buffer, '\0', MAXFORMATSIZE);
+				fclose(newLog);
+				createLog(subDirSource,logFilePath,level + 1);
+				newLog = fopen(logFilePath, "a");
+				free(subDirSource);
+				free(dirList[n]);
+				subDirSource = NULL;
+			}
+
+			else {
+				char *pathToFile = malloc(sizeof(char)*strlen(dirList[n]->d_name) +
+						sizeof(char)*strlen(sourceDir) + 4); 
+				sprintf(pathToFile,"%s/%s",sourceDir,dirList[n]->d_name);
+				putFStats(pathToFile, &buffer);
+				for(i = 0; i < level;i++) { //add right amount of tabs
+					fputc('\t',newLog);
+				}
+				fputs(buffer, newLog);
+				memset(buffer, '\0', MAXFORMATSIZE);
+				free(pathToFile);
+				pathToFile = NULL;
+			}
+		}
+		free(dirList);
+	}
 	free(buffer);
 	buffer = NULL;
 	fclose(newLog);
 	newLog = NULL;
-	closedir(dir);
-	dir = NULL;
+
 }
+
 
 //Compare every char, if one differs return 1, else 0
 
@@ -345,8 +363,8 @@ int copyDir(char *sourceDir, char *backupDir) { //tested, does not free memory
 			mkdir(pathToBackup,0777);
 			sprintf(subDirSource,"%s/%s",sourceDir,tempEnt->d_name);
 			copyDir(subDirSource,pathToBackup);
-			//free(subDirSource);
-			//free(pathToBackup);
+			free(pathToBackup);
+			free(subDirSource);
 			subDirSource = NULL;
 			pathToBackup = NULL;
 		}
@@ -355,8 +373,9 @@ int copyDir(char *sourceDir, char *backupDir) { //tested, does not free memory
 			char *pathToFile = malloc(sizeof(char)*strlen(tempEnt->d_name) +
 					sizeof(char)*strlen(sourceDir) + 4);
 			sprintf(pathToFile,"%s/%s",sourceDir,tempEnt->d_name);
-
 			copyFile(pathToFile,backupDir);
+			free(pathToFile);
+			pathToFile = NULL;
 		}
 	}
 
