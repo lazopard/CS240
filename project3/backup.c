@@ -20,6 +20,24 @@
 #include <assert.h>
 #include <unistd.h>
 
+void putCurrentTime(char **timeBuf);
+
+void putFStats(char *fileName, char **buf);
+
+void createLogFile(char *sourceDir, char *logFilePath, int level);
+
+int compareLog(FILE *oldLogFile, FILE *newLogFile);
+
+int copyFile(char *sourcePath, char *destinationPath);
+
+int copyDir(char *sourceDir, char *backupDir);
+
+int getNumOfBackup(char *destinationDir);
+
+int clearDir(char *pathToDir);
+
+int removeOldestBackup(char *destinationDir);
+
 int main(int argc, char **argv) {
 
 	/* Arguments processing */
@@ -68,7 +86,7 @@ int main(int argc, char **argv) {
 	char *newLogFilePath = malloc(sizeof(char)*strlen(destDir) + //create new log
 			sizeof(char)*strlen(LOG_NEW_FILENAME) + 1);
 	sprintf(newLogFilePath,"%s/%s",destDir,LOG_NEW_FILENAME);
-	createLog(sourceDir,newLogFilePath,0);
+	createLogFile(sourceDir,newLogFilePath,0);
 	char *oldLogFilePath = malloc(sizeof(char)*strlen(destDir) +
 			sizeof(char)*strlen(LOG_LAST_FILENAME) + 2);
 	sprintf(oldLogFilePath,"%s/%s",destDir,LOG_LAST_FILENAME);
@@ -210,7 +228,7 @@ int skipWdPd(const struct dirent *dir) {
 
 //create a log with the status of all the files in sourceDir
 
-void createLog(char *sourceDir, char *logFilePath, int level) { //tested
+void createLogFile(char *sourceDir, char *logFilePath, int level) { //tested
 
 	struct dirent **dirList;
 	FILE *newLog;
@@ -250,7 +268,7 @@ void createLog(char *sourceDir, char *logFilePath, int level) { //tested
 				fputs(buffer, newLog);
 				memset(buffer, '\0', MAXFORMATSIZE);
 				fclose(newLog);
-				createLog(subDirSource,logFilePath,level + 1);
+				createLogFile(subDirSource,logFilePath,level + 1);
 				newLog = fopen(logFilePath, "a");
 				free(subDirSource);
 				free(dirList[n]);
