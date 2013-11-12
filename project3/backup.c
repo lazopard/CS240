@@ -1,6 +1,6 @@
 #define MAXPATHLEN 200
 #define MAXDATE 9999999
-#define TIMELENGTH 19
+#define TIMELENGTH 80
 #define MAXFORMATSIZE 120
 #define SOURCE "-s"
 #define DESTINATION "-d"
@@ -115,6 +115,9 @@ int main(int argc, char **argv) {
 
 				FILE *oldLog = fopen(oldLogFilePath,"r");
 
+				rewind(newLog);
+				rewind(oldLog);
+
 				if (oldLog == NULL) { /*if it is the first time backing up*/
 								fclose(newLog);
 								rename(newLogFilePath, oldLogFilePath);
@@ -191,7 +194,7 @@ void putCurrentTime(char **timeBuf) {
 				time_t rawtime;
 				struct tm * timeinfo;
 				time ( &rawtime );
-				timeinfo = localtime ( &rawtime );
+				timeinfo = localtime (&rawtime);
 				sprintf(*timeBuf, "%d-%d-%d-%d-%d-%d", timeinfo->tm_year + 1900,
 												timeinfo->tm_mon + 1,
 												timeinfo->tm_mday, timeinfo->tm_hour,
@@ -222,24 +225,18 @@ void putFStats(char *fileName, char **buf) {
 				}
 
 				/*get size in bytes*/
+
 				size_t size = fileStats.st_size;
-
-				/*get creation time use st_ctime*/
-
-				const time_t creationTime = fileStats.st_mtime;
-				const char *cTime = ctime(&creationTime);
 
 				/*get last mod time*/
 
-				const time_t modTime = fileStats.st_mtime;
-				const char *mTime = ctime(&modTime);
+				char *mTime = malloc(sizeof(char)*TIMELENGTH + 1);
+				strftime(mTime,TIMELENGTH , "%c",localtime(&fileStats.st_mtime));
 
 				/*take out newLines*/
 
-				char fcTime[strlen(cTime)];
 				char fmTime[strlen(mTime)];
-				strncpy(fcTime, cTime,strlen(cTime) - 1);
-				fcTime[strlen(cTime) - 1] = '\0';
+
 				strncpy(fmTime, mTime,strlen(mTime) - 1);
 				fmTime[strlen(mTime) - 1] = '\0';
 
@@ -250,7 +247,12 @@ void putFStats(char *fileName, char **buf) {
 				}
 
 				/*build stats string*/
-				sprintf(*buf,"%s\t%zu\t%s\t%s\t%s\n",type,size,fcTime,fmTime,fileName);
+
+				sprintf(*buf,"%s\t%zu\t%s\t%s\t%s\n",type,size,fmTime,fmTime,fileName);
+				puts(*buf);
+
+				free(mTime);
+				mTime = NULL;
 }
 
 /*filter function for scandir*/
@@ -297,16 +299,20 @@ void createLogFile(char *sourceDir, char *logFilePath, int level) {
 												if (dirList[n]->d_name[strlen(dirList[n]->d_name) - 1] != '/') {
 																sprintf(fullEntPath,"%s/%s",sourceDir,dirList[n]->d_name);
 												}
+
 												else {
 																sprintf(fullEntPath,"%s%s",sourceDir,dirList[n]->d_name);
 												}
+
 												struct stat *tempStat = malloc(sizeof(struct stat));
+
 												if(stat(fullEntPath, tempStat)) {
 																perror("stat() failed\n");
 																abort();
 												}		
 
 												if (S_ISDIR(tempStat->st_mode)) { 
+
 																char *subDirSource = malloc(sizeof(sourceDir) +     
 																								sizeof(dirList[n]->d_name) +
 																								4);
@@ -361,10 +367,12 @@ int compareLog(FILE *oldLogFile, FILE *newLogFile) {
 				}
 				int c1,c2;
 				while((c1 = fgetc(oldLogFile)) == (c2 = fgetc(newLogFile)) && (c1 != EOF && c2 != EOF));
-				if (c1 == c2)  
+				if (c1 == c2) {
 								return 1;
-				else
+				}
+				else {
 								return 0;
+				}
 }
 
 /*copies a file*/
@@ -562,8 +570,8 @@ int removeOldestBackup(char *destinationDir) {
 																printf("currentDir is %s\n",currentDir);
 																return 0;
 												}
-												if (fileStats.st_ctime < min) {
-																min = fileStats.st_ctime;
+												if (fileStats.st_mtime < min) {
+																min = fileStats.st_mtime;
 																dirToRemove = strcpy(dirToRemove,currentDir);
 												}
 												free(currentDir);
