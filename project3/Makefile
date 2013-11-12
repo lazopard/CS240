@@ -1,4 +1,5 @@
 CC=gcc
+
 CFLAGS=-Wall -m32 -std=c89 -g -o backup
 
 all: backup
