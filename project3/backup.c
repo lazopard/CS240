@@ -286,15 +286,27 @@ void createLogFile(char *sourceDir, char *logFilePath, int level) {
 
 				n = scandir(sourceDir, &dirList, skipWdPd, alphasort); /*filter working and parent dirs*/
 
-				if (n < 0)
+				if (n < 0) {
 								perror("scandir failed");
+				}
 				else {
 								while (n--) {   
 
-												struct stat tempStat;
-												stat(dirList[n]->d_name, &tempStat);
+												char *fullEntPath = malloc(sizeof(char)*strlen(dirList[n]->d_name) +
+																								sizeof(char)*strlen(sourceDir) + 2);
+												if (dirList[n]->d_name[strlen(dirList[n]->d_name) - 1] != '/') {
+																sprintf(fullEntPath,"%s/%s",sourceDir,dirList[n]->d_name);
+												}
+												else {
+																sprintf(fullEntPath,"%s%s",sourceDir,dirList[n]->d_name);
+												}
+												struct stat *tempStat = malloc(sizeof(struct stat));
+												if(stat(fullEntPath, tempStat)) {
+																perror("stat() failed\n");
+																abort();
+												}		
 
-												if (S_ISDIR(tempStat.st_mode)) { 
+												if (S_ISDIR(tempStat->st_mode)) { 
 																char *subDirSource = malloc(sizeof(sourceDir) +     
 																								sizeof(dirList[n]->d_name) +
 																								4);
@@ -327,6 +339,9 @@ void createLogFile(char *sourceDir, char *logFilePath, int level) {
 																free(dirList[n]);
 																pathToFile = NULL;
 												}
+												free(fullEntPath);
+												free(tempStat);
+												tempStat = NULL;
 								}
 								free(dirList);
 				}
