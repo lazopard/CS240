@@ -115,8 +115,9 @@ int main(int argc, char **argv) {
 
 				FILE *oldLog = fopen(oldLogFilePath,"r");
 
-				rewind(newLog);
+				/*rewind(newLog);
 				rewind(oldLog);
+				*/
 
 				if (oldLog == NULL) { /*if it is the first time backing up*/
 								fclose(newLog);
@@ -134,6 +135,7 @@ int main(int argc, char **argv) {
 												return 0;
 								}
 								free(backupPath);
+								free(oldLogFilePath);
 								backupPath = NULL;
 								free(currentTime);
 								currentTime = NULL;
@@ -177,7 +179,9 @@ int main(int argc, char **argv) {
 				}
 
 				/*check number of backups, removeOldest if neccesary*/
+
 				if (getNumOfBackup(destDir) > maxB) {
+
 								if(!removeOldestBackup(destDir)) {
 												perror("Removing oldest backup failed.\n");
 												return 0;
@@ -249,7 +253,6 @@ void putFStats(char *fileName, char **buf) {
 				/*build stats string*/
 
 				sprintf(*buf,"%s\t%zu\t%s\t%s\t%s\n",type,size,fmTime,fmTime,fileName);
-				puts(*buf);
 
 				free(mTime);
 				mTime = NULL;
@@ -477,7 +480,8 @@ int getNumOfBackup(char *destinationDir) { /* I make the assumption that every d
 																								destinationDir is a backup */
 				DIR *destination = opendir(destinationDir);
 				assert(destination != NULL);
-				struct dirent *tempEnt; int backupCount = 0;
+				struct dirent *tempEnt;
+				int backupCount = 0;
 				while((tempEnt = readdir(destination))) {
 								struct stat tempStat;
 								stat(tempEnt->d_name, &tempStat);
