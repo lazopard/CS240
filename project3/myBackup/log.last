@@ -1,16 +1,20 @@
-DT_REG	10074	Mon Nov 11 15:33:26 2013	Mon Nov 11 15:33:26 2013	in-class journal.jnt
-DT_REG	7	Mon Nov 11 15:46:05 2013	Mon Nov 11 15:46:05 2013	hello.h
-DT_DIR	136	Wed Nov  6 10:49:35 2013	Wed Nov  6 10:49:35 2013	engl106
-	DT_REG	0	Fri Nov  8 20:23:49 2013	Fri Nov  8 20:23:49 2013	essay.pdf
-	DT_REG	0	Fri Nov  8 20:23:49 2013	Fri Nov  8 20:23:49 2013	essay.docx
-DT_DIR	102	Wed Nov  6 10:49:35 2013	Wed Nov  6 10:49:35 2013	empty2
-	DT_DIR	102	Wed Nov  6 10:49:35 2013	Wed Nov  6 10:49:35 2013	seriously
-		DT_DIR	136	Fri Nov  8 10:36:30 2013	Fri Nov  8 10:36:30 2013	kidding
-			DT_REG	0	Fri Nov  8 20:23:49 2013	Fri Nov  8 20:23:49 2013	arribba.wav
-			DT_REG	0	Fri Nov  8 20:23:49 2013	Fri Nov  8 20:23:49 2013	LICENSE
-DT_DIR	170	Wed Nov  6 10:49:35 2013	Wed Nov  6 10:49:35 2013	cs240
-	DT_DIR	102	Sat Nov  9 19:00:12 2013	Sat Nov  9 19:00:12 2013	solution
-		DT_REG	2	Sat Nov  9 19:00:12 2013	Sat Nov  9 19:00:12 2013	backup.c
-	DT_REG	0	Fri Nov  8 20:23:49 2013	Fri Nov  8 20:23:49 2013	hello.s
-	DT_REG	0	Fri Nov  8 20:23:49 2013	Fri Nov  8 20:23:49 2013	hello.c
-DT_REG	55796	Wed Nov  6 10:49:35 2013	Wed Nov  6 10:49:35 2013	boss.jpg
+DT_REG	0	Mon Nov 11 19:25:24 2013	Mon Nov 11 19:25:24 2013	newfile.txt
+DT_REG	10074	Mon Nov 11 16:20:10 2013	Mon Nov 11 16:20:10 2013	in-class journal.jnt
+DT_DIR	4096	Fri Nov  8 22:41:04 2013	Fri Nov  8 22:41:04 2013	engl106
+	DT_REG	0	Sat Nov  9 11:46:13 2013	Sat Nov  9 11:46:13 2013	essay.pdf
+	DT_REG	0	Sat Nov  9 11:46:13 2013	Sat Nov  9 11:46:13 2013	essay.docx
+DT_DIR	4096	Sat Oct 19 00:01:46 2013	Sat Oct 19 00:01:46 2013	empty2
+	DT_DIR	4096	Fri Nov  8 11:56:19 2013	Fri Nov  8 11:56:19 2013	seriously
+		DT_DIR	4096	Fri Nov  8 22:41:04 2013	Fri Nov  8 22:41:04 2013	kidding
+			DT_DIR	4096	Sat Oct 12 18:55:30 2013	Sat Oct 12 18:55:30 2013	real-empty
+			DT_REG	0	Sat Nov  9 11:46:13 2013	Sat Nov  9 11:46:13 2013	arribba.wav
+			DT_REG	0	Sat Nov  9 11:46:13 2013	Sat Nov  9 11:46:13 2013	LICENSE
+DT_DIR	4096	Sat Oct 19 00:01:46 2013	Sat Oct 19 00:01:46 2013	empty
+	DT_DIR	4096	Sat Oct 12 18:55:30 2013	Sat Oct 12 18:55:30 2013	Empty
+DT_DIR	4096	Fri Nov  8 22:41:04 2013	Fri Nov  8 22:41:04 2013	cs240
+	DT_DIR	4096	Sat Nov  9 16:14:26 2013	Sat Nov  9 16:14:26 2013	solution
+		DT_REG	2	Sat Nov  9 16:14:26 2013	Sat Nov  9 16:14:26 2013	backup.c
+	DT_REG	0	Sat Nov  9 11:46:13 2013	Sat Nov  9 11:46:13 2013	hello.s
+	DT_REG	0	Sat Nov  9 11:46:13 2013	Sat Nov  9 11:46:13 2013	hello.exe
+	DT_REG	0	Sat Nov  9 11:46:13 2013	Sat Nov  9 11:46:13 2013	hello.c
+DT_REG	55796	Sat Feb  4 23:46:22 2012	Sat Feb  4 23:46:22 2012	boss.jpg

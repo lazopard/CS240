@@ -85,12 +85,24 @@ int main(int argc, char **argv) {
 				/* Arguments processing end */
 
 				char *newLogFilePath = malloc(sizeof(char)*strlen(destDir) + //create new log
-												sizeof(char)*strlen(LOG_NEW_FILENAME) + 1);
-				sprintf(newLogFilePath,"%s/%s",destDir,LOG_NEW_FILENAME);
+												sizeof(char)*strlen(LOG_NEW_FILENAME) + 2);
+				if (destDir[strlen(destDir) - 1] != '/') { //add slash if neccesary
+								sprintf(newLogFilePath,"%s/%s",destDir,LOG_NEW_FILENAME);
+				}
+				else {
+								sprintf(newLogFilePath,"%s%s",destDir,LOG_NEW_FILENAME);
+				}
+
 				createLogFile(sourceDir,newLogFilePath,0);
+
 				char *oldLogFilePath = malloc(sizeof(char)*strlen(destDir) +
 												sizeof(char)*strlen(LOG_LAST_FILENAME) + 2);
-				sprintf(oldLogFilePath,"%s/%s",destDir,LOG_LAST_FILENAME);
+				if (destDir[strlen(destDir) - 1] != '/') {
+								sprintf(oldLogFilePath,"%s/%s",destDir,LOG_LAST_FILENAME);
+				}
+				else {
+								sprintf(oldLogFilePath,"%s%s",destDir,LOG_LAST_FILENAME);
+				}
 
 				FILE *newLog = fopen(newLogFilePath,"r");
 
@@ -108,12 +120,13 @@ int main(int argc, char **argv) {
 								free(newLogFilePath);
 								newLogFilePath = NULL;
 								char *backupPath = malloc(sizeof(char)*strlen(destDir) + 
-																sizeof(char)*TIMELENGTH);
+																sizeof(char)*TIMELENGTH + 1);
 								char *currentTime = malloc(sizeof(char)*TIMELENGTH);
 								putCurrentTime(&currentTime);
 								sprintf(backupPath,"%s/%s",destDir,currentTime);
 								mkdir(backupPath,0777);
-								printf("source is %s\nbackupPath is %s\n",sourceDir, backupPath);
+								printf("print before copyDir\nsourceDir is %s\nbackupPath is %s\n",
+												sourceDir,backupPath);
 								if (!copyDir(sourceDir,backupPath)) {
 												perror("Copying the directory failed.\n");
 												return 0;
@@ -124,7 +137,7 @@ int main(int argc, char **argv) {
 								currentTime = NULL;
 				}
 
-				else if (!compareLog(newLog, oldLog)) { //if they are the same, just rename log.new
+				else if (compareLog(newLog, oldLog)) { //if they are the same, just rename log.new
 								fclose(oldLog);
 								fclose(newLog);
 								remove(oldLogFilePath);
@@ -304,6 +317,7 @@ void createLogFile(char *sourceDir, char *logFilePath, int level) { //tested
 																fputs(buffer, newLog);
 																memset(buffer, '\0', MAXFORMATSIZE);
 																free(pathToFile);
+																free(dirList[n]);
 																pathToFile = NULL;
 												}
 								}
@@ -384,17 +398,22 @@ int copyDir(char *sourceDir, char *backupDir) { //tested, does not free memory
 				struct dirent *tempEnt;
 
 				while((tempEnt = readdir(source))) {
-								if (!strcmp(tempEnt->d_name,".") || !strcmp(tempEnt->d_name, ".."))
+
+								if (!strcmp(tempEnt->d_name,".") || !strcmp(tempEnt->d_name, "..")) {
 												continue;
+								}
 
 								if (tempEnt->d_type == DT_DIR) { // if dir mkdir in backupDir, and copyDir on it 
+
 												char *subDirSource = malloc(sizeof(sourceDir) +
 																				sizeof(tempEnt->d_name) +
-																				4);
-												sprintf(subDirSource,"%s/%s",sourceDir,tempEnt->d_name);
+																				2);
+															sprintf(subDirSource,"%s/%s",sourceDir,tempEnt->d_name);
+															sprintf(subDirSource,"%s%s",sourceDir,tempEnt->d_name);
 												if (strrchr(subDirSource,'/') != NULL) {
 																subDirSource = &(strrchr(subDirSource,'/')[1]);
 												}
+
 												char *pathToBackup = malloc(sizeof(char)*strlen(backupDir) +
 																				sizeof(char)*strlen(subDirSource) +
 																				2);

@@ -93,7 +93,7 @@ int copyDir(char *sourceDir, char *backupDir) {
 
 int main(void) {
 	char *source = "userData";
-	char *destination = "/home/adminuser/CS/CS240/project3/backupDir";
+	char *destination = "/home/adminuser/CS/CS240/project3/myBackup";
 	copyDir(source,destination);
 	//copyFile("backup.c",destination);
 }
