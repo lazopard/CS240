@@ -55,6 +55,7 @@ int main(int argc, char **argv) {
 								}
 								else if (!strcmp(argv[i],DESTINATION)) {
 												destDir = argv[i+1];
+												mkdir(destDir, 0777);
 												foundDest++;
 												i++;
 								}
@@ -84,9 +85,9 @@ int main(int argc, char **argv) {
 
 				/* Arguments processing end */
 
-				char *newLogFilePath = malloc(sizeof(char)*strlen(destDir) + //create new log
+				char *newLogFilePath = malloc(sizeof(char)*strlen(destDir) + /*create new log*/
 												sizeof(char)*strlen(LOG_NEW_FILENAME) + 2);
-				if (destDir[strlen(destDir) - 1] != '/') { //add slash if neccesary
+				if (destDir[strlen(destDir) - 1] != '/') { /*add slash if neccesary*/
 								sprintf(newLogFilePath,"%s/%s",destDir,LOG_NEW_FILENAME);
 				}
 				else {
@@ -114,7 +115,7 @@ int main(int argc, char **argv) {
 
 				FILE *oldLog = fopen(oldLogFilePath,"r");
 
-				if (oldLog == NULL) { //if it is the first time backing up
+				if (oldLog == NULL) { /*if it is the first time backing up*/
 								fclose(newLog);
 								rename(newLogFilePath, oldLogFilePath);
 								free(newLogFilePath);
@@ -125,8 +126,6 @@ int main(int argc, char **argv) {
 								putCurrentTime(&currentTime);
 								sprintf(backupPath,"%s/%s",destDir,currentTime);
 								mkdir(backupPath,0777);
-								printf("print before copyDir\nsourceDir is %s\nbackupPath is %s\n",
-												sourceDir,backupPath);
 								if (!copyDir(sourceDir,backupPath)) {
 												perror("Copying the directory failed.\n");
 												return 0;
@@ -137,7 +136,7 @@ int main(int argc, char **argv) {
 								currentTime = NULL;
 				}
 
-				else if (compareLog(newLog, oldLog)) { //if they are the same, just rename log.new
+				else if (compareLog(newLog, oldLog)) { /*if they are the same, just rename log.new*/
 								fclose(oldLog);
 								fclose(newLog);
 								remove(oldLogFilePath);
@@ -149,7 +148,7 @@ int main(int argc, char **argv) {
 								return 1;
 				}
 
-				else { //if there is any change, create a new backup
+				else { /*if there is any change, create a new backup*/
 								fclose(oldLog);
 								fclose(newLog);
 								remove(oldLogFilePath);
@@ -174,7 +173,7 @@ int main(int argc, char **argv) {
 								currentTime = NULL;
 				}
 
-				//check number of backups, removeOldest if neccesary
+				/*check number of backups, removeOldest if neccesary*/
 				if (getNumOfBackup(destDir) > maxB) {
 								if(!removeOldestBackup(destDir)) {
 												perror("Removing oldest backup failed.\n");
@@ -185,9 +184,9 @@ int main(int argc, char **argv) {
 				return 1;
 }
 
-//store current time with the appropiate format in timeBuff
+/*store current time with the appropiate format in timeBuff*/
 
-void putCurrentTime(char **timeBuf) { //tested
+void putCurrentTime(char **timeBuf) {
 
 				time_t rawtime;
 				struct tm * timeinfo;
@@ -199,15 +198,15 @@ void putCurrentTime(char **timeBuf) { //tested
 												timeinfo->tm_min, timeinfo->tm_sec);
 }
 
-//put a formatted string with the stats of a file in buff
+/*put a formatted string with the stats of a file in buff*/
 
-void putFStats(char *fileName, char **buf) { //tested
+void putFStats(char *fileName, char **buf) {
 
 				struct stat fileStats;
 				assert(!stat(fileName, &fileStats));
 				int i;
 
-				//get type 
+				/*get type*/
 				const char *type;
 
 				for(i = 0;i < NTYPES;i++) {
@@ -222,44 +221,48 @@ void putFStats(char *fileName, char **buf) { //tested
 								}
 				}
 
-				//get size in bytes
+				/*get size in bytes*/
 				size_t size = fileStats.st_size;
 
-				//get creation time use st_ctime
+				/*get creation time use st_ctime*/
 
 				const time_t creationTime = fileStats.st_ctime;
 				const char *cTime = ctime(&creationTime);
 
-				//get last mod time
+				/*get last mod time*/
 
 				const time_t modTime = fileStats.st_mtime;
 				const char *mTime = ctime(&modTime);
 
-				//take out newLines
+				/*take out newLines*/
+
 				char fcTime[strlen(cTime)];
 				char fmTime[strlen(mTime)];
 				strncpy(fcTime, cTime,strlen(cTime) - 1);
 				fcTime[strlen(cTime) - 1] = '\0';
 				strncpy(fmTime, mTime,strlen(mTime) - 1);
 				fmTime[strlen(mTime) - 1] = '\0';
-				//strip filename of path
+
+				/*strip filename of path*/
+
 				if (strrchr(fileName,'/') != NULL) {
 								fileName = &(strrchr(fileName,'/')[1]);
 				}
-				//build stats string
+
+				/*build stats string*/
 				sprintf(*buf,"%s\t%zu\t%s\t%s\t%s\n",type,size,fcTime,fmTime,fileName);
 }
 
-//filter function for scandir
+/*filter function for scandir*/
 
 int skipWdPd(const struct dirent *dir) {
 				return !(!strcmp(dir->d_name,".") || !strcmp(dir->d_name, ".."));
 }
 
 
-//create a log with the status of all the files in sourceDir
+/*create a log with the status of all the files in sourceDir*/
 
-void createLogFile(char *sourceDir, char *logFilePath, int level) { //tested
+void createLogFile(char *sourceDir, char *logFilePath, int level) {
 
 				struct dirent **dirList;
 				FILE *newLog;
@@ -281,7 +284,7 @@ void createLogFile(char *sourceDir, char *logFilePath, int level) { //tested
 
 				int n, i;
 
-				n = scandir(sourceDir, &dirList, skipWdPd, alphasort); //filter working and parent dirs
+				n = scandir(sourceDir, &dirList, skipWdPd, alphasort); /*filter working and parent dirs*/
 
 				if (n < 0)
 								perror("scandir failed");
@@ -311,7 +314,7 @@ void createLogFile(char *sourceDir, char *logFilePath, int level) { //tested
 																								sizeof(char)*strlen(sourceDir) + 4); 
 																sprintf(pathToFile,"%s/%s",sourceDir,dirList[n]->d_name);
 																putFStats(pathToFile, &buffer);
-																for(i = 0; i < level;i++) { //add right amount of tabs
+																for(i = 0; i < level;i++) { /*add right amount of tabs*/
 																				fputc('\t',newLog);
 																}
 																fputs(buffer, newLog);
@@ -331,9 +334,9 @@ void createLogFile(char *sourceDir, char *logFilePath, int level) { //tested
 }
 
 
-//Compare every char, if one differs return 1, else 0
+/*Compare every char, if one differs return 1, else 0*/
 
-int compareLog(FILE *oldLogFile, FILE *newLogFile) { //tested
+int compareLog(FILE *oldLogFile, FILE *newLogFile) {
 				if (oldLogFile == NULL || newLogFile == NULL) {
 								return 0;
 				}
@@ -345,9 +348,9 @@ int compareLog(FILE *oldLogFile, FILE *newLogFile) { //tested
 								return 0;
 }
 
-//copies a file
+/*copies a file*/
 
-int copyFile(char *sourcePath, char *destinationPath) { //tested
+int copyFile(char *sourcePath, char *destinationPath) {
 
 				FILE *source = fopen(sourcePath, "r");
 				if (source == NULL) {
@@ -368,7 +371,7 @@ int copyFile(char *sourcePath, char *destinationPath) { //tested
 								return 0;
 				}
 
-				//copy a byte at a time
+				/*copy a byte at a time*/
 				char c;
 				while((c = fgetc(source)) != EOF) {
 								if ((fputc(c,destination)) == EOF) {
@@ -386,9 +389,9 @@ int copyFile(char *sourcePath, char *destinationPath) { //tested
 				return 1;
 }
 
-//copies a directory
+/*copies a directory*/
 
-int copyDir(char *sourceDir, char *backupDir) { //tested, does not free memory
+int copyDir(char *sourceDir, char *backupDir) {
 
 				DIR *source = opendir(sourceDir);
 				if (source == NULL) {
@@ -403,7 +406,7 @@ int copyDir(char *sourceDir, char *backupDir) { //tested, does not free memory
 												continue;
 								}
 
-								if (tempEnt->d_type == DT_DIR) { // if dir mkdir in backupDir, and copyDir on it 
+								if (tempEnt->d_type == DT_DIR) { /* if dir mkdir in backupDir, and copyDir on it*/ 
 
 												char *subDirSource = malloc(sizeof(sourceDir) +
 																				sizeof(tempEnt->d_name) +
@@ -421,13 +424,11 @@ int copyDir(char *sourceDir, char *backupDir) { //tested, does not free memory
 												mkdir(pathToBackup,0777);
 												sprintf(subDirSource,"%s/%s",sourceDir,tempEnt->d_name);
 												copyDir(subDirSource,pathToBackup);
-												//free(pathToBackup);
-												//free(subDirSource);
 												subDirSource = NULL;
 												pathToBackup = NULL;
 								}
 
-								else { //if file, copy
+								else { /*if file, copy*/
 												char *pathToFile = malloc(sizeof(char)*strlen(tempEnt->d_name) +
 																				sizeof(char)*strlen(sourceDir) + 4);
 												sprintf(pathToFile,"%s/%s",sourceDir,tempEnt->d_name);
@@ -440,11 +441,10 @@ int copyDir(char *sourceDir, char *backupDir) { //tested, does not free memory
 				return 1;
 }
 
-//get number of backups on destinationDir
+/*get number of backups on destinationDir*/
 
-int getNumOfBackup(char *destinationDir) { // I make the assumption that every dir in 
-				// destinationDir is a backup
-
+int getNumOfBackup(char *destinationDir) { /* I make the assumption that every dir in
+																								destinationDir is a backup */
 				DIR *destination = opendir(destinationDir);
 				assert(destination != NULL);
 				struct dirent *tempEnt; int backupCount = 0;
@@ -460,9 +460,9 @@ int getNumOfBackup(char *destinationDir) { // I make the assumption that every d
 				return backupCount;
 }
 
-//removes the oldest backup in destinationDir
+/*removes the oldest backup in destinationDir*/
 
-int clearDir(char *pathToDir) { //tested
+int clearDir(char *pathToDir) {
 
 				DIR *dir = opendir(pathToDir);
 				if (dir == NULL) {
@@ -472,7 +472,7 @@ int clearDir(char *pathToDir) { //tested
 
 				struct dirent *tempEnt;
 
-				while((tempEnt = readdir(dir))){ //if file remove, if dir clearDir and remove
+				while((tempEnt = readdir(dir))){ /*if file remove, if dir clearDir and remove*/
 
 								if (!strcmp(tempEnt->d_name,".") || !strcmp(tempEnt->d_name, "..")) {
 												continue;
@@ -504,7 +504,7 @@ int clearDir(char *pathToDir) { //tested
 				return 1;
 }
 
-int removeOldestBackup(char *destinationDir) { //tested
+int removeOldestBackup(char *destinationDir) {
 
 				DIR *destination = opendir(destinationDir);
 				if (destination == NULL) {
@@ -515,7 +515,7 @@ int removeOldestBackup(char *destinationDir) { //tested
 				time_t min = LONG_MAX;
 				char *dirToRemove = malloc(sizeof(char)*MAXPATHLEN);
 
-				while((tempEnt = readdir(destination))) { //find oldest backup
+				while((tempEnt = readdir(destination))) { /*find oldest backup*/
 								if (!strcmp(tempEnt->d_name,".") || !strcmp(tempEnt->d_name,"..")) {
 												continue;
 								}
@@ -538,7 +538,7 @@ int removeOldestBackup(char *destinationDir) { //tested
 								}
 				}
 
-				if (!clearDir(dirToRemove)) { //remove every file inside the directory
+				if (!clearDir(dirToRemove)) { /*remove every file inside the directory*/
 								perror("clearDir failed\n");
 								return 0;
 				}
