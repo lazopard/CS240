@@ -296,6 +296,7 @@ void createLogFile(char *sourceDir, char *logFilePath, int level) {
 				if (n < 0) {
 								perror("scandir failed");
 				}
+
 				else {
 								while (n--) {   
 
