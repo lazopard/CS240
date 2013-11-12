@@ -1,4 +1,5 @@
-#define MAXBUFFSIZE 120
+#define MAXBUFFSIZE 1000
+#define MAXCOMMANDSIZE 400
 
 #include <string.h>
 #include <stdio.h>
@@ -25,7 +26,27 @@ int main(int argc, char **argv) {
 		return 1;
 	}
 	char *buffer = malloc(sizeof(char)*MAXBUFFSIZE);
-	int n = read(fd, buffer, MAXBUFFSIZE);
-	char **commands = malloc(sizeof(char)*n);
-	buffer = strtok(buffer, " \n");
+	FILE *commandFile = fopen(argv[1], "r");
+	char *tempString = malloc(sizeof(char)*MAXCOMMANDSIZE);
+	while((tempString = fgets(tempString, MAXCOMMANDSIZE, commandFile)) != NULL) {
+		fprintf(stdout,"> %s", tempString);
+		if (containsAlphaNum(tempString)) {
+			/*execCommand( */
+		}
+		memset(tempString, '\0', MAXCOMMANDSIZE);
+		fputc('\n', stdout);
+	}
+	free(buffer);
+	free(tempString);
+	return 1;
+}
+
+int containsAlphaNum(char *str) {
+	int i;
+	for(i = 0; i < strlen(str); i++) {
+		if (isalnum(str[i])) {
+			return 1;
+		}
+	}
+	return 0;
 }
