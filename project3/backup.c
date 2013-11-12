@@ -226,7 +226,7 @@ void putFStats(char *fileName, char **buf) {
 
 				/*get creation time use st_ctime*/
 
-				const time_t creationTime = fileStats.st_ctime;
+				const time_t creationTime = fileStats.st_mtime;
 				const char *cTime = ctime(&creationTime);
 
 				/*get last mod time*/
