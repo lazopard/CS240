@@ -290,7 +290,11 @@ void createLogFile(char *sourceDir, char *logFilePath, int level) {
 								perror("scandir failed");
 				else {
 								while (n--) {   
-												if (((int)dirList[n]->d_type) == ((int) DT_DIR)) { 
+
+												struct stat tempStat;
+												stat(dirList[n]->d_name, &tempStat);
+
+												if (S_ISDIR(tempStat.st_mode)) { 
 																char *subDirSource = malloc(sizeof(sourceDir) +     
 																								sizeof(dirList[n]->d_name) +
 																								4);
@@ -405,8 +409,11 @@ int copyDir(char *sourceDir, char *backupDir) {
 								if (!strcmp(tempEnt->d_name,".") || !strcmp(tempEnt->d_name, "..")) {
 												continue;
 								}
+								
+								struct stat tempStats;
+								stat(tempEnt->d_name, &tempStats);
 
-								if (tempEnt->d_type == DT_DIR) { /* if dir mkdir in backupDir, and copyDir on it*/ 
+								if (S_ISDIR(tempStats.st_mode)) { /* if dir mkdir in backupDir, and copyDir on it*/ 
 
 												char *subDirSource = malloc(sizeof(sourceDir) +
 																				sizeof(tempEnt->d_name) +
@@ -449,10 +456,14 @@ int getNumOfBackup(char *destinationDir) { /* I make the assumption that every d
 				assert(destination != NULL);
 				struct dirent *tempEnt; int backupCount = 0;
 				while((tempEnt = readdir(destination))) {
-								if (!strcmp(tempEnt->d_name,".") || !strcmp(tempEnt->d_name, ".."))
+								struct stat tempStat;
+								stat(tempEnt->d_name, &tempStat);
+								if (!strcmp(tempEnt->d_name,".") || !strcmp(tempEnt->d_name, "..")) {
 												continue;
-								if(tempEnt->d_type == DT_DIR) 
+								}
+								if(S_ISDIR(tempStat.st_mode)) {
 												backupCount++;
+								}
 				}
 
 				closedir(destination);
@@ -472,13 +483,16 @@ int clearDir(char *pathToDir) {
 
 				struct dirent *tempEnt;
 
-				while((tempEnt = readdir(dir))){ /*if file remove, if dir clearDir and remove*/
+				while((tempEnt = readdir(dir))) { /*if file remove, if dir clearDir and remove*/
+
+								struct stat tempStat;
+								stat(tempEnt->d_name, &tempStat);
 
 								if (!strcmp(tempEnt->d_name,".") || !strcmp(tempEnt->d_name, "..")) {
 												continue;
 								}
 
-								if (tempEnt->d_type == DT_DIR) {
+								if (S_ISDIR(tempStat.st_mode)) {
 												char *subDirSource = malloc(sizeof(pathToDir) +
 																				sizeof(tempEnt->d_name) +
 																				4);
@@ -516,10 +530,14 @@ int removeOldestBackup(char *destinationDir) {
 				char *dirToRemove = malloc(sizeof(char)*MAXPATHLEN);
 
 				while((tempEnt = readdir(destination))) { /*find oldest backup*/
+
 								if (!strcmp(tempEnt->d_name,".") || !strcmp(tempEnt->d_name,"..")) {
 												continue;
 								}
-								else if (tempEnt->d_type == DT_DIR) {
+
+								struct stat tempStat;
+								stat(tempEnt->d_name, &tempStat);
+								if (S_ISDIR(tempStat.st_mode)) {
 												struct stat fileStats;
 												char *currentDir = malloc(sizeof(char)*strlen(tempEnt->d_name) +
 																				+ sizeof(char)*strlen(destinationDir) + 2);
@@ -551,3 +569,4 @@ int removeOldestBackup(char *destinationDir) {
 				closedir(destination);
 				return 1;
 }
+
