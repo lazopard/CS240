@@ -179,8 +179,8 @@ int main(int argc, char **argv) {
 				}
 
 				/*check number of backups, removeOldest if neccesary*/
-
-				if (getNumOfBackup(destDir) > maxB) {
+				int numBackups = getNumOfBackup(destDir) - 1;
+				if (numBackups > maxB) {
 
 								if(!removeOldestBackup(destDir)) {
 												perror("Removing oldest backup failed.\n");
