@@ -1,15 +1,19 @@
-DT_REG	10074	Tue Nov 12 00:27:25 201	Tue Nov 12 00:27:25 201	in-class journal.jnt
-DT_DIR	136	Tue Nov 12 00:27:25 201	Tue Nov 12 00:27:25 201	engl106
-	DT_REG	0	Tue Nov 12 00:27:25 201	Tue Nov 12 00:27:25 201	essay.pdf
-	DT_REG	0	Tue Nov 12 00:27:25 201	Tue Nov 12 00:27:25 201	essay.docx
-DT_DIR	102	Tue Nov 12 00:27:25 201	Tue Nov 12 00:27:25 201	empty2
-	DT_DIR	102	Tue Nov 12 00:27:25 201	Tue Nov 12 00:27:25 201	seriously
-		DT_DIR	136	Tue Nov 12 00:27:25 201	Tue Nov 12 00:27:25 201	kidding
-			DT_REG	0	Tue Nov 12 00:27:25 201	Tue Nov 12 00:27:25 201	arribba.wav
-			DT_REG	0	Tue Nov 12 00:27:25 201	Tue Nov 12 00:27:25 201	LICENSE
-DT_DIR	170	Tue Nov 12 00:27:25 201	Tue Nov 12 00:27:25 201	cs240
-	DT_DIR	102	Tue Nov 12 00:27:25 201	Tue Nov 12 00:27:25 201	solution
-		DT_REG	2	Tue Nov 12 00:27:25 201	Tue Nov 12 00:27:25 201	backup.c
-	DT_REG	0	Tue Nov 12 00:27:25 201	Tue Nov 12 00:27:25 201	hello.s
-	DT_REG	0	Tue Nov 12 00:27:25 201	Tue Nov 12 00:27:25 201	hello.c
-DT_REG	55796	Tue Nov 12 00:27:25 201	Tue Nov 12 00:27:25 201	boss.jpg
+DT_REG	10072	Fri Oct  4 23:43:54 201	Fri Oct  4 23:43:54 201	in-class journal.jnt
+DT_DIR	4096	Mon Oct  7 14:08:13 201	Mon Oct  7 14:08:13 201	engl106
+	DT_REG	164200	Fri Oct  4 23:56:39 201	Fri Oct  4 23:56:39 201	essay.pdf
+	DT_REG	89554	Fri Oct  4 23:38:24 201	Fri Oct  4 23:38:24 201	essay.docx
+DT_DIR	4096	Mon Oct  7 14:08:11 201	Mon Oct  7 14:08:11 201	empty2
+	DT_DIR	4096	Mon Oct  7 14:08:11 201	Mon Oct  7 14:08:11 201	seriously
+		DT_DIR	4096	Mon Oct  7 14:08:12 201	Mon Oct  7 14:08:12 201	kidding
+			DT_DIR	4096	Mon Oct  7 14:08:12 201	Mon Oct  7 14:08:12 201	real-empty
+			DT_REG	41094	Fri Oct  4 23:59:02 201	Fri Oct  4 23:59:02 201	arribba.wav
+			DT_REG	415	Sat Oct  5 00:00:56 201	Sat Oct  5 00:00:56 201	LICENSE
+DT_DIR	4096	Mon Oct  7 14:08:11 201	Mon Oct  7 14:08:11 201	empty
+	DT_DIR	4096	Mon Oct  7 14:08:11 201	Mon Oct  7 14:08:11 201	Empty
+DT_DIR	4096	Mon Oct  7 14:08:10 201	Mon Oct  7 14:08:10 201	cs240
+	DT_DIR	4096	Mon Oct  7 14:08:10 201	Mon Oct  7 14:08:10 201	solution
+		DT_REG	32	Fri Oct  4 23:52:21 201	Fri Oct  4 23:52:21 201	backup.c
+	DT_REG	548	Fri Oct  4 23:40:45 201	Fri Oct  4 23:40:45 201	hello.s
+	DT_REG	90096	Fri Oct  4 23:40:40 201	Fri Oct  4 23:40:40 201	hello.exe
+	DT_REG	83	Fri Oct  4 23:39:35 201	Fri Oct  4 23:39:35 201	hello.c
+DT_REG	55796	Sat Feb  4 22:46:23 201	Sat Feb  4 22:46:23 201	boss.jpg
