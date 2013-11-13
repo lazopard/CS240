@@ -179,8 +179,9 @@ int main(int argc, char **argv) {
 	}
 
 	/*check number of backups, removeOldest if neccesary*/
+
 	int numBackups = getNumOfBackup(destDir);
-	printf("num of backups is %d, maxB is %d\n", numBackups, maxB);
+
 	if (numBackups > maxB) {
 
 		if(!removeOldestBackup(destDir)) {
@@ -462,7 +463,6 @@ int copyDir(char *sourceDir, char *backupDir) {
 					sizeof(dirList[n]->d_name) +
 					2);
 			sprintf(subDirSource,"%s/%s",sourceDir,dirList[n]->d_name);
-			sprintf(subDirSource,"%s%s",sourceDir,dirList[n]->d_name);
 			if (strrchr(subDirSource,'/') != NULL) {
 				subDirSource = &(strrchr(subDirSource,'/')[1]);
 			}
