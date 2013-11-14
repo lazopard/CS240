@@ -20,24 +20,35 @@ int main(int argc, char **argv) {
 		return 1;
 	}
 
-	char *buffer = malloc(sizeof(char)*MAXBUFFSIZE);
 	FILE *commandFile = fopen(argv[1], "r");
 	if (commandFile == NULL) {
 		perror("fopen failed\n");
 		return 1;
 	}
+
 	int fd = fileno(commandFile);
 	char *tempString = malloc(sizeof(char)*MAXCOMMANDSIZE);
+
 	while((tempString = fgets(tempString, MAXCOMMANDSIZE, commandFile)) != NULL) {
 		fprintf(stdout,"> %s", tempString);
+		argc = 0;
 		if (containsAlphaNum(tempString)) {
-
-			execCommand(
+			int len = strlen(tempString);
+			int argc = 0;
+			char **argv = malloc(sizeof(char)*len + 1);
+			char *substr = strtok(tempString, " ");
+			while(substr != NULL) {
+				strcpy(argv[argc], substr);
+				substr = strtok(tempString, " ");
+				argc++;
+			}
+			/*execCommand(argc, argv, fd);*/
+			free(argv);
+			argv = NULL;
 		}
 		memset(tempString, '\0', MAXCOMMANDSIZE);
 		fputc('\n', stdout);
 	}
-	free(buffer);
 	free(tempString);
 	return 1;
 }
