@@ -1,4 +1,3 @@
-#define MAXBUFFSIZE 1000
 #define MAXCOMMANDSIZE 400
 
 #include <string.h>
@@ -33,21 +32,35 @@ int main(int argc, char **argv) {
 		fprintf(stdout,"> %s", tempString);
 		argc = 0;
 		if (containsAlphaNum(tempString)) {
+
 			int len = strlen(tempString);
 			int argc = 0;
-			char **argv = malloc(sizeof(char)*len + 1);
+			char **argv = malloc(sizeof(char*)*len);
 			char *substr = strtok(tempString, " ");
-			while(substr != NULL) {
+
+			while(substr != NULL) { /*does not deal with ""'s */
+				argv[argc] = malloc(sizeof(char)*strlen(substr) + 1);
 				strcpy(argv[argc], substr);
-				substr = strtok(tempString, " ");
+				substr = strtok(NULL, " ");
 				argc++;
 			}
+
 			/*execCommand(argc, argv, fd);*/
+
+			/*free argv start*/
+			int i;
+			for(i = 0;i < argc; i++) {
+				free(argv[i]);
+				argv[i] = NULL;
+			}
 			free(argv);
 			argv = NULL;
+			/*free argv end*/
 		}
+
 		memset(tempString, '\0', MAXCOMMANDSIZE);
 		fputc('\n', stdout);
+
 	}
 	free(tempString);
 	return 1;
@@ -64,5 +77,4 @@ int containsAlphaNum(char *str) {
 }
 
 void execCommand(int argc, char** argv, int fdWrite) {
-
 }

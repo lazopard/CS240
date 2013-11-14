@@ -4,6 +4,5 @@ all: myTerminal
 
 myTerminal: myTerminal.c
 	$(CC) $(CFLAGS) myTerminal.c
-	cp myTerminal testcases/
 clean:
 	rm myTerminal
