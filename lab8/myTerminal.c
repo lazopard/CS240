@@ -9,9 +9,9 @@
 #include <sys/stat.h> 
 #include <fcntl.h>
 
-void execCommand(int argc, char** argv, int fdWrite) {
+int containsAlphaNum(char *);
 
-}
+void execCommand(int argc, char** argv, int fdWrite);
 
 int main(int argc, char **argv) {
 
@@ -20,18 +20,19 @@ int main(int argc, char **argv) {
 		return 1;
 	}
 
-	int fd  = open(argv[1], O_RDWR);
-	if (fd < 0) {
-		perror("error opening file\n");
-		return 1;
-	}
 	char *buffer = malloc(sizeof(char)*MAXBUFFSIZE);
 	FILE *commandFile = fopen(argv[1], "r");
+	if (commandFile == NULL) {
+		perror("fopen failed\n");
+		return 1;
+	}
+	int fd = fileno(commandFile);
 	char *tempString = malloc(sizeof(char)*MAXCOMMANDSIZE);
 	while((tempString = fgets(tempString, MAXCOMMANDSIZE, commandFile)) != NULL) {
 		fprintf(stdout,"> %s", tempString);
 		if (containsAlphaNum(tempString)) {
-			/*execCommand( */
+
+			execCommand(
 		}
 		memset(tempString, '\0', MAXCOMMANDSIZE);
 		fputc('\n', stdout);
@@ -49,4 +50,8 @@ int containsAlphaNum(char *str) {
 		}
 	}
 	return 0;
+}
+
+void execCommand(int argc, char** argv, int fdWrite) {
+
 }
