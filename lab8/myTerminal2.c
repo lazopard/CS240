@@ -41,29 +41,13 @@ int main(int argc, char **argv) {
 			int len = strlen(tempString);
 			int argc = 0;
 			char **argv = malloc(sizeof(char*)*len);
-			char *substr = strtok(tempString, " ");
 
-			while(substr != NULL) { /*does not deal with ""'s */
-				argv[argc] = malloc(sizeof(char)*strlen(substr) + 1);
-				strcpy(argv[argc], substr);
-				substr = strtok(NULL, " ");
-				argc++;
-			}
-			
-			/*execCommand(argc, argv, fd);*/
+			argc = parseCommand(&argv, tempString);
 
-			/*free argv start*/
-			int i;
-			printf("command %d\n",k);
-			for(i = 0 ; i < argc; i++) {
-				printf("%s\n",argv[i]);
-				free(argv[i]);
-				argv[i] = NULL;
-			}
+			execCommand(argc, argv, fd);
 
-			free(argv);
-			argv = NULL;
-			/*free argv end*/
+			freeCommandList(argv);
+
 		}
 
 		memset(tempString, '\0', MAXCOMMANDSIZE);
@@ -72,9 +56,11 @@ int main(int argc, char **argv) {
 		k++;
 
 	}
+
 	fprintf(newFile,"> ");
 	fclose(newFile);
 	free(tempString);
+
 	return 1;
 }
 
@@ -86,4 +72,39 @@ int containsAlphaNum(char *str) {
 		}
 	}
 	return 0;
+}
+
+
+int parseCommand(char ***argList, char *commandString) {
+	char c;
+	int k = 0;
+	while(1) {
+
+		char substr = malloc(sizeof(char)*MAXWORDLENGTH);
+
+		if (c == '\"') {
+			substr[k] = c;
+			k++;
+			while(isalnum(c)) {
+				c = tempString[k];
+				substr[k] = c;
+				k++;
+			}
+			substr[k]
+				break;
+		}
+	}
+}
+
+void freeCommandList(char ***argList) {
+	int i;
+	printf("command %d\n",k);
+	for(i = 0 ; i < argc; i++) {
+		printf("%s\n",argv[i]);
+		free(argv[i]);
+		argv[i] = NULL;
+	}
+
+	free(argv);
+	argv = NULL;
 }
