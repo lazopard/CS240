@@ -5,10 +5,11 @@
 #include <string.h>
 #include <ctype.h>
 
-int containsAlphaNum(char *str) {
+int isValidArg(char *str) {
 	int i;
 	for(i = 0; i < strlen(str); i++) {
-		if (isalnum(str[i])) {
+		if (isalnum(str[i]) || str[i] == '>' 
+						|| str[i] == '|' || str[i] == '&') {
 			return 1;
 		}
 	}
@@ -24,10 +25,13 @@ void parseCommand(char ***argv, char *string, int *argc) { /*special cases: "\""
 		char *substr = malloc(sizeof(char)*MAXARGLEN);
 		while((c = string[i]) != '\0') {
 			if (c == ' ') {
+				i++;
 				break;
 			}
 			else if (c == '\"') {
 				substr[k] = c;
+				i++;
+				k++;
 				while((c = string[i]) != '\"') {
 					substr[k] = c;
 					k++;
@@ -40,25 +44,25 @@ void parseCommand(char ***argv, char *string, int *argc) { /*special cases: "\""
 			else  {
 				substr[k] = c;
 				k++;
+				i++;
 			}
-			i++;
+		}
+		if (isValidArg(substr)) {
+			(*argv)[*argc] = substr;
+			*argc = (*argc) + 1;
 		}
 		if (c == '\0') {
 			break;
 		}
-		if (containsAlphaNum(substr)) {
-			(*argv)[*argc] = substr;
-			*argc++;
-		}
+
 	}
 }
 
 int main(void) {
-	char **argv = malloc(sizeof(char *)*1000);
-	char *string = "gcc \"hello world\"\0";
+	char **argv = malloc(sizeof(char *)*100);
+	char *string = "gcc \"hello world\" >  txt.txt\0";
 	int argc = 0;
 	parseCommand(&argv, string, &argc);
-	printf("there are %d arguments\n",argc);
 	int i;
 	for(i = 0; i < argc; i++) {
 		printf("%s\n",argv[i]);

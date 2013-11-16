@@ -1,4 +1,4 @@
-#define MAXWORLEN 50
+#define MAXARGLEN 50
 #define MAXCOMMANDSIZE 400
 
 #include <string.h>
@@ -9,7 +9,7 @@
 #include <sys/stat.h> 
 #include <fcntl.h>
 
-int containsAlphaNum(char *);
+int isValidArg(char *);
 
 void parseCommand(char ***argv, char *string, int *argc);
 
@@ -41,13 +41,13 @@ int main(int argc, char **argv) {
 		fprintf(newFile,"> %s", tempString);
 		argc = 0;
 
-		if (containsAlphaNum(tempString)) { /*If it is not empty or only with spaces*/
+		if (isValidArg(tempString)) { /*If it is not empty or only with spaces*/
 
 			int len = strlen(tempString);
 			char **argv = malloc(sizeof(char*)*len);
 			int argc = 0;
-
 			parseCommand(&argv, tempString, &argc);
+
 
 			/*execCommand(argc, argv, fd);*/
 
@@ -61,7 +61,7 @@ int main(int argc, char **argv) {
 		k++;
 
 	}
-
+	
 	fprintf(newFile,"> ");
 	fclose(newFile);
 	free(tempString);
@@ -69,16 +69,16 @@ int main(int argc, char **argv) {
 	return 1;
 }
 
-int containsAlphaNum(char *str) {
+int isValidArg(char *str) {
 	int i;
 	for(i = 0; i < strlen(str); i++) {
-		if (isalnum(str[i])) {
+		if (isalnum(str[i]) || str[i] == '>'
+				|| str[i] == '|' || str[i] == '&') {
 			return 1;
 		}
 	}
 	return 0;
 }
-
 
 void parseCommand(char ***argv, char *string, int *argc) { /*special cases: "\"", " " */
 	int i,k;
@@ -86,13 +86,16 @@ void parseCommand(char ***argv, char *string, int *argc) { /*special cases: "\""
 	char c;
 	while(1) {
 		k = 0;
-		char *substr = malloc(sizeof(char)*MAXWORLEN);
+		char *substr = malloc(sizeof(char)*MAXARGLEN);
 		while((c = string[i]) != '\0') {
 			if (c == ' ') {
+				i++;
 				break;
 			}
 			else if (c == '\"') {
 				substr[k] = c;
+				i++;
+				k++;
 				while((c = string[i]) != '\"') {
 					substr[k] = c;
 					k++;
@@ -105,17 +108,18 @@ void parseCommand(char ***argv, char *string, int *argc) { /*special cases: "\""
 			else  {
 				substr[k] = c;
 				k++;
+				i++;
 			}
-			i++;
+		}
+		if (isValidArg(substr)) {
+			substr[k+1] = '\0';
+			(*argv)[*argc] = substr;
+			*argc = (*argc) + 1;
 		}
 		if (c == '\0') {
 			break;
 		}
-		if (containsAlphaNum(substr)) {
-			(*argv)[*argc] = substr;
-			*argc++;
-		}
-	}
+	} 
 }
 
 void freeArgList(char ***argv, int argc) {
