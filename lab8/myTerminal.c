@@ -5,6 +5,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
+#include <ctype.h>
 #include "myTerminal.h"
 #include <sys/stat.h> 
 #include <fcntl.h>
@@ -32,7 +33,7 @@ int main(int argc, char **argv) {
 	}
 
 	char *tempString = malloc(sizeof(char)*MAXCOMMANDSIZE);
-	FILE *newFile = fopen("new.txt","w+");
+
 	int pipefd[2];
 	pid_t cpid;
 
@@ -65,12 +66,12 @@ int main(int argc, char **argv) {
 			}
 			
 			if (cpid == 0) { //if it is the child process
-				
-				execCommand(argc, argv, fd);
 
+				close(pipefd[0]);
+				execCommand(argc, argv, pipefd[1]);
 			}
 			else {
-
+				close(pipefd[0]);
 			}
 
 			freeArgList(&argv, argc);
@@ -84,8 +85,7 @@ int main(int argc, char **argv) {
 
 	}
 	
-	fprintf(newFile,"> ");
-	fclose(newFile);
+	write(STDOUT_FILENO, "> ", 2);
 	free(tempString);
 
 	return 1;
@@ -147,7 +147,6 @@ void parseCommand(char ***argv, char *string, int *argc) { /*special cases: "\""
 void freeArgList(char ***argv, int argc) {
 	int i;
 	for(i = 0 ; i < argc; i++) {
-		printf("%s\n",(*argv)[i]);
 		free((*argv)[i]);
 		(*argv)[i] = NULL;
 	}
