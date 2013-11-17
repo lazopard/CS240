@@ -25,20 +25,23 @@ int main(int argc, char **argv) {
 	}
 
 	FILE *commandFile = fopen(argv[1], "r");
+
 	if (commandFile == NULL) {
 		perror("fopen failed\n");
 		return 1;
 	}
 
-	int fd = fileno(commandFile);
 	char *tempString = malloc(sizeof(char)*MAXCOMMANDSIZE);
 	FILE *newFile = fopen("new.txt","w+");
+	int pipefd[2];
+	pid_t cpid;
+
 	int k = 1;
 
 	while((tempString = fgets(tempString, MAXCOMMANDSIZE, commandFile)) != NULL) {
 
-		/*fprintf(stdout,"> %s", tempString);*/
-		write(STDOUT_FILENO,"> "
+		write(STDOUT_FILENO,"> ",sizeof(char)*2);
+		write(STDOUT_FILENO,tempString,sizeof(char)*strlen(tempString) + 1);
 		argc = 0;
 
 		if (isValidArg(tempString)) { /*If it is not empty or only with spaces*/
@@ -49,15 +52,34 @@ int main(int argc, char **argv) {
 
 			parseCommand(&argv, tempString, &argc);
 
-			/*execCommand(argc, argv, fd);*/
+			if (pipe(pipefd) == -1) {
+				perror("pipe failed\n");
+				exit(EXIT_FAILURE);
+			}
+
+			cpid = fork();
+
+			if (cpid == -1) {
+				perror("fork failed\n");
+				exit(EXIT_FAILURE);
+			}
+			
+			if (cpid == 0) { //if it is the child process
+				
+				execCommand(argc, argv, fd);
+
+			}
+			else {
+
+			}
 
 			freeArgList(&argv, argc);
 
 		}
 
 		memset(tempString, '\0', MAXCOMMANDSIZE);
-		/*fputc('\n', stdout);*/
-		fputc('\n', newFile);
+
+		write(STDOUT_FILENO, "\n", 1);
 		k++;
 
 	}
