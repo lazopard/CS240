@@ -9,7 +9,7 @@
 #include <sys/stat.h> 
 #include <fcntl.h>
 
-int isValidArg(char *);
+int isValidArg(char *arg);
 
 void parseCommand(char ***argv, char *string, int *argc);
 
@@ -38,7 +38,7 @@ int main(int argc, char **argv) {
 	while((tempString = fgets(tempString, MAXCOMMANDSIZE, commandFile)) != NULL) {
 
 		/*fprintf(stdout,"> %s", tempString);*/
-		fprintf(newFile,"> %s", tempString);
+		write(STDOUT_FILENO,"> "
 		argc = 0;
 
 		if (isValidArg(tempString)) { /*If it is not empty or only with spaces*/
@@ -46,8 +46,8 @@ int main(int argc, char **argv) {
 			int len = strlen(tempString);
 			char **argv = malloc(sizeof(char*)*len);
 			int argc = 0;
-			parseCommand(&argv, tempString, &argc);
 
+			parseCommand(&argv, tempString, &argc);
 
 			/*execCommand(argc, argv, fd);*/
 
