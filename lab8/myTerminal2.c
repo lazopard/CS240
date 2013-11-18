@@ -1,5 +1,4 @@
 #define MAXARGLEN 50
-#define MAXBUFFSIZE 50
 #define MAXCOMMANDSIZE 400
 
 #include <string.h>
@@ -39,24 +38,20 @@ int main(int argc, char **argv) {
 	pid_t cpid;
 
 	int k = 1;
-	int len = 0;
-
-	char **argv1 = malloc(sizeof(char*)*len);
-	char *parentBuf = malloc(sizeof(char)*MAXBUFFSIZE);
-	int argc1;
 
 	while((tempString = fgets(tempString, MAXCOMMANDSIZE, commandFile)) != NULL) {
 
 		write(STDOUT_FILENO,"> ",sizeof(char)*2);
 		write(STDOUT_FILENO,tempString,sizeof(char)*strlen(tempString) + 1);
-		argc1 = 0;
+		argc = 0;
 
 		if (isValidArg(tempString)) { /*If it is not empty or only with spaces*/
 
-			len = strlen(tempString);
-			
+			int len = strlen(tempString);
+			char **argv = malloc(sizeof(char*)*len);
+			int argc = 0;
 
-			parseCommand(&argv1, tempString, &argc1);
+			parseCommand(&argv, tempString, &argc);
 
 			if (pipe(pipefd) == -1) {
 				perror("pipe failed\n");
@@ -70,20 +65,18 @@ int main(int argc, char **argv) {
 				exit(EXIT_FAILURE);
 			}
 			
-			if (cpid == 0) { /*if it is the child process*/
-				
+			if (cpid == 0) { //if it is the child process
+
 				close(pipefd[0]);
-				execCommand(argc1, argv1, pipefd[1]);
-				return 0;
+				execCommand(argc, argv, pipefd[1]);
 			}
 			else {
-				close(pipefd[1]);
-				read(pipefd[0],parentBuf,MAXBUFFSIZE - 1);
-				if (isalpha(parentBuf[0])) {
-					write(STDOUT_FILENO, parentBuf, strlen(parentBuf));
-					write(STDOUT_FILENO, "\n", 1);
-				}
+				if (
+				close(pipefd[0]);
 			}
+
+			freeArgList(&argv, argc);
+
 		}
 
 		memset(tempString, '\0', MAXCOMMANDSIZE);
@@ -94,10 +87,7 @@ int main(int argc, char **argv) {
 	}
 	
 	write(STDOUT_FILENO, "> ", 2);
-
-	freeArgList(&argv1, argc1);
 	free(tempString);
-	free(parentBuf);
 
 	return 1;
 }
