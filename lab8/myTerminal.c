@@ -23,7 +23,7 @@ void execCommand(int argc, char** argv, int fdWrite);
 int main(int argc, char **argv) {
 
 	if (argc != 2) {
-		perror("invalid number of arguments\n");
+		printf("invalid number of arguments\n");
 		return 1;
 	}
 
@@ -48,7 +48,7 @@ int main(int argc, char **argv) {
 	while((tempString = fgets(tempString, MAXCOMMANDSIZE, commandFile)) != NULL) {
 
 		write(STDOUT_FILENO,"> ",sizeof(char)*2);
-		write(STDOUT_FILENO,tempString,sizeof(char)*strlen(tempString) + 1);
+		write(STDOUT_FILENO,tempString,sizeof(char)*strlen(tempString));
 		argc1 = 0;
 
 		if (isValidArg(tempString)) { /*If it is not empty or only with spaces*/
@@ -77,8 +77,8 @@ int main(int argc, char **argv) {
 				close(pipefd[1]);
 				read(pipefd[0],parentBuf,MAXBUFFSIZE - 1);
 				if (isalpha(parentBuf[0])) {
-					write(STDOUT_FILENO, parentBuf, strlen(parentBuf));
-					write(STDOUT_FILENO, "\n", 1);
+					write(STDOUT_FILENO, parentBuf, sizeof(char)*strlen(parentBuf));
+					write(STDOUT_FILENO, "\n", sizeof(char)*1);
 				}
 			}
 
@@ -87,12 +87,12 @@ int main(int argc, char **argv) {
 
 		memset(tempString, '\0', MAXCOMMANDSIZE);
 
-		write(STDOUT_FILENO, "\n", 1);
+		write(STDOUT_FILENO, "\n", sizeof(char)*1);
 		k++;
 
 	}
-	
-	write(STDOUT_FILENO, "> ", 2);
+
+	write(STDOUT_FILENO, "> ", sizeof(char)*2);
 
 	free(tempString);
 	tempString = NULL;
