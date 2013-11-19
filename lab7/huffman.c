@@ -13,6 +13,8 @@ struct charBinary {
 	char c;
 };
 
+void clearStr(char **str);
+
 void printCharBinaryArray(struct charBinary[], int size);
 
 int getSizeOfCharBinaryArray(FILE *code);
@@ -93,8 +95,10 @@ int main(int argc, char **argv) {
 
 	i = 0, c = 0;
 	char *binaryString = malloc(sizeof(char)*MAXBINARYSTRING);
+  unsigned char binary = 00000000;
 
 	while((c = fgetc(code)) != EOF) {
+
 		if (i < 1) {
 			charBinaryArray[i].c = c;
 			fgetc(code);
@@ -102,25 +106,29 @@ int main(int argc, char **argv) {
 			binary = convertToBinary(binaryString);
 			charBinaryArray[i].binary = binary;
 			i++;
-
+      clearStr(&binaryString);
 		}
+
 		else if (c == '\n') {
 			c = fgetc(code);
 			fgetc(code);
-			binary = fgetc(code);
+			binaryString = fgets(binaryString,MAXBINARYSTRING,code);
+      printf("%s\n",binaryString);
 			charBinaryArray[i].c = c;
 			charBinaryArray[i].binary = binary;
 			i++;
 		}
+
 		else {
 			continue;
 		}
+
 	}
 	free(binaryString);
 	binaryString = NULL;
 
 	c = 0;
-	printCharBinaryArray(charBinaryArray, charBinaryArraySize);
+	//printCharBinaryArray(charBinaryArray, charBinaryArraySize);
 
 	//encode input
 	 
@@ -186,20 +194,44 @@ int getSizeOfCharBinaryArray(FILE *code) {
 	return charBinaryArraySize;
 }
 
+int twoToThePowerOf(int i) {
+				if (i = 1) {
+								return 1;
+				}
+        int j, twoPow;
+        twoPow = 1;
+        for(j = 0;j < i;j++) {
+                twoPow *= 2;
+        }
+        return twoPow;
+}
 
 unsigned char convertToBinary(char *binaryString) {
-	unsigned char binary = 00000000;
-	char tempBit = 0;
-	int i = strlen(binaryString) - 1;
-	int j = 0, twoPow = 1;
-	while(i > 0) {
-		if (*(binaryString + i) == 1) {
-			for(j;j < i;j++) {
-				twoPwo *= 2;
-			}
-			binary | twoPwo;
-		}
-		i--;
-	}
-	return binary;
+				printf("binary string is %s\n",binaryString);
+        unsigned char binary = 00000000;
+        char tempBit = 0;
+        int i, j, k, twoPow;
+        i = strlen(binaryString) - 1;
+        j = 0, twoPow = 1;
+        k = 0;
+        while(i >= 0) {
+                if (*(binaryString + k) == '1') {
+                        twoPow = twoToThePowerOf(i);
+                        binary = binary | twoPow;
+                        printf("binary is %d\n", binary);
+                }
+                twoPow = 1;
+                i--;
+                k++;
+        }
+        return binary;
 }
+
+void clearStr(char **str) {
+				int len = strlen(*str);
+				for(len;len > 0;len++) {
+								*(*str + len) = '\0';
+								len--;
+				}
+}
+
