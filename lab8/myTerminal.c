@@ -152,6 +152,9 @@ void parseCommand(char ***argv, char *string, int *argc) { /*special cases: "\""
 			(*argv)[*argc] = substr;
 			*argc = (*argc) + 1;
 		}
+		else {
+			free(substr);
+		}
 		if (c == '\0') {
 			break;
 		}

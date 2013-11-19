@@ -67,6 +67,7 @@ void parseCommand(char ***argv, char *string, int *argc) { /*special cases: "\""
 }
 
 void freeArgList(char ***argv, int argc) {
+	printf("args:\n\n");
 	int i;
 	for(i = 0 ; i < argc; i++) {
 		printf("%s\n",(*argv)[i]);
@@ -75,14 +76,28 @@ void freeArgList(char ***argv, int argc) {
 	}
 	free(*argv);
 	*argv = NULL;
+	printf("---------------------\n");
 }
 
 
 int main(void) {
 	char **argv;
-	char *string = "gcc \"hello world\" >  txt.txt\0";
-	int argc = 0;
-	parseCommand(&argv, string, &argc);
+	char *string1= "gcc \"hello world\" >  txt.txt\0";
+	char *string2 ="grep echo \"Wow!      <-This TAB is not an arg delimiter!\"";
+	char *string3 = "sudo -s";
+	char *string4 = "cat hello.c";
+	int argc;
+	argc = 0;
+	parseCommand(&argv, string1, &argc);
+	freeArgList(&argv, argc);
+	argc = 0;
+	parseCommand(&argv, string2, &argc);
+	freeArgList(&argv, argc);
+	argc = 0;
+	parseCommand(&argv, string3, &argc);
+	freeArgList(&argv, argc);
+	argc = 0;
+	parseCommand(&argv, string4, &argc);
 	freeArgList(&argv, argc);
 	return 0;
 }
