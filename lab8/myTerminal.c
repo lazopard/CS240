@@ -1,10 +1,11 @@
-#define MAXARGLEN 50
-#define MAXBUFFSIZE 50
+#define MAXNUMARG 20
+#define MAXARGLEN 100 
+#define MAXBUFFSIZE 100
 #define MAXCOMMANDSIZE 400
 
 #include <string.h>
 #include <stdio.h>
-#include <stdlib.h>
+#include <stdlib.h> 
 #include <unistd.h>
 #include <ctype.h>
 #include "myTerminal.h"
@@ -39,10 +40,9 @@ int main(int argc, char **argv) {
 	pid_t cpid;
 
 	int k = 1;
-	int len = 0;
-
-	char **argv1 = malloc(sizeof(char*)*len);
 	char *parentBuf = malloc(sizeof(char)*MAXBUFFSIZE);
+
+	char **argv1;
 	int argc1;
 
 	while((tempString = fgets(tempString, MAXCOMMANDSIZE, commandFile)) != NULL) {
@@ -52,9 +52,6 @@ int main(int argc, char **argv) {
 		argc1 = 0;
 
 		if (isValidArg(tempString)) { /*If it is not empty or only with spaces*/
-
-			len = strlen(tempString);
-			
 
 			parseCommand(&argv1, tempString, &argc1);
 
@@ -84,6 +81,8 @@ int main(int argc, char **argv) {
 					write(STDOUT_FILENO, "\n", 1);
 				}
 			}
+
+			freeArgList(&argv1, argc1);
 		}
 
 		memset(tempString, '\0', MAXCOMMANDSIZE);
@@ -95,9 +94,10 @@ int main(int argc, char **argv) {
 	
 	write(STDOUT_FILENO, "> ", 2);
 
-	freeArgList(&argv1, argc1);
 	free(tempString);
+	tempString = NULL;
 	free(parentBuf);
+	parentBuf = NULL;
 
 	return 1;
 }
@@ -114,9 +114,12 @@ int isValidArg(char *str) {
 }
 
 void parseCommand(char ***argv, char *string, int *argc) { /*special cases: "\"", " " */
+
+	*argv = malloc(sizeof(char *)*MAXNUMARG);
 	int i,k;
-	i = 0;
 	char c;
+	i = 0;
+
 	while(1) {
 		k = 0;
 		char *substr = malloc(sizeof(char)*MAXARGLEN);
