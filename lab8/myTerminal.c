@@ -1,15 +1,15 @@
 #define MAXNUMARG 20
-#define MAXARGLEN 100 
+#define MAXARGLEN 100
 #define MAXBUFFSIZE 100
 #define MAXCOMMANDSIZE 400
 
 #include <string.h>
 #include <stdio.h>
-#include <stdlib.h> 
+#include <stdlib.h>
 #include <unistd.h>
 #include <ctype.h>
 #include "myTerminal.h"
-#include <sys/stat.h> 
+#include <sys/stat.h>
 #include <fcntl.h>
 
 int isValidArg(char *arg);
@@ -66,9 +66,9 @@ int main(int argc, char **argv) {
 				perror("fork failed\n");
 				exit(EXIT_FAILURE);
 			}
-			
+
 			if (cpid == 0) { /*if it is the child process*/
-				
+
 				close(pipefd[0]);
 				execCommand(argc1, argv1, pipefd[1]);
 				return 0;
@@ -77,8 +77,7 @@ int main(int argc, char **argv) {
 				close(pipefd[1]);
 				read(pipefd[0],parentBuf,MAXBUFFSIZE - 1);
 				if (isalpha(parentBuf[0])) {
-					write(STDOUT_FILENO, parentBuf, sizeof(char)*strlen(parentBuf));
-					write(STDOUT_FILENO, "\n", sizeof(char)*1);
+					write(STDOUT_FILENO, parentBuf, sizeof(char)*strlen(parentBuf) - 1);
 				}
 			}
 
@@ -87,7 +86,7 @@ int main(int argc, char **argv) {
 
 		memset(tempString, '\0', MAXCOMMANDSIZE);
 
-		write(STDOUT_FILENO, "\n", sizeof(char)*1);
+		write(STDOUT_FILENO, "\n", sizeof(char));
 		k++;
 
 	}
@@ -123,6 +122,7 @@ void parseCommand(char ***argv, char *string, int *argc) { /*special cases: "\""
 	while(1) {
 		k = 0;
 		char *substr = malloc(sizeof(char)*MAXARGLEN);
+		memset(substr,0,sizeof(char)*MAXARGLEN);
 		while((c = string[i]) != '\0') {
 			if (c == ' ') {
 				i++;
@@ -139,16 +139,17 @@ void parseCommand(char ***argv, char *string, int *argc) { /*special cases: "\""
 				}
 				substr[k] = c;
 				i++;
+				k++;
 				break;
 			}
-			else  {
+			else {
 				substr[k] = c;
 				k++;
 				i++;
 			}
 		}
 		if (isValidArg(substr)) {
-			substr[k+1] = '\0';
+			substr[k] = '\0';
 			(*argv)[*argc] = substr;
 			*argc = (*argc) + 1;
 		}
@@ -158,15 +159,17 @@ void parseCommand(char ***argv, char *string, int *argc) { /*special cases: "\""
 		if (c == '\0') {
 			break;
 		}
-	} 
+	}
 }
 
 void freeArgList(char ***argv, int argc) {
 	int i;
 	for(i = 0 ; i < argc; i++) {
+		memset((*argv)[i], 0, sizeof(char)*MAXARGLEN);
 		free((*argv)[i]);
 		(*argv)[i] = NULL;
 	}
 	free(*argv);
 	*argv = NULL;
 }
+

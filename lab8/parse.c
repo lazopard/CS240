@@ -17,7 +17,6 @@ int isValidArg(char *str) {
 	return 0;
 }
 
-
 void parseCommand(char ***argv, char *string, int *argc) { /*special cases: "\"", " " */
 
 	*argv = malloc(sizeof(char *)*MAXNUMARG);
@@ -28,6 +27,7 @@ void parseCommand(char ***argv, char *string, int *argc) { /*special cases: "\""
 	while(1) {
 		k = 0;
 		char *substr = malloc(sizeof(char)*MAXARGLEN);
+		memset(substr,0,sizeof(char)*MAXARGLEN);
 		while((c = string[i]) != '\0') {
 			if (c == ' ') {
 				i++;
@@ -44,16 +44,17 @@ void parseCommand(char ***argv, char *string, int *argc) { /*special cases: "\""
 				}
 				substr[k] = c;
 				i++;
+				k++;
 				break;
 			}
-			else  {
+			else {
 				substr[k] = c;
 				k++;
 				i++;
 			}
 		}
 		if (isValidArg(substr)) {
-			substr[k+1] = '\0';
+			substr[k] = '\0';
 			(*argv)[*argc] = substr;
 			*argc = (*argc) + 1;
 		}
@@ -67,18 +68,15 @@ void parseCommand(char ***argv, char *string, int *argc) { /*special cases: "\""
 }
 
 void freeArgList(char ***argv, int argc) {
-	printf("args:\n\n");
 	int i;
 	for(i = 0 ; i < argc; i++) {
-		printf("%s\n",(*argv)[i]);
+		memset((*argv)[i], 0, sizeof(char)*MAXARGLEN);
 		free((*argv)[i]);
 		(*argv)[i] = NULL;
 	}
 	free(*argv);
 	*argv = NULL;
-	printf("---------------------\n");
 }
-
 
 int main(void) {
 	char **argv;
@@ -101,4 +99,3 @@ int main(void) {
 	freeArgList(&argv, argc);
 	return 0;
 }
-
