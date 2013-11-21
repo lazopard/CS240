@@ -1,24 +1,5 @@
-args:
+> hello world
 
-gcc
-"hello world"
->
-txt.txt
----------------------
-args:
+> my name is leo
 
-grepp
-echol
-"Wow!      <-This TAB is not an arg delimiter!"
-t
----------------------
-args:
-
-sudop
--sh
----------------------
-args:
-
-cat÷
-hello.cw
----------------------
+> 

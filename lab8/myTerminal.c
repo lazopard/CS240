@@ -1,7 +1,7 @@
-#define MAXNUMARG 20
-#define MAXARGLEN 100
-#define MAXBUFFSIZE 100
-#define MAXCOMMANDSIZE 400
+#define MAXNUMARG 1000
+#define MAXARGLEN 1000
+#define MAXBUFFSIZE 1000
+#define MAXCOMMANDSIZE 1000
 
 #include <string.h>
 #include <stdio.h>
@@ -75,9 +75,11 @@ int main(int argc, char **argv) {
 			}
 			else {
 				close(pipefd[1]);
-				read(pipefd[0],parentBuf,MAXBUFFSIZE - 1);
-				if (isalpha(parentBuf[0])) {
+				read(pipefd[0],parentBuf,sizeof(char)*MAXBUFFSIZE - 1);
+				if (parentBuf[strlen(parentBuf) + 2] == 1) {
+					/*parentBuf[strlen(parentBuf)] = '\n';*/
 					write(STDOUT_FILENO, parentBuf, sizeof(char)*strlen(parentBuf) - 1);
+					/*write(STDOUT_FILENO, "\n", sizeof(char));*/
 				}
 			}
 
@@ -105,7 +107,7 @@ int isValidArg(char *str) {
 	int i;
 	for(i = 0; i < strlen(str); i++) {
 		if (isalnum(str[i]) || str[i] == '>'
-				|| str[i] == '|' || str[i] == '&') {
+				|| str[i] == '|' || str[i] == '&' || str[i] == '<') {
 			return 1;
 		}
 	}

@@ -1,8 +1,9 @@
 CC=gcc
-CFLAGS=-Wall -m32 -std=gnu89 -g -o myTerminal
+CFLAGS=-Wall -m32 -g -fprofile-arcs -ftest-coverage -o
+
 all: myTerminal
 
 myTerminal: myTerminal.c
-	$(CC) $(CFLAGS) myTerminal.c libmyTerminal_ref.a
+	$(CC) $(CFLAGS) myTerminal myTerminal.c libmyTerminal_ref.a
 clean:
 	rm myTerminal
