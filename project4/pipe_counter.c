@@ -12,6 +12,8 @@
 
 int wordCount = 0;
 
+int keyCmp(const char *keyword, char *string, int keyLen, int currentIndex);
+
 int main(int argc, char **argv) {
 
 	/*Args processing*/
@@ -101,8 +103,8 @@ int main(int argc, char **argv) {
 
 	/*word counting starts */
 
-	int i;
 	pid_t cpid;
+
 	for(i = 0; i < numForks;i++) {
 		cpid = fork();
 		if (cpid < 0) {
@@ -123,18 +125,25 @@ int main(int argc, char **argv) {
 	return 0;
 }
 
-int keyCmp(const char *keyword, char *string, int keyLen, int currentIndex) { // hello
+int isDelimiter(char c);
+
+/*compare string with keyword*/
+
+int keyCmp(const char *keyword, char *string, int keyLen, int currentIndex) {
 	int i;
 	for(i=0;i < keyLen; i++) {
 		if (string[i + currentIndex] != keyword[i])
 			return 0;
 	}
 	if (currentIndex == 0)
-		return (isDelimiter(keyword[i + currentIndex])) /*if the word is isolated return 1*/
+		return (isDelimiter(keyword[i + currentIndex])); /*if the word is isolated return 1*/
 	else
-		return (isDelimiter(string[i + currentIndex]) && isDelimiter(string[currentIndex - 1])
+		return (isDelimiter(string[i + currentIndex]) && isDelimiter(string[currentIndex - 1]));
 }
+
+/*check if the char C is a delimiter as defined in the handout*/
 
 int isDelimiter(char c) {
 	return (c == ' ' || c == '\t' || c == '\n');
 }
+
