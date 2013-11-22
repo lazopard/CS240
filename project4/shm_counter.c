@@ -7,6 +7,8 @@
  *     writes struct proc_key_count to the shared memory pointed to by shared_mem.
  */
 
+#define MAXKEYSIZE 50
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
@@ -57,14 +59,92 @@ void destroy_sharedmem() {
  * TODO: Create whatever functions you need here.
  */
 
-int main() {
-	
-	/**
-	 * TODO: Complete the main function.
-	 * Be sure to set keys_cnt, keywords, shm_id, and shared_mem to their actual values. 
-	 */
+/**
+ * TODO: Complete the main function.
+ * Be sure to set keys_cnt, keywords, shm_id, and shared_mem to their actual values. 
+ */
+
+int main(int argc, char **argv) {
+
+	/*Args processing*/
+
+	if (argc != 7) {
+		printf("invalid number of args\n");
+		return 1;
+	}
+
+	char *input, *output, *keyword;
+	int bufferSize;
+
+	int foundInput, foundOutput, foundKeyword, foundBufferSize;
+	foundInput=foundOutput=foundKeyword=foundBufferSize=0;
+
+	int i;
+
+	for(i=1;i < argc;i++) {
+
+		if (!strcmp(argv[i], INPUT)) {
+			input = argv[i+1];
+			i++;
+		}
+		else if (!strcmp(argv[i], OUTPUT)) {
+			output = argv[i+1];
+			i++;
+		}
+		else if (!strcmp(argv[i], KEYWORD)) {
+			keyword = argv[i+1];
+			i++;
+		}
+		else {
+			printf("Invalid argument...\n");
+			return 1;
+		}
+	}
+	/*Args processing end*/
+
+	keywords = malloc(sizeof(char *)*MAXKEYWORDS);
+
+	/*Initialize keyword array*/
+
+	FILE *keywordFile = fopen(keyword,"r");
+	fillKeyArray(&keywords, keywordFile);
+
+	/*Initialize file streams*/
+
+	FILE *inputFile = fopen(input, "r");
+	FILE *outputFile = fopen(output, "w");
+
+	/*free memory*/
+
+	fclose(keywordFile);
+	fclose(inputFile);
+	fclose(outputFile);
 
 	destroy_sharedmem();
-	
+
 	return 0;
-} //main()
+}
+
+void fillKeyArray(char ***keywords, FILE *keywordFile) {
+	char c;
+	int i, j; 
+	i=j=0;
+	while((c = fgetc(keywordFile)) != EOF) {
+		if (isValidC(c)) {
+			(*keywords)[i] = malloc(sizeof(char)*MAXKEYSIZE);
+			while(isValidC(c)) {
+				(*keywords)[j] = c;
+				keys_cnt++;
+				j++;
+				c = fgetc(keywordFile);
+			}
+			i++;
+		}
+		c = fgetc(keywordFile);
+	}
+}
+
+int isValidC(char c) {
+	return c >= 'A' && c <= 'Z' || c >= 'a' && c <= 'z' || c == ',' 
+			|| c =='.' || c == ';' || c == '!';
+}
