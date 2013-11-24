@@ -8,6 +8,10 @@
  */
 
 #define MAXKEYSIZE 50
+#define INPUT "-i"
+#define OUTPUT "-o"
+#define BUFFERSIZE "-b"
+#define KEYWORD "-k"
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -41,6 +45,7 @@ void*	shared_mem	= NULL;			/* pointer to shared memory returned by SHMGET */
  *
  * Clear the shared memory and dynamic allocated memory, if any.
  */
+
 void destroy_sharedmem() {
 
 	/**
@@ -64,6 +69,10 @@ void destroy_sharedmem() {
  * Be sure to set keys_cnt, keywords, shm_id, and shared_mem to their actual values. 
  */
 
+int isValidC(char c);
+
+void fillKeyArray(char ***keywords, FILE *keywordFile);
+
 int main(int argc, char **argv) {
 
 	/*Args processing*/
@@ -74,7 +83,6 @@ int main(int argc, char **argv) {
 	}
 
 	char *input, *output, *keyword;
-	int bufferSize;
 
 	int foundInput, foundOutput, foundKeyword, foundBufferSize;
 	foundInput=foundOutput=foundKeyword=foundBufferSize=0;
@@ -102,10 +110,10 @@ int main(int argc, char **argv) {
 	}
 	/*Args processing end*/
 
-	keywords = malloc(sizeof(char *)*MAXKEYWORDS);
 
 	/*Initialize keyword array*/
 
+	keywords = malloc(sizeof(char *)*MAXKEYSIZE);
 	FILE *keywordFile = fopen(keyword,"r");
 	fillKeyArray(&keywords, keywordFile);
 
@@ -114,7 +122,9 @@ int main(int argc, char **argv) {
 	FILE *inputFile = fopen(input, "r");
 	FILE *outputFile = fopen(output, "w");
 
-	/*free memory*/
+
+
+	/*free memory, close streams*/
 
 	fclose(keywordFile);
 	fclose(inputFile);
@@ -133,7 +143,7 @@ void fillKeyArray(char ***keywords, FILE *keywordFile) {
 		if (isValidC(c)) {
 			(*keywords)[i] = malloc(sizeof(char)*MAXKEYSIZE);
 			while(isValidC(c)) {
-				(*keywords)[j] = c;
+				(**keywords)[j] = c;
 				keys_cnt++;
 				j++;
 				c = fgetc(keywordFile);
@@ -145,6 +155,6 @@ void fillKeyArray(char ***keywords, FILE *keywordFile) {
 }
 
 int isValidC(char c) {
-	return c >= 'A' && c <= 'Z' || c >= 'a' && c <= 'z' || c == ',' 
-			|| c =='.' || c == ';' || c == '!';
+	return (c >= 'A' && c <= 'Z') || (c >= 'a' && c <= 'z') || (c == ',')
+			|| (c =='.') || (c == ';') || (c == '!') ;
 }
