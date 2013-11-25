@@ -110,6 +110,10 @@ int main(int argc, char **argv) {
 
 	int fileSizePerChild = (size-mainBytes)/3;
 
+	char *string = malloc(sizeof(char)*size + 1);
+	fread(string,sizeof(char),size, inputFile);
+	free(string);
+
 	/*Counting starts */
 
 	for(i = 0; i < numForks;i++) {
@@ -122,7 +126,7 @@ int main(int argc, char **argv) {
 			char *tempString = malloc(sizeof(char)*fileSizePerChild);
 			fseek(inputFile,i*fileSizePerChild, SEEK_SET);
 			fread(tempString, sizeof(char), fileSizePerChild, inputFile);
-			wordCount += countWords(tempString, keyword);
+			countWords(tempString, keyword);
 			free(tempString);
 			_exit(0);
 		}
@@ -131,7 +135,7 @@ int main(int argc, char **argv) {
 				char *tempString = malloc(sizeof(char)*mainBytes);
 				fseek(inputFile,fileSizePerChild*numForks, SEEK_SET);
 				fread(tempString, sizeof(char), mainBytes, inputFile);
-				wordCount += countWords(tempString, keyword);
+				countWords(tempString, keyword);
 				free(tempString);
 				mainCountIsComplete = 1;
 			}
@@ -143,7 +147,6 @@ int main(int argc, char **argv) {
 	/*write to output */
 
 	fprintf(outputFile, "%d\n",wordCount);
-	wordCount = 0;
 
 	/*free memory and close files*/
 
@@ -186,5 +189,6 @@ int countWords(char *string, const char *keyword) {
 		else 
 			i++;
 	}
+	printf("count is %d\n", count);
 	return count;
 }
