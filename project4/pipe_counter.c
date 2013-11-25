@@ -95,37 +95,46 @@ int main(int argc, char **argv) {
 	/*Initialize variables for counting */
 
 	int pipe_fds[2];
-	int read_fd;
-	int write_fd;
-	pipe(pipe_fds);
-	read_fd = pipe_fds[0];
-	write_fd = pipe_fds[1];
 
 	pid_t cpid;
 
 	int childCount = 0;
+	int cCount = 0; /*buffer from where count from child processes are read*/
 	int totalCount = 0;
 	int mainCountIsComplete = 0;
 
-	int fileSizePerChild = (size-mainBytes)/3;
+	int fileSizePerChild = (size-mainBytes)/numForks;
 
 	/*Counting starts */
 
 	for(i = 0; i < numForks;i++) {
+		cCount=childCount=0;
+
+		if (pipe(pipe_fds) == -1) {
+			perror("pipe failed...\n");
+			exit(EXIT_FAILURE);
+		}
+
 		cpid = fork();
-		if (cpid < 0) {
+
+		if (cpid < 0) { /*if ford failed*/
 			perror("fork failed...\n");
 			return 1;
 		}
 		else if (cpid == 0) { /*child process*/
+			close(pipe_fds[0]);
 			char *tempString = malloc(sizeof(char)*fileSizePerChild);
 			fseek(inputFile,i*fileSizePerChild, SEEK_SET);
 			fread(tempString, sizeof(char), fileSizePerChild, inputFile);
-			countWords(tempString, keyword);
+			childCount = countWords(tempString, keyword);
+			write(pipe_fds[1], &childCount, sizeof(int));
 			free(tempString);
 			_exit(0);
 		}
 		else { /*parent process*/
+			close(pipe_fds[1]);
+			read(pipe_fds[0], &cCount, sizeof(int));
+			totalCount += cCount;
 			if (!mainCountIsComplete) {
 				char *tempString = malloc(sizeof(char)*mainBytes);
 				fseek(inputFile,fileSizePerChild*numForks, SEEK_SET);
