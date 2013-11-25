@@ -39,11 +39,3 @@ int countWords(char *string, const char *keyword) {
 	}
 	return count;
 }
-
-int main() {
-	const char *keyword = "dream";
-	int keylen = strlen(keyword);
-	FILE *input = fopen("adreamwithinadream", "r");
-
-	fclose(input);
-}

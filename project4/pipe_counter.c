@@ -29,8 +29,8 @@ int main(int argc, char **argv) {
 	const char *keyword;
 	int bufferSize;
 
-	int foundInput, foundOutput, foundKeyword, foundBufferSize;
-	foundInput=foundOutput=foundKeyword=foundBufferSize=0;
+	/*int foundInput, foundOutput, foundKeyword, foundBufferSize;
+	foundInput=foundOutput=foundKeyword=foundBufferSize=0;*/
 
 	int i;
 
@@ -98,12 +98,13 @@ int main(int argc, char **argv) {
 
 	/*Initialize variables for counting */
 
-	int pipe_fds[2];
+	/*int pipe_fds[2];
 	int read_fd;
 	int write_fd;
 	pipe(pipe_fds);
 	read_fd = pipe_fds[0];
 	write_fd = pipe_fds[1];
+	*/
 
 	pid_t cpid;
 
@@ -129,7 +130,6 @@ int main(int argc, char **argv) {
 		}
 		else { /*parent process*/
 			if (!mainCountIsComplete) {
-				printf("got here\n");
 				char *tempString = malloc(sizeof(char)*mainBytes);
 				fseek(inputFile,fileSizePerChild*numForks, SEEK_SET);
 				fread(tempString, sizeof(char), mainBytes, inputFile);
@@ -181,15 +181,17 @@ int isDelimiter(char c) {
 /*given a STRING count number of times KEYWORD appears*/
 
 int countWords(char *string, const char *keyword) {
-	int i = 0;
 	int count = 0;
-	char c;
-	while((c = string[i]) != EOF) {
-		if (c == keyword[0]) {
-			if (keyCmp(keyword, string + i, i))
-				count++;
-		}
+	char *isolatedKey = malloc(sizeof(char)*strlen(keyword) + 3);
+	char *tempString;
+	tempString = strstr(string, isolatedKey);
+	if (tempString != NULL) {
+		count++;
+		while((tempString = strstr(tempString, isolatedKey)) != NULL)
+			count++;
+		return 1;
 	}
-	return count;
+	else 
+		return 0;
 }
 
