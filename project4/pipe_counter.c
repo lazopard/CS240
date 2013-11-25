@@ -10,8 +10,6 @@
 #include <sys/types.h>
 #include <unistd.h>
 
-int wordCount = 0;
-
 int countWords(char *string, const char *keyword);
 
 int main(int argc, char **argv) {
@@ -96,23 +94,20 @@ int main(int argc, char **argv) {
 
 	/*Initialize variables for counting */
 
-	/*int pipe_fds[2];
+	int pipe_fds[2];
 	int read_fd;
 	int write_fd;
 	pipe(pipe_fds);
 	read_fd = pipe_fds[0];
 	write_fd = pipe_fds[1];
-	*/
 
 	pid_t cpid;
 
+	int childCount = 0;
+	int totalCount = 0;
 	int mainCountIsComplete = 0;
 
 	int fileSizePerChild = (size-mainBytes)/3;
-
-	char *string = malloc(sizeof(char)*size + 1);
-	fread(string,sizeof(char),size, inputFile);
-	free(string);
 
 	/*Counting starts */
 
@@ -135,7 +130,7 @@ int main(int argc, char **argv) {
 				char *tempString = malloc(sizeof(char)*mainBytes);
 				fseek(inputFile,fileSizePerChild*numForks, SEEK_SET);
 				fread(tempString, sizeof(char), mainBytes, inputFile);
-				countWords(tempString, keyword);
+				totalCount += countWords(tempString, keyword);
 				free(tempString);
 				mainCountIsComplete = 1;
 			}
@@ -146,7 +141,7 @@ int main(int argc, char **argv) {
 
 	/*write to output */
 
-	fprintf(outputFile, "%d\n",wordCount);
+	fprintf(outputFile, "%d\n",totalCount);
 
 	/*free memory and close files*/
 
@@ -189,6 +184,5 @@ int countWords(char *string, const char *keyword) {
 		else 
 			i++;
 	}
-	printf("count is %d\n", count);
 	return count;
 }
