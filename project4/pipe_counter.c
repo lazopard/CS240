@@ -12,8 +12,6 @@
 
 int wordCount = 0;
 
-int keyCmp(const char *keyword, char *string, int currentIndex);
-
 int countWords(char *string, const char *keyword);
 
 int main(int argc, char **argv) {
@@ -155,23 +153,6 @@ int main(int argc, char **argv) {
 	return 0;
 }
 
-int isDelimiter(char c);
-
-/*compare string with keyword*/
-
-int keyCmp(const char *keyword, char *string, int currentIndex) {
-	int i;
-	int keyLen = strlen(keyword);
-	for(i=0;i < keyLen; i++) {
-		if (string[i + currentIndex] != keyword[i])
-			return 0;
-	}
-	if (currentIndex == 0)
-		return (isDelimiter(keyword[i + currentIndex])); /*if the word is isolated return 1*/
-	else
-		return (isDelimiter(string[i + currentIndex]) && isDelimiter(string[currentIndex - 1]));
-}
-
 /*check if the char C is a delimiter as defined in the handout*/
 
 int isDelimiter(char c) {
@@ -181,17 +162,29 @@ int isDelimiter(char c) {
 /*given a STRING count number of times KEYWORD appears*/
 
 int countWords(char *string, const char *keyword) {
-	int count = 0;
-	char *isolatedKey = malloc(sizeof(char)*strlen(keyword) + 3);
-	char *tempString;
-	tempString = strstr(string, isolatedKey);
-	if (tempString != NULL) {
+	char c;
+	int keylen = strlen(keyword);
+	int i = 0;
+	int matchlen, count;
+	count = 0;
+	if (!strncmp(string,keyword,sizeof(char)*keylen)
+			&& isDelimiter(*(string + keylen))) {
 		count++;
-		while((tempString = strstr(tempString, isolatedKey)) != NULL)
-			count++;
-		return 1;
+		i += keylen;
+	} 
+	while((c = string[i]) != EOF) {
+		matchlen = 0;
+		if (c == keyword[0] && isDelimiter(*(string + i - 1))
+				&& isDelimiter(*(string + i + keylen))) {
+			while((c = string[i + matchlen]) == keyword[matchlen])
+				matchlen++;
+			if (matchlen == keylen) {
+				count++;
+			}
+			i += matchlen;
+		}
+		else 
+			i++;
 	}
-	else 
-		return 0;
+	return count;
 }
-
