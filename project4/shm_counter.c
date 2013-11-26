@@ -6,14 +6,6 @@
  *  2. Each child searches part of the input file for the keywords, and
  *     writes struct proc_key_count to the shared memory pointed to by shared_mem.
  */
-
-#define MAXKEYSIZE 50
-#define KEYLENGTH 20
-#define INPUT "-i"
-#define OUTPUT "-o"
-#define BUFFERSIZE "-b"
-#define KEYWORD "-k"
-
 #include <stdio.h>
 #include <ctype.h>
 #include <stdlib.h>
@@ -28,8 +20,7 @@
 #include <errno.h>			
 #include <stddef.h>
 #include <semaphore.h>
- 
-#include "interface.h"
+
 #include "shm_counter.h"
 
 /**
@@ -53,13 +44,13 @@ void destroy_sharedmem() {
 	/**
 	 * Autograder function to check if all data stored in shared memory is correct.
 	 * Do not free the memory before this function is called.
-	*/
+	 */
 	shmem_checker();
 
 	/**
 	 * TODO: Write your code to clean all shared memory you created here.
 	 */
-	 
+
 } //destroy_sharedmem()
 
 /**
@@ -85,7 +76,7 @@ int main(int argc, char **argv) {
 	}
 
 	char *input, *output, *keyword;
-	
+
 	int i;
 
 	for(i=1;i < argc;i++) {
@@ -115,18 +106,18 @@ int main(int argc, char **argv) {
 
 	keywords = malloc(sizeof(char *)*MAXKEYSIZE);
 	FILE *keywordFile = fopen(keyword,"r");
-	fillKeyArray(&keywords, keywordFile);
+	keys_cnt = fillKeyArray(&keywords, keywordFile);
+	fclose(keywordFile);
 
 	/*Initialize file streams*/
 
 	FILE *inputFile = fopen(input, "r");
 	FILE *outputFile = fopen(output, "w");
 
-
+	/*Count words*/
 
 	/*free memory, close streams*/
 
-	fclose(keywordFile);
 	fclose(inputFile);
 	fclose(outputFile);
 
@@ -168,7 +159,7 @@ int fillKeyArray(char ***keywords, FILE *keywordFile) {
 }  
 
 int isDelimiter(char c) {
-    return (c == ' ' || c == '\t' || c == '\n');
+	return (c == ' ' || c == '\t' || c == '\n');
 }
 
 /*given a STRING count number of times KEYWORD appears*/

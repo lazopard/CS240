@@ -45,6 +45,10 @@ int main(int argc, char **argv) {
 		}
 		else if (!strcmp(argv[i], BUFFERSIZE)) {
 			bufferSize = atoi(argv[i+1]);
+			if (bufferSize <= 0) {
+				printf("Invalid buffer size\n");
+				return 1;
+			}
 			i++;
 		}
 		else {
@@ -80,7 +84,6 @@ int main(int argc, char **argv) {
 
 	int numForks = size/bufferSize;
 
-
 	/*get number of bytes for main*/
 
 	int mainCountIsComplete = 0;
@@ -107,6 +110,7 @@ int main(int argc, char **argv) {
 	/*Counting starts */
 
 	for(i = 0; i < numForks;i++) {
+
 		cCount=childCount=0;
 
 		if (pipe(pipe_fds) == -1) {
@@ -147,9 +151,7 @@ int main(int argc, char **argv) {
 
 	/*Counting ends*/
 
-	/*write to output */
-
-	fprintf(outputFile, "%d\n",totalCount);
+	fprintf(outputFile, "%d\n", totalCount);
 
 	/*free memory and close files*/
 
