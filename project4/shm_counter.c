@@ -8,12 +8,14 @@
  */
 
 #define MAXKEYSIZE 50
+#define KEYLENGTH 20
 #define INPUT "-i"
 #define OUTPUT "-o"
 #define BUFFERSIZE "-b"
 #define KEYWORD "-k"
 
 #include <stdio.h>
+#include <ctype.h>
 #include <stdlib.h>
 #include <unistd.h>
 #include <sys/ipc.h>
@@ -71,7 +73,7 @@ void destroy_sharedmem() {
 
 int isValidC(char c);
 
-void fillKeyArray(char ***keywords, FILE *keywordFile);
+int fillKeyArray(char ***keywords, FILE *keywordFile);
 
 int main(int argc, char **argv) {
 
@@ -108,6 +110,7 @@ int main(int argc, char **argv) {
 			return 1;
 		}
 	}
+
 	/*Args processing end*/
 
 
@@ -135,26 +138,68 @@ int main(int argc, char **argv) {
 	return 0;
 }
 
-void fillKeyArray(char ***keywords, FILE *keywordFile) {
-	char c;
-	int i, j; 
-	i=j=0;
-	while((c = fgetc(keywordFile)) != EOF) {
-		if (isValidC(c)) {
-			(*keywords)[i] = malloc(sizeof(char)*MAXKEYSIZE);
-			while(isValidC(c)) {
-				(**keywords)[j] = c;
-				keys_cnt++;
-				j++;
-				c = fgetc(keywordFile);
-			}
-			i++;
-		}
-		c = fgetc(keywordFile);
-	}
-}
-
 int isValidC(char c) {
 	return (c >= 'A' && c <= 'Z') || (c >= 'a' && c <= 'z') || (c == ',')
-			|| (c =='.') || (c == ';') || (c == '!') ;
+		|| (c =='.') || (c == ';') || (c == '!') ;
+}
+
+int isValidLine(char *string) {
+	int i;
+	if (isspace(string[0]))
+		return 0;
+	int len = strlen(string);
+	for(i = 0; i < len; i++) {
+		if (!isValidC(string[i]) && string[i] != '\n')
+			return 0;
+	}
+	return 1;
+}
+
+int fillKeyArray(char ***keywords, FILE *keywordFile) {
+	int i = 0;
+	char *string = malloc(sizeof(char)*KEYLENGTH);
+	while((string = fgets(string, KEYLENGTH, keywordFile)) != NULL) {
+		if (isValidLine(string)) {
+			(*keywords)[i] = malloc(sizeof(char)*strlen(string));
+			strcpy((*keywords)[i], string);
+			i++;
+		}
+		memset(string, '\0', KEYLENGTH);
+	}
+	free(string);
+	return i - 1;
+}  
+
+int isDelimiter(char c) {
+    return (c == ' ' || c == '\t' || c == '\n');
+}
+
+/*given a STRING count number of times KEYWORD appears*/
+
+int countWords(char *string, const char *keyword) {
+	char c;
+	int keylen = strlen(keyword);
+	int i = 0;
+	int matchlen, count;
+	count = 0;
+	if (!strncmp(string,keyword,sizeof(char)*keylen)
+			&& isDelimiter(*(string + keylen))) {
+		count++;
+		i += keylen;
+	} 
+	while((c = string[i]) != EOF) {
+		matchlen = 0;
+		if (c == keyword[0] && isDelimiter(*(string + i - 1))
+				&& isDelimiter(*(string + i + keylen))) {
+			while((c = string[i + matchlen]) == keyword[matchlen])
+				matchlen++;
+			if (matchlen == keylen) {
+				count++;
+			}
+			i += matchlen;
+		}
+		else 
+			i++;
+	}
+	return count;
 }
