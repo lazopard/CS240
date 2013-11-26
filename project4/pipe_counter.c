@@ -3,7 +3,6 @@
 #define BUFFERSIZE "-b"
 #define KEYWORD "-k"
 
-#include "interface.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -84,9 +83,10 @@ int main(int argc, char **argv) {
 
 	/*get number of bytes for main*/
 
+	int mainCountIsComplete = 0;
+
 	if ((size % bufferSize) == 0) {
-		printf("size mod bufferSize = 0\n");
-		return 1;
+		mainCountIsComplete = 1;
 	}
 
 	int mainBytes = size % bufferSize;
@@ -101,7 +101,6 @@ int main(int argc, char **argv) {
 	int childCount = 0;
 	int cCount = 0; /*buffer from where count from child processes are read*/
 	int totalCount = 0;
-	int mainCountIsComplete = 0;
 
 	int fileSizePerChild = (size-mainBytes)/numForks;
 
@@ -179,7 +178,7 @@ int countWords(char *string, const char *keyword) {
 		count++;
 		i += keylen;
 	} 
-	while((c = string[i]) != EOF) {
+	while((c = string[i]) != '\0') {
 		matchlen = 0;
 		if (c == keyword[0] && isDelimiter(*(string + i - 1))
 				&& isDelimiter(*(string + i + keylen))) {
@@ -190,8 +189,9 @@ int countWords(char *string, const char *keyword) {
 			}
 			i += matchlen;
 		}
-		else 
+		else {
 			i++;
+		}
 	}
 	return count;
 }

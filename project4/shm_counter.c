@@ -85,10 +85,7 @@ int main(int argc, char **argv) {
 	}
 
 	char *input, *output, *keyword;
-
-	int foundInput, foundOutput, foundKeyword, foundBufferSize;
-	foundInput=foundOutput=foundKeyword=foundBufferSize=0;
-
+	
 	int i;
 
 	for(i=1;i < argc;i++) {
